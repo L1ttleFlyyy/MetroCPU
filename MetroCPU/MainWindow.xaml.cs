@@ -41,8 +41,9 @@ namespace MetroCPU
             }
             else
             {
-                MessageBox.Show($"SST: {cpuinfo.SST_support}" );
-                //Environment.Exit(0);
+                MessageBox.Show($"SST: {cpuinfo.SST_support}\n" 
+                    + $"Frequency: {cpuinfo.Freq}");
+                Environment.Exit(0);
                 if (!cpuinfo.SST_support)
                 {
                     SST_TextBlock.Text = "Unavailable";

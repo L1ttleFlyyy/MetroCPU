@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Text;
 
 namespace OpenLibSys
@@ -16,6 +17,8 @@ namespace OpenLibSys
         public bool IsCpuid { get; }
         public string Vendor { get; }
         public string Manufacturer { get; }
+        public uint Threadcount { get; }
+        public double Freq { get; }
         public readonly string ErrorMessage = "No error";
 
         public CPUinfo()
@@ -37,7 +40,17 @@ namespace OpenLibSys
                 MaxCPUIDexind = (int)(cpuid_ex[0, 0] - 0x80000000);
                 Vendor = _getVendor();
                 Manufacturer = _getManufacturer();
+                Threadcount = BitsSlicer(cpuid[1,1],23,16);
                 SST_support = BitsSlicer(cpuid[6, 0], 7, 7) > 0;
+                RdTSC();
+                ulong mask = ThreadAffinity.Set(1UL << 5);
+
+                EstimateTimeStampCounterFrequency(
+                  out double estimatedTimeStampCounterFrequency,
+                  out double estimatedTimeStampCounterFrequencyError);
+                
+                ThreadAffinity.Set(mask);
+                Freq = estimatedTimeStampCounterFrequency;
             }
         }
 
@@ -129,6 +142,63 @@ namespace OpenLibSys
                     _ols.Cpuid(tmp + 0x80000000, ref cpuid_ex[tmp, 0], ref cpuid_ex[tmp, 1], ref cpuid_ex[tmp, 2], ref cpuid_ex[tmp, 3]);
                 }
             }
+        }
+
+        private void EstimateTimeStampCounterFrequency(out double frequency, out double error)
+        {
+
+            // preload the function
+            EstimateTimeStampCounterFrequency(0, out double f, out double e);
+            EstimateTimeStampCounterFrequency(0, out f, out e);
+
+            // estimate the frequency
+            error = double.MaxValue;
+            frequency = 0;
+            for (int i = 0; i < 5; i++)
+            {
+                EstimateTimeStampCounterFrequency(0.025, out f, out e);
+                if (e < error)
+                {
+                    error = e;
+                    frequency = f;
+                }
+
+                if (error < 1e-4)
+                    break;
+            }
+        }
+
+        private void EstimateTimeStampCounterFrequency(double timeWindow, out double frequency, out double error)
+        {
+            long ticks = (long)(timeWindow * Stopwatch.Frequency);
+            ulong countBegin, countEnd;
+
+            long timeBegin = Stopwatch.GetTimestamp() +
+              (long)Math.Ceiling(0.001 * ticks);
+            long timeEnd = timeBegin + ticks;
+
+            while (Stopwatch.GetTimestamp() < timeBegin) { }
+            countBegin = RdTSC();
+            long afterBegin = Stopwatch.GetTimestamp();
+
+            while (Stopwatch.GetTimestamp() < timeEnd) { }
+            countEnd = RdTSC();
+            long afterEnd = Stopwatch.GetTimestamp();
+
+            double delta = (timeEnd - timeBegin);
+            frequency = 1e-6 *
+              (((double)(countEnd - countBegin)) * Stopwatch.Frequency) / delta;
+
+            double beginError = (afterBegin - timeBegin) / delta;
+            double endError = (afterEnd - timeEnd) / delta;
+            error = beginError + endError;
+        }
+
+        private ulong RdTSC()
+        {
+            uint eax = 0, edx = 0;
+            _ols.RdtscTx(ref eax, ref edx, (UIntPtr)(1UL<<5));
+            return ((ulong)edx << 32) + eax;
         }
 
         public uint BitsSlicer(uint exx, int Highest, int Lowest)
