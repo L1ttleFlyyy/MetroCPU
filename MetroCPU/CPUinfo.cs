@@ -43,13 +43,13 @@ namespace OpenLibSys
                 Threadcount = BitsSlicer(cpuid[1,1],23,16);
                 SST_support = BitsSlicer(cpuid[6, 0], 7, 7) > 0;
                 RdTSC();
-                ulong mask = ThreadAffinity.Set(1UL << 5);
+                //ulong mask = ThreadAffinity.Set(1UL << 5);
 
                 EstimateTimeStampCounterFrequency(
                   out double estimatedTimeStampCounterFrequency,
                   out double estimatedTimeStampCounterFrequencyError);
                 
-                ThreadAffinity.Set(mask);
+                //ThreadAffinity.Set(mask);
                 Freq = estimatedTimeStampCounterFrequency;
             }
         }
@@ -197,7 +197,8 @@ namespace OpenLibSys
         private ulong RdTSC()
         {
             uint eax = 0, edx = 0;
-            _ols.RdtscTx(ref eax, ref edx, (UIntPtr)(1UL<<5));
+            _ols.Rdtsc(ref eax, ref edx);
+            //_ols.RdtscTx(ref eax, ref edx, (UIntPtr)(1UL<<5));
             return ((ulong)edx << 32) + eax;
         }
 
