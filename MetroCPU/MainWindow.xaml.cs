@@ -41,10 +41,8 @@ namespace MetroCPU
             }
             else
             {
-                MessageBox.Show($"HWP: {cpuinfo.HWP_support}");
-                MessageBox.Show("SST: " + cpuinfo.SST_support.ToString());
-                //MessageBox.Show(cpuinfo.BitsSlicer(0x80001234, 31, 28));
-                Environment.Exit(0);
+                MessageBox.Show($"SST: {cpuinfo.SST_support}" );
+                //Environment.Exit(0);
                 if (!cpuinfo.SST_support)
                 {
                     SST_TextBlock.Text = "Unavailable";
