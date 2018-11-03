@@ -10,7 +10,7 @@ namespace OpenLibSys
         public int test;
         public bool LoadSucceeded { get; }
         public bool SST_support { get; }
-        public uint[,] cpuid = new uint[16, 4];
+        public uint[,] cpuid = new uint[32, 4];
         public int MaxCPUIDind { get; }
         public uint[,] cpuid_ex = new uint[32, 4];
         public int MaxCPUIDexind { get; }
@@ -113,7 +113,7 @@ namespace OpenLibSys
             {
                 _ols.Cpuid(0, ref cpuid[0, 0], ref cpuid[0, 1], ref cpuid[0, 2], ref cpuid[0, 3]);
             }
-            int maxind = Math.Min((int)cpuid[0, 0], 0xf);
+            int maxind = Math.Min((int)cpuid[0, 0], 0x1f);
             if (maxind > 0)
             {
                 for (uint tmp = 1; tmp <= maxind; tmp++)
@@ -197,7 +197,7 @@ namespace OpenLibSys
         private ulong RdTSC()
         {
             uint eax = 0, edx = 0;
-            int res = _ols.Rdpmc((uint)1<<30+1, ref eax, ref edx);
+            int res = _ols.RdmsrTx(0x0c1, ref eax, ref edx,(UIntPtr)(1UL));
             //_ols.Rdtsc(ref eax, ref edx);
             //_ols.RdtscTx(ref eax, ref edx, (UIntPtr)(1UL<<5));
             return ((ulong)edx << 32) + eax;

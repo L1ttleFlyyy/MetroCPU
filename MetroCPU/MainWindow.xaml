@@ -22,7 +22,9 @@
                 </StackPanel>
             </Controls:MetroTabItem.Header>
             <DockPanel Margin="4">
-                <GroupBox Header="CPUID" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Controls:ControlsHelper.ContentCharacterCasing="Upper" BorderThickness="1"/>
+                <GroupBox Header="CPUID" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Controls:ControlsHelper.ContentCharacterCasing="Upper" BorderThickness="1">
+                    <TextBox x:Name="TextBox1" TextWrapping="Wrap" Text="TextBlock" TextAlignment="Center"/>
+                </GroupBox>
             </DockPanel>
         </Controls:MetroTabItem>
 

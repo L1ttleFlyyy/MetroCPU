@@ -37,9 +37,20 @@ namespace MetroCPU
             }
             else
             {
-                MessageBox.Show($"SST: {cpuinfo.SST_support}\n" 
+
+                MessageBox.Show($"SST: {cpuinfo.SST_support}\n"
                     + $"Frequency: {cpuinfo.Freq}");
-                Environment.Exit(0);
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i <= cpuinfo.MaxCPUIDind; i++)
+                {
+                    sb.Append($"{i.ToString("X2")}H :"
+                        + $" {cpuinfo.cpuid[i, 0].ToString("X8")}H"
+                        + $" {cpuinfo.cpuid[i, 1].ToString("X8")}H"
+                        + $" {cpuinfo.cpuid[i, 2].ToString("X8")}H"
+                        + $" {cpuinfo.cpuid[i, 3].ToString("X8")}H\n");
+                }
+                TextBox1.Text =sb.ToString();
+                //Environment.Exit(0);
                 if (!cpuinfo.SST_support)
                 {
                     SST_TextBlock.Text = "Unavailable";
