@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
@@ -10,6 +12,7 @@ namespace OpenLibSys
 
         private const int MaxIndDefined = 0x1f;
         private Ols _ols;
+        private List<FreqPMC> PMC_List;
         public int test;
         public bool LoadSucceeded { get; }
         public bool SST_support { get; }
@@ -22,7 +25,7 @@ namespace OpenLibSys
         public string Manufacturer { get; }
         public int ThreadCount { get; }
         public int CoreCount { get; }
-        public double Freq { get; }
+        public ArrayList Freq_List { get; }
         public readonly string ErrorMessage = "No error";
         public int LogicalCoreCounts { get; }
         public bool IsHyperThreading { get; }
@@ -50,17 +53,23 @@ namespace OpenLibSys
                 IsHyperThreading = BitsSlicer(cpuid[1, 3], 28, 28) > 0;
                 ThreadCount = _getThreadCount();
                 CoreCount = IsHyperThreading?ThreadCount>>1:ThreadCount;
-
-                pMC = new PMC(_ols, Manufacturer, 0, 0, 0x3c);
-                RdTSC();
+                PMC_List = new List<FreqPMC>(ThreadCount);
+                Freq_List = new ArrayList(ThreadCount);
+                for(int i=0;i<ThreadCount;i++)
+                {
+                    PMC_List.Add( new FreqPMC(_ols, Manufacturer, i, 0, 0x3c));
+                    Freq_List.Add( PMC_List[i].Frequency());
+                }
+                /*RdTSC();
                 //ulong mask = ThreadAffinity.Set(1UL <<1);
 
-                EstimateTimeStampCounterFrequency(
-                  out double estimatedTimeStampCounterFrequency,
-                  out double estimatedTimeStampCounterFrequencyError);
+                EstimatePerformanceMonitoringCounterFrequency(
+                  out double estimatedPerformanceMonitoringCounterFrequency,
+                  out double estimatedPerformanceMonitoringCounterFrequencyError);
 
                 //ThreadAffinity.Set(mask);
-                Freq = estimatedTimeStampCounterFrequency;
+                Freq = estimatedPerformanceMonitoringCounterFrequency;*/
+                
             }
         }
         
@@ -164,20 +173,20 @@ namespace OpenLibSys
                 }
             }
         }
-
-        private void EstimateTimeStampCounterFrequency(out double frequency, out double error)
+        /*
+        private void EstimatePerformanceMonitoringCounterFrequency(out double frequency, out double error)
         {
 
             // preload the function
-            EstimateTimeStampCounterFrequency(0, out double f, out double e);
-            EstimateTimeStampCounterFrequency(0, out f, out e);
+            EstimatePerformanceMonitoringCounterFrequency(0, out double f, out double e);
+            EstimatePerformanceMonitoringCounterFrequency(0, out f, out e);
 
             // estimate the frequency
             error = double.MaxValue;
             frequency = 0;
             for (int i = 0; i < 5; i++)
             {
-                EstimateTimeStampCounterFrequency(0.025, out f, out e);
+                EstimatePerformanceMonitoringCounterFrequency(0.025, out f, out e);
                 if (e < error)
                 {
                     error = e;
@@ -189,7 +198,7 @@ namespace OpenLibSys
             }
         }
 
-        private void EstimateTimeStampCounterFrequency(double timeWindow, out double frequency, out double error)
+        private void EstimatePerformanceMonitoringCounterFrequency(double timeWindow, out double frequency, out double error)
         {
             long ticks = (long)(timeWindow * Stopwatch.Frequency);
             ulong countBegin, countEnd;
@@ -215,7 +224,6 @@ namespace OpenLibSys
             error = beginError + endError;
         }
 
-        private PMC pMC;
 
         private ulong RdTSC()
         {
@@ -223,12 +231,9 @@ namespace OpenLibSys
             //int res = _ols.RdmsrTx(0x0c1, ref eax, ref edx, (UIntPtr)(1UL));
             //_ols.Rdtsc(ref eax, ref edx);
             //_ols.RdtscTx(ref eax, ref edx, (UIntPtr)(1UL<<5));
-
-
-
             //return ((ulong)edx << 32) + eax;
             return pMC.EventCounts;
-        }
+        }*/
 
         public static uint BitsSlicer(uint exx, int Highest, int Lowest)
         {
@@ -272,8 +277,11 @@ namespace OpenLibSys
                 {
                     // TODO: 释放托管状态(托管对象)。
                 }
-
-                pMC.Dispose();
+                foreach(FreqPMC f in PMC_List)
+                {
+                    f.Dispose();
+                }
+                //pMC.Dispose();
                 _ols.Dispose();
 
                 disposedValue = true;

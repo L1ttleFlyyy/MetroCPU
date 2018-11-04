@@ -1,19 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Security.Principal;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using MahApps.Metro.Controls;
 using OpenLibSys;
 
@@ -38,9 +28,12 @@ namespace MetroCPU
             }
             else
             {
-
+                StringBuilder freqsb = new StringBuilder();
+                foreach(double ii in cpuinfo.Freq_List)
+                    freqsb.AppendLine(ii.ToString());
+                
                 MessageBox.Show($"SST: {cpuinfo.SST_support}\n"
-                    + $"Frequency: {cpuinfo.Freq}\n"
+                    + $"Frequency: {freqsb}\n"
                     + $"Physical corecount: {cpuinfo.CoreCount}\n"
                     + $"Logical corecount: {cpuinfo.ThreadCount}");
                 StringBuilder sb = new StringBuilder();

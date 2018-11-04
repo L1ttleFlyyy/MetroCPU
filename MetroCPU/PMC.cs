@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace OpenLibSys
 {
@@ -10,22 +11,16 @@ namespace OpenLibSys
         public int EventSelect { get; }
         private readonly uint PMC_num;
         private readonly Ols _ols;
-        
+        private uint eax = 0, edx = 0;
+
         public string ErrorMessage { get; }
         public ulong EventCounts
         {
             get
             {
-                uint eax = 0,edx =0;
-                _ols.RdmsrTx(0x0c1 +PMC_num,ref eax, ref edx, (UIntPtr)(1UL<<Thread));
-                return ((ulong)edx<<32) + eax;
+                _ols.RdmsrTx(0x0c1 + PMC_num, ref eax, ref edx, (UIntPtr)(1UL << Thread));
+                return ((ulong)edx << 32) + eax;
             }
-        }
-
-        public double Frequency()
-        {
-            
-            return 0;
         }
 
         public PMC(Ols ols, string Manufacturer, int thread, byte uMask, byte eventSelect)
@@ -33,7 +28,6 @@ namespace OpenLibSys
             _ols = ols;
             if (_ols.IsMsr() > 0)
             {
-                uint eax = 0, edx = 0;
                 switch (Manufacturer)
                 {
                     case "GenuineIntel":
@@ -42,13 +36,13 @@ namespace OpenLibSys
                         EventSelect = eventSelect;
                         for (uint i = 0; i < 8; i++)
                         {
-                            if (_ols.RdmsrTx(i+0x186, ref eax, ref edx, (UIntPtr)(1UL << Thread)) > 0)
+                            if (_ols.RdmsrTx(i + 0x186, ref eax, ref edx, (UIntPtr)(1UL << Thread)) > 0)
                             {
-                                if(CPUinfo.BitsSlicer(eax, 22, 22)==0)
+                                if (CPUinfo.BitsSlicer(eax, 22, 22) == 0)
                                 {
                                     PMC_num = i;
                                     edx = 0;
-                                    eax = eventSelect+uMask*256U+0x41*256*256;
+                                    eax = eventSelect + uMask * 256U + 0x41 * 256 * 256;
                                     if (_ols.WrmsrTx(PMC_num + 0x186, eax, edx, (UIntPtr)(1UL << Thread)) == 0)
                                     {
                                         ErrorMessage = "Wrmsr failed";
@@ -86,7 +80,7 @@ namespace OpenLibSys
                     // TODO: 释放托管状态(托管对象)。
                 }
 
-                _ols.WrmsrTx(PMC_num+0x186,0,0,(UIntPtr)(1UL<<Thread));
+                _ols.WrmsrTx(PMC_num + 0x186, 0, 0, (UIntPtr)(1UL << Thread));
                 Disposed = true;
             }
         }
