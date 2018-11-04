@@ -40,7 +40,9 @@ namespace MetroCPU
             {
 
                 MessageBox.Show($"SST: {cpuinfo.SST_support}\n"
-                    + $"Frequency: {cpuinfo.Freq}");
+                    + $"Frequency: {cpuinfo.Freq}\n"
+                    + $"Physical corecount: {cpuinfo.CoreCount}\n"
+                    + $"Logical corecount: {cpuinfo.ThreadCount}");
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i <= cpuinfo.MaxCPUIDind; i++)
                 {

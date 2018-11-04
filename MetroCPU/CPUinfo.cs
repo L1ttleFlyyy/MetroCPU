@@ -5,7 +5,7 @@ using System.Text;
 namespace OpenLibSys
 {
 
-    class CPUinfo:IDisposable
+    class CPUinfo : IDisposable
     {
 
         private const int MaxIndDefined = 0x1f;
@@ -20,9 +20,12 @@ namespace OpenLibSys
         public bool IsCpuid { get; }
         public string Vendor { get; }
         public string Manufacturer { get; }
-        public uint Threadcount { get; }
+        public int ThreadCount { get; }
+        public int CoreCount { get; }
         public double Freq { get; }
         public readonly string ErrorMessage = "No error";
+        public int LogicalCoreCounts { get; }
+        public bool IsHyperThreading { get; }
 
         public CPUinfo()
         {
@@ -43,8 +46,11 @@ namespace OpenLibSys
                 MaxCPUIDexind = (int)Math.Min((cpuid_ex[0, 0] - 0x80000000), MaxIndDefined);
                 Vendor = _getVendor();
                 Manufacturer = _getManufacturer();
-                Threadcount = BitsSlicer(cpuid[1, 1], 23, 16);
                 SST_support = BitsSlicer(cpuid[6, 0], 7, 7) > 0;
+                IsHyperThreading = BitsSlicer(cpuid[1, 3], 28, 28) > 0;
+                ThreadCount = _getThreadCount();
+                CoreCount = IsHyperThreading?ThreadCount>>1:ThreadCount;
+
                 pMC = new PMC(_ols, Manufacturer, 0, 0, 0x3c);
                 RdTSC();
                 //ulong mask = ThreadAffinity.Set(1UL <<1);
@@ -57,7 +63,7 @@ namespace OpenLibSys
                 Freq = estimatedTimeStampCounterFrequency;
             }
         }
-
+        
 
         public bool SST_enabled
         {
@@ -83,7 +89,18 @@ namespace OpenLibSys
             }
         }
 
-        public string _getManufacturer()
+        private int _getThreadCount()
+        {
+            uint eax = 0, ebx = 0, ecx = 0, edx = 0;
+            int cnt = 0;
+            while (_ols.CpuidTx(01, ref eax, ref ebx, ref ecx, ref edx, (UIntPtr)(1UL << cnt)) == 1)
+            {
+                cnt++;
+            }
+            return cnt;
+        }
+
+        private string _getManufacturer()
         {
             StringBuilder sb = new StringBuilder();
             uint[] ex = new uint[4] { 0, 0, 0, 0 };
@@ -210,7 +227,7 @@ namespace OpenLibSys
 
 
             //return ((ulong)edx << 32) + eax;
-                return pMC.EventCounts;
+            return pMC.EventCounts;
         }
 
         public static uint BitsSlicer(uint exx, int Highest, int Lowest)
