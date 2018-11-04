@@ -33,6 +33,7 @@ namespace MetroCPU
             if (!cpuinfo.LoadSucceeded)
             {
                 MessageBox.Show(cpuinfo.ErrorMessage);
+                cpuinfo.Dispose();
                 Environment.Exit(1);
             }
             else
@@ -49,6 +50,7 @@ namespace MetroCPU
                         + $" {cpuinfo.cpuid[i, 2].ToString("X8")}H"
                         + $" {cpuinfo.cpuid[i, 3].ToString("X8")}H\n");
                 }
+                sb.Append(cpuinfo.Manufacturer);
                 TextBox1.Text =sb.ToString();
                 //Environment.Exit(0);
                 if (!cpuinfo.SST_support)
@@ -102,8 +104,26 @@ namespace MetroCPU
             if (Toggle1.IsChecked.HasValue)
             {
                 cpuinfo.SST_enabled = Toggle1.IsChecked.Value;
-                Toggle1.IsChecked = cpuinfo.SST_enabled;
+                if (Toggle1.IsChecked != cpuinfo.SST_enabled)
+                {
+                    Toggle1.IsChecked = cpuinfo.SST_enabled;
+                    SST_Group.IsEnabled = false;
+                    MessageBox.Show("SST status won't change unless reboot");
+                }
             }
+        }
+
+        private void Hyperlink_Click(object sender, RoutedEventArgs e)
+        {
+            Hyperlink hl = (Hyperlink)sender;
+            string navigateUri = hl.NavigateUri.ToString();
+            Process.Start(new ProcessStartInfo(navigateUri));
+            e.Handled = true;
+        }
+
+        private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            cpuinfo.Dispose();
         }
     }
 }

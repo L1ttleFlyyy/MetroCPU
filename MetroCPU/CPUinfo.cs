@@ -4,8 +4,11 @@ using System.Text;
 
 namespace OpenLibSys
 {
-    class CPUinfo
+
+    class CPUinfo:IDisposable
     {
+
+        private const int MaxIndDefined = 0x1f;
         private Ols _ols;
         public int test;
         public bool LoadSucceeded { get; }
@@ -27,7 +30,7 @@ namespace OpenLibSys
             uint res = _ols.GetStatus();
             if (res != 0)
             {
-                ErrorMessage = ((Ols.Status)res).ToString()+"\n"+((Ols.OlsDllStatus)_ols.GetDllStatus()).ToString();
+                ErrorMessage = ((Ols.Status)res).ToString() + "\n" + ((Ols.OlsDllStatus)_ols.GetDllStatus()).ToString();
                 LoadSucceeded = false;
             }
             else
@@ -35,20 +38,21 @@ namespace OpenLibSys
                 LoadSucceeded = true;
                 IsCpuid = _ols.IsCpuid() > 0;
                 _getCPUID();
-                MaxCPUIDind = (int)cpuid[0, 0];
+                MaxCPUIDind = (int)Math.Min(cpuid[0, 0], MaxIndDefined);
                 _getCPUIDex();
-                MaxCPUIDexind = (int)(cpuid_ex[0, 0] - 0x80000000);
+                MaxCPUIDexind = (int)Math.Min((cpuid_ex[0, 0] - 0x80000000), MaxIndDefined);
                 Vendor = _getVendor();
                 Manufacturer = _getManufacturer();
-                Threadcount = BitsSlicer(cpuid[1,1],23,16);
+                Threadcount = BitsSlicer(cpuid[1, 1], 23, 16);
                 SST_support = BitsSlicer(cpuid[6, 0], 7, 7) > 0;
+                pMC = new PMC(_ols, Manufacturer, 0, 0, 0x3c);
                 RdTSC();
                 //ulong mask = ThreadAffinity.Set(1UL <<1);
 
                 EstimateTimeStampCounterFrequency(
                   out double estimatedTimeStampCounterFrequency,
                   out double estimatedTimeStampCounterFrequencyError);
-                
+
                 //ThreadAffinity.Set(mask);
                 Freq = estimatedTimeStampCounterFrequency;
             }
@@ -113,7 +117,7 @@ namespace OpenLibSys
             {
                 _ols.Cpuid(0, ref cpuid[0, 0], ref cpuid[0, 1], ref cpuid[0, 2], ref cpuid[0, 3]);
             }
-            int maxind = Math.Min((int)cpuid[0, 0], 0x1f);
+            int maxind = Math.Min((int)cpuid[0, 0], MaxIndDefined);
             if (maxind > 0)
             {
                 for (uint tmp = 1; tmp <= maxind; tmp++)
@@ -133,7 +137,7 @@ namespace OpenLibSys
             {
                 _ols.Cpuid(0x80000000, ref cpuid_ex[0, 0], ref cpuid_ex[0, 1], ref cpuid_ex[0, 2], ref cpuid_ex[0, 3]);
             }
-            int maxind = Math.Min((int)(cpuid_ex[0, 0] - 0x80000000), 0x1f);
+            int maxind = Math.Min((int)(cpuid_ex[0, 0] - 0x80000000), MaxIndDefined);
 
             if (maxind > 0)
             {
@@ -194,16 +198,22 @@ namespace OpenLibSys
             error = beginError + endError;
         }
 
+        private PMC pMC;
+
         private ulong RdTSC()
         {
-            uint eax = 0, edx = 0;
-            int res = _ols.RdmsrTx(0x0c1, ref eax, ref edx,(UIntPtr)(1UL));
+            //uint eax = 0, edx = 0;
+            //int res = _ols.RdmsrTx(0x0c1, ref eax, ref edx, (UIntPtr)(1UL));
             //_ols.Rdtsc(ref eax, ref edx);
             //_ols.RdtscTx(ref eax, ref edx, (UIntPtr)(1UL<<5));
-            return ((ulong)edx << 32) + eax;
+
+
+
+            //return ((ulong)edx << 32) + eax;
+                return pMC.EventCounts;
         }
 
-        public uint BitsSlicer(uint exx, int Highest, int Lowest)
+        public static uint BitsSlicer(uint exx, int Highest, int Lowest)
         {
             if (Highest < Lowest || Highest > 31 || Highest < 0 || Lowest > 31 || Lowest < 0)
             {
@@ -215,7 +225,7 @@ namespace OpenLibSys
             return tail - head;
         }
 
-        public string ToBinary(uint data, int bits)
+        public static string ToBinary(uint data, int bits)
         {
             if (bits > 31 || bits < 0)
             {
@@ -233,6 +243,30 @@ namespace OpenLibSys
             }
             return Encoding.ASCII.GetString(bytes);
         }
-        
+
+        #region IDisposable Support
+        private bool disposedValue = false; // 要检测冗余调用
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: 释放托管状态(托管对象)。
+                }
+
+                pMC.Dispose();
+                _ols.Dispose();
+
+                disposedValue = true;
+            }
+        }
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+        #endregion
+
     }
 }

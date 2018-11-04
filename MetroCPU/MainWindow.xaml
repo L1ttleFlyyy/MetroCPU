@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:MetroCPU"
         mc:Ignorable="d"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        Title="MetroCPU" Height="450" Width="800" MaxWidth="800" MaxHeight="450" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Icon="CPU.ico">
+        Title="MetroCPU" Height="450" Width="800" MaxWidth="800" MaxHeight="450" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Icon="CPU.ico" Closing="MetroWindow_Closing">
     <Controls:MetroWindow.Resources>
         <SolidColorBrush x:Key="AccentBlue" Color="#FF41B1E1"/>
         <SolidColorBrush x:Key="AccentGray" Color="#FF686868"/>
@@ -30,13 +30,16 @@
 
         <Controls:MetroTabItem>
             <Controls:MetroTabItem.Header>
-                <StackPanel Orientation="Horizontal" Width="100">
+                <StackPanel ToolTip="ONLY Available on latest Intel&#174; CPUs(Skylake, Kabylake, Coffeelake or newer family)" Orientation="Horizontal" Width="100">
                     <Image Height="auto" Width="auto" Source="intel.png" Margin="10,0,0,0" />
                     <TextBlock Text="SST" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" Margin="10,0,0,0" FontSize="20"/>
                 </StackPanel>
             </Controls:MetroTabItem.Header>
             <DockPanel Name="SST_Dock" Margin="4">
-                <GroupBox Header="Intel&#174; Speed Shift Technology" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Controls:ControlsHelper.ContentCharacterCasing="Normal" BorderThickness="1" DockPanel.Dock="Top">
+                <GroupBox Name="SST_Group"  Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Controls:ControlsHelper.ContentCharacterCasing="Normal" BorderThickness="1" DockPanel.Dock="Top">
+                    <GroupBox.Header >
+                        <Hyperlink ToolTip="ONLY Available on latest Intel&#174; CPUs(Skylake, Kabylake, Coffeelake or newer family)" Foreground="White" NavigateUri="https://www.anandtech.com/show/9751/examining-intel-skylake-speed-shift-more-responsive-processors" TextDecorations="{x:Null}" RequestNavigate="Hyperlink_Click">Intel&#174; Speed Shift Technology</Hyperlink>
+                    </GroupBox.Header>
                     <DockPanel>
                         <Ellipse Height="10" Width="{Binding RelativeSource={RelativeSource Self}, Path=Height}" Margin="3,0,0,0">
                             <Ellipse.Style>
@@ -69,7 +72,7 @@
                         <Controls:ToggleSwitchButton Name="Toggle1" Height="Auto" Width="35" HorizontalAlignment="Left" Click="Toggle1_Click"/>
                     </DockPanel>
                 </GroupBox>
-                <GroupBox Header="Energy Performance Preference" DockPanel.Dock="Top" Controls:ControlsHelper.ContentCharacterCasing="Normal" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Margin="0,4,0,0">
+                <GroupBox Name="EPP_Group" Header="Energy Performance Preference" DockPanel.Dock="Top" Controls:ControlsHelper.ContentCharacterCasing="Normal" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Margin="0,4,0,0" Controls:GroupBoxHelper.HeaderForeground="{x:Null}">
                     
                 </GroupBox>
             </DockPanel>

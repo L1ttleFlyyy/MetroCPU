@@ -64,6 +64,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="PMC.cs" />
     <Compile Include="ThreadAffinity.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -118,6 +119,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="intel.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="help.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
