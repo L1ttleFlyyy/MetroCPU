@@ -18,14 +18,26 @@
             <Controls:MetroTabItem.Header>
                 <StackPanel Orientation="Horizontal" Width="100">
                     <Image Height="auto" Width="auto" Source="pulse.png" />
-                    <TextBlock Text="Tuning" TextAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" HorizontalAlignment="Center" Margin="3,0,0,0" FontSize="20"/>
+                    <TextBlock Text="Tuning" TextAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" HorizontalAlignment="Center" FontSize="20"/>
                 </StackPanel>
             </Controls:MetroTabItem.Header>
-            <DockPanel Margin="4">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
                 <GroupBox Header="CPUID" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Controls:ControlsHelper.ContentCharacterCasing="Upper" BorderThickness="1">
                     <TextBox x:Name="TextBox1" TextWrapping="Wrap" Text="TextBlock" TextAlignment="Center"/>
                 </GroupBox>
-            </DockPanel>
+                <GroupBox Header="Monitoring" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Controls:ControlsHelper.ContentCharacterCasing="Upper" BorderThickness="1" Grid.Column="1">
+                    <DockPanel>
+                        <Button DockPanel.Dock="Top" Click="Button_Click">
+                        </Button>
+                        <TextBox DockPanel.Dock="Top" Name="TextBox2">
+                        </TextBox>
+                    </DockPanel>
+                </GroupBox>
+            </Grid>
         </Controls:MetroTabItem>
 
         <Controls:MetroTabItem>
@@ -73,7 +85,7 @@
                     </DockPanel>
                 </GroupBox>
                 <GroupBox Name="EPP_Group" Header="Energy Performance Preference" DockPanel.Dock="Top" Controls:ControlsHelper.ContentCharacterCasing="Normal" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Margin="0,4,0,0" Controls:GroupBoxHelper.HeaderForeground="{x:Null}">
-                    
+
                 </GroupBox>
             </DockPanel>
 

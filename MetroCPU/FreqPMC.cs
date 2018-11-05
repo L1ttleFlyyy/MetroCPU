@@ -4,15 +4,17 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace OpenLibSys
 {
-    class FreqPMC:PMC
+    class FreqPMC : PMC
     {
-        public FreqPMC(Ols ols, string manufacturer, int thread, byte uMask,byte eventSelect):base(ols,manufacturer,thread,uMask,eventSelect)
+        public FreqPMC(Ols ols, ManufacturerName manufacturer, int thread, byte uMask, byte eventSelect) : base(ols, manufacturer, thread, uMask, eventSelect)
         {
         }
-
+        
+        
         public double Frequency()
         {
             ulong mask = 1UL << Thread;

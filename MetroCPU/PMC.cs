@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 
 namespace OpenLibSys
 {
@@ -11,29 +10,38 @@ namespace OpenLibSys
         public int EventSelect { get; }
         private readonly uint PMC_num;
         private readonly Ols _ols;
-        private uint eax = 0, edx = 0;
 
         public string ErrorMessage { get; }
         public ulong EventCounts
         {
             get
             {
-                _ols.RdmsrTx(0x0c1 + PMC_num, ref eax, ref edx, (UIntPtr)(1UL << Thread));
-                return ((ulong)edx << 32) + eax;
+                uint eax = 0, edx = 0;
+                try
+                {
+                    _ols.RdmsrTx(0x0c1 + PMC_num, ref eax, ref edx, (UIntPtr)(1UL << Thread));
+
+                    return ((ulong)edx << 32) + eax;
+                }
+                catch(Exception e)
+                {
+                    return 0;
+                }
             }
         }
 
-        public PMC(Ols ols, string Manufacturer, int thread, byte uMask, byte eventSelect)
+        public PMC(Ols ols, ManufacturerName Manufacturer, int thread, byte uMask, byte eventSelect)
         {
             _ols = ols;
             if (_ols.IsMsr() > 0)
             {
                 switch (Manufacturer)
                 {
-                    case "GenuineIntel":
+                    case ManufacturerName.GenuineIntel:
                         Thread = thread;
                         UMask = uMask;
                         EventSelect = eventSelect;
+                        uint eax = 0, edx = 0;
                         for (uint i = 0; i < 8; i++)
                         {
                             if (_ols.RdmsrTx(i + 0x186, ref eax, ref edx, (UIntPtr)(1UL << Thread)) > 0)
@@ -58,7 +66,7 @@ namespace OpenLibSys
                             }
                         }
                         break;
-                    case "AuthenticAMD":
+                    case ManufacturerName.AuthenticAMD:
                         ErrorMessage = "Unsupported cpu vendor";
                         Dispose();
                         break;

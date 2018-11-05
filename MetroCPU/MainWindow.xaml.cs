@@ -40,23 +40,25 @@ namespace MetroCPU
                 for (int i = 0; i <= cpuinfo.MaxCPUIDind; i++)
                 {
                     sb.Append($"{i.ToString("X2")}H :"
-                        + $" {cpuinfo.cpuid[i, 0].ToString("X8")}H"
-                        + $" {cpuinfo.cpuid[i, 1].ToString("X8")}H"
-                        + $" {cpuinfo.cpuid[i, 2].ToString("X8")}H"
-                        + $" {cpuinfo.cpuid[i, 3].ToString("X8")}H\n");
+                        + $" {cpuinfo.CPUID[i, 0].ToString("X8")}H"
+                        + $" {cpuinfo.CPUID[i, 1].ToString("X8")}H"
+                        + $" {cpuinfo.CPUID[i, 2].ToString("X8")}H"
+                        + $" {cpuinfo.CPUID[i, 3].ToString("X8")}H\n");
                 }
 
                 sb.Append(cpuinfo.Manufacturer+"\n");
                 for (int i = 0; i <= cpuinfo.MaxCPUIDexind; i++)
                 {
                     sb.Append($"{(0x80000000+i).ToString("X8")}H :"
-                        + $" {cpuinfo.cpuid_ex[i, 0].ToString("X8")}H"
-                        + $" {cpuinfo.cpuid_ex[i, 1].ToString("X8")}H"
-                        + $" {cpuinfo.cpuid_ex[i, 2].ToString("X8")}H"
-                        + $" {cpuinfo.cpuid_ex[i, 3].ToString("X8")}H\n");
+                        + $" {cpuinfo.CPUID_ex[i, 0].ToString("X8")}H"
+                        + $" {cpuinfo.CPUID_ex[i, 1].ToString("X8")}H"
+                        + $" {cpuinfo.CPUID_ex[i, 2].ToString("X8")}H"
+                        + $" {cpuinfo.CPUID_ex[i, 3].ToString("X8")}H\n");
                 }
 
                 TextBox1.Text = sb.ToString();
+                TextBox2.Text = $"Count: {cpuinfo.DataCount}\n"
+                    + $"Freq: {cpuinfo.Freq}";
                 //Environment.Exit(0);
                 if (!cpuinfo.SST_support)
                 {
@@ -129,6 +131,12 @@ namespace MetroCPU
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             cpuinfo.Dispose();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            TextBox2.Text = $"Count: {cpuinfo.DataCount}\n"
+                + $"Freq: {cpuinfo.Freq}";
         }
     }
 }

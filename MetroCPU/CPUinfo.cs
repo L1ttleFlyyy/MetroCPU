@@ -6,6 +6,7 @@ using System.Text;
 
 namespace OpenLibSys
 {
+    enum ManufacturerName { GenuineIntel, AuthenticAMD, Unknown };
 
     class CPUinfo : IDisposable
     {
@@ -16,19 +17,22 @@ namespace OpenLibSys
         public int test;
         public bool LoadSucceeded { get; }
         public bool SST_support { get; }
-        public uint[,] cpuid = new uint[32, 4];
-        public int MaxCPUIDind { get; }
-        public uint[,] cpuid_ex = new uint[32, 4];
-        public int MaxCPUIDexind { get; }
+        public uint[,] CPUID { get; private set; }
+        public int MaxCPUIDind { get; private set; }
+        public uint[,] CPUID_ex { get; private set; }
+        public int MaxCPUIDexind { get; private set; }
         public bool IsCpuid { get; }
         public string Vendor { get; }
-        public string Manufacturer { get; }
+        public ManufacturerName Manufacturer { get; }
         public int ThreadCount { get; }
         public int CoreCount { get; }
         public ArrayList Freq_List { get; }
         public readonly string ErrorMessage = "No error";
         public int LogicalCoreCounts { get; }
         public bool IsHyperThreading { get; }
+        private Sensor sensor1;
+        public int DataCount { get => sensor1.AvailableDataCount; }
+        public double Freq { get => sensor1.CurrentData; }
 
         public CPUinfo()
         {
@@ -44,35 +48,24 @@ namespace OpenLibSys
                 LoadSucceeded = true;
                 IsCpuid = _ols.IsCpuid() > 0;
                 _getCPUID();
-                MaxCPUIDind = (int)Math.Min(cpuid[0, 0], MaxIndDefined);
                 _getCPUIDex();
-                MaxCPUIDexind = (int)Math.Min((cpuid_ex[0, 0] - 0x80000000), MaxIndDefined);
                 Vendor = _getVendor();
                 Manufacturer = _getManufacturer();
-                SST_support = BitsSlicer(cpuid[6, 0], 7, 7) > 0;
-                IsHyperThreading = BitsSlicer(cpuid[1, 3], 28, 28) > 0;
+                SST_support = BitsSlicer(CPUID[6, 0], 7, 7) > 0;
+                IsHyperThreading = BitsSlicer(CPUID[1, 3], 28, 28) > 0;
                 ThreadCount = _getThreadCount();
-                CoreCount = IsHyperThreading?ThreadCount>>1:ThreadCount;
+                CoreCount = IsHyperThreading ? ThreadCount >> 1 : ThreadCount;
                 PMC_List = new List<FreqPMC>(ThreadCount);
                 Freq_List = new ArrayList(ThreadCount);
-                for(int i=0;i<ThreadCount;i++)
+                for (int i = 0; i < ThreadCount; i++)
                 {
-                    PMC_List.Add( new FreqPMC(_ols, Manufacturer, i, 0, 0x3c));
-                    Freq_List.Add( PMC_List[i].Frequency());
+                    PMC_List.Add(new FreqPMC(_ols, Manufacturer, i, 0, 0x3c));
+                    Freq_List.Add(PMC_List[i].Frequency());
                 }
-                /*RdTSC();
-                //ulong mask = ThreadAffinity.Set(1UL <<1);
-
-                EstimatePerformanceMonitoringCounterFrequency(
-                  out double estimatedPerformanceMonitoringCounterFrequency,
-                  out double estimatedPerformanceMonitoringCounterFrequencyError);
-
-                //ThreadAffinity.Set(mask);
-                Freq = estimatedPerformanceMonitoringCounterFrequency;*/
-                
+                sensor1 = new Sensor(new GetData(PMC_List[0].Frequency));
             }
         }
-        
+
 
         public bool SST_enabled
         {
@@ -109,14 +102,22 @@ namespace OpenLibSys
             return cnt;
         }
 
-        private string _getManufacturer()
+        private ManufacturerName _getManufacturer()
         {
             StringBuilder sb = new StringBuilder();
             uint[] ex = new uint[4] { 0, 0, 0, 0 };
             _ols.Cpuid(0, ref ex[0], ref ex[1], ref ex[2], ref ex[3]);
             foreach (uint i in new uint[] { ex[1], ex[3], ex[2] })
                 sb.Append(ExToString(i));
-            return sb.ToString();
+            switch (sb.ToString())
+            {
+                case "GenuineIntel":
+                    return ManufacturerName.GenuineIntel;
+                case "AuthenticAMD":
+                    return ManufacturerName.AuthenticAMD;
+                default:
+                    return ManufacturerName.Unknown;
+            }
         }
 
         private string _getVendor()
@@ -135,41 +136,43 @@ namespace OpenLibSys
 
         private void _getCPUID()
         {
-            cpuid[0, 0] = 0;
-            cpuid[0, 1] = 0;
-            cpuid[0, 2] = 0;
-            cpuid[0, 3] = 0;
+            CPUID = new uint[MaxIndDefined + 1, 4];
+            CPUID[0, 0] = 0;
+            CPUID[0, 1] = 0;
+            CPUID[0, 2] = 0;
+            CPUID[0, 3] = 0;
             if (IsCpuid)
             {
-                _ols.Cpuid(0, ref cpuid[0, 0], ref cpuid[0, 1], ref cpuid[0, 2], ref cpuid[0, 3]);
+                _ols.Cpuid(0, ref CPUID[0, 0], ref CPUID[0, 1], ref CPUID[0, 2], ref CPUID[0, 3]);
             }
-            int maxind = Math.Min((int)cpuid[0, 0], MaxIndDefined);
-            if (maxind > 0)
+            MaxCPUIDind = Math.Min((int)CPUID[0, 0], MaxIndDefined);
+            if (MaxCPUIDind > 0)
             {
-                for (uint tmp = 1; tmp <= maxind; tmp++)
+                for (uint tmp = 1; tmp <= MaxCPUIDind; tmp++)
                 {
-                    _ols.Cpuid(tmp, ref cpuid[tmp, 0], ref cpuid[tmp, 1], ref cpuid[tmp, 2], ref cpuid[tmp, 3]);
+                    _ols.Cpuid(tmp, ref CPUID[tmp, 0], ref CPUID[tmp, 1], ref CPUID[tmp, 2], ref CPUID[tmp, 3]);
                 }
             }
         }
 
         private void _getCPUIDex()
         {
-            cpuid_ex[0, 0] = 0;
-            cpuid_ex[0, 1] = 0;
-            cpuid_ex[0, 2] = 0;
-            cpuid_ex[0, 3] = 0;
+            CPUID_ex = new uint[MaxIndDefined + 1, 4];
+            CPUID_ex[0, 0] = 0;
+            CPUID_ex[0, 1] = 0;
+            CPUID_ex[0, 2] = 0;
+            CPUID_ex[0, 3] = 0;
             if (IsCpuid)
             {
-                _ols.Cpuid(0x80000000, ref cpuid_ex[0, 0], ref cpuid_ex[0, 1], ref cpuid_ex[0, 2], ref cpuid_ex[0, 3]);
+                _ols.Cpuid(0x80000000, ref CPUID_ex[0, 0], ref CPUID_ex[0, 1], ref CPUID_ex[0, 2], ref CPUID_ex[0, 3]);
             }
-            int maxind = Math.Min((int)(cpuid_ex[0, 0] - 0x80000000), MaxIndDefined);
+            MaxCPUIDexind = Math.Min((int)(CPUID_ex[0, 0] - 0x80000000), MaxIndDefined);
 
-            if (maxind > 0)
+            if (MaxCPUIDexind > 0)
             {
-                for (uint tmp = 1; tmp <= maxind; tmp++)
+                for (uint tmp = 1; tmp <= MaxCPUIDexind; tmp++)
                 {
-                    _ols.Cpuid(tmp + 0x80000000, ref cpuid_ex[tmp, 0], ref cpuid_ex[tmp, 1], ref cpuid_ex[tmp, 2], ref cpuid_ex[tmp, 3]);
+                    _ols.Cpuid(tmp + 0x80000000, ref CPUID_ex[tmp, 0], ref CPUID_ex[tmp, 1], ref CPUID_ex[tmp, 2], ref CPUID_ex[tmp, 3]);
                 }
             }
         }
@@ -277,11 +280,11 @@ namespace OpenLibSys
                 {
                     // TODO: 释放托管状态(托管对象)。
                 }
-                foreach(FreqPMC f in PMC_List)
+                sensor1.Dispose();
+                foreach (FreqPMC f in PMC_List)
                 {
                     f.Dispose();
                 }
-                //pMC.Dispose();
                 _ols.Dispose();
 
                 disposedValue = true;
