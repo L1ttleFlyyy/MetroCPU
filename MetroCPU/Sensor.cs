@@ -39,7 +39,7 @@ namespace OpenLibSys
         }
 
 
-        public Sensor(GetData dataHandler, double interval = 1000, int datacount = 60)
+        public Sensor(GetData dataHandler, double interval = 500, int datacount = 60)
         {
             MaxCapacity = datacount;
             CurrentInterval = interval;

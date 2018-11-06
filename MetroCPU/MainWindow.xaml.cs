@@ -28,12 +28,12 @@ namespace MetroCPU
             }
             else
             {
-                StringBuilder freqsb = new StringBuilder();
-                foreach(double ii in cpuinfo.Freq_List)
-                    freqsb.AppendLine(ii.ToString());
+                //StringBuilder freqsb = new StringBuilder();
+                //foreach(double ii in cpuinfo.Freq_List)
+                  //  freqsb.AppendLine(ii.ToString());
                 
                 MessageBox.Show($"SST: {cpuinfo.SST_support}\n"
-                    + $"Frequency: {freqsb}\n"
+                    //+ $"Frequency: {freqsb}\n"
                     + $"Physical corecount: {cpuinfo.CoreCount}\n"
                     + $"Logical corecount: {cpuinfo.ThreadCount}");
                 StringBuilder sb = new StringBuilder();
@@ -57,8 +57,7 @@ namespace MetroCPU
                 }
 
                 TextBox1.Text = sb.ToString();
-                TextBox2.Text = $"Count: {cpuinfo.DataCount}\n"
-                    + $"Freq: {cpuinfo.Freq}";
+                //TextBox2.Text = $"Freq: {cpuinfo.testvalue()}";
                 //Environment.Exit(0);
                 if (!cpuinfo.SST_support)
                 {
@@ -135,8 +134,12 @@ namespace MetroCPU
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            TextBox2.Text = $"Count: {cpuinfo.DataCount}\n"
-                + $"Freq: {cpuinfo.Freq}";
+            StringBuilder sb = new StringBuilder();
+            foreach(TimeDataPair i in cpuinfo.TDpair)
+            {
+                sb.Append(i.Data+"\n");
+            }
+            TextBox2.Text = $"Freq: {sb}";
         }
     }
 }

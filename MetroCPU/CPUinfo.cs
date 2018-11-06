@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Management;
 using System.Text;
 
 namespace OpenLibSys
@@ -13,7 +14,7 @@ namespace OpenLibSys
 
         private const int MaxIndDefined = 0x1f;
         private Ols _ols;
-        private List<FreqPMC> PMC_List;
+        //private List<FreqPMC> PMC_List;
         public int test;
         public bool LoadSucceeded { get; }
         public bool SST_support { get; }
@@ -26,13 +27,28 @@ namespace OpenLibSys
         public ManufacturerName Manufacturer { get; }
         public int ThreadCount { get; }
         public int CoreCount { get; }
-        public ArrayList Freq_List { get; }
+        //public ArrayList Freq_List { get; }
         public readonly string ErrorMessage = "No error";
         public int LogicalCoreCounts { get; }
         public bool IsHyperThreading { get; }
         private Sensor sensor1;
-        public int DataCount { get => sensor1.AvailableDataCount; }
-        public double Freq { get => sensor1.CurrentData; }
+        
+        //public int DataCount { get => sensor1.AvailableDataCount; }
+        public TimeDataPair[] TDpair { get => sensor1.TimeDatas; }
+
+        public double testvalue()
+        {
+            double res = 0;
+            using (var searcher = new ManagementObjectSearcher(
+                "select CurrentClockSpeed from Win32_Processor"))
+            {
+                foreach(var item in searcher.Get())
+                {
+                    res = (uint)item["CurrentClockSpeed"];
+                }
+                return res;
+            }
+        }
 
         public CPUinfo()
         {
@@ -55,14 +71,16 @@ namespace OpenLibSys
                 IsHyperThreading = BitsSlicer(CPUID[1, 3], 28, 28) > 0;
                 ThreadCount = _getThreadCount();
                 CoreCount = IsHyperThreading ? ThreadCount >> 1 : ThreadCount;
-                PMC_List = new List<FreqPMC>(ThreadCount);
+                /*PMC_List = new List<FreqPMC>(ThreadCount);
                 Freq_List = new ArrayList(ThreadCount);
                 for (int i = 0; i < ThreadCount; i++)
                 {
                     PMC_List.Add(new FreqPMC(_ols, Manufacturer, i, 0, 0x3c));
                     Freq_List.Add(PMC_List[i].Frequency());
                 }
-                sensor1 = new Sensor(new GetData(PMC_List[0].Frequency));
+                sensor1 = new Sensor(new GetData(PMC_List[0].Frequency));*/
+                sensor1 = new Sensor(new GetData(testvalue));
+                
             }
         }
 
@@ -280,11 +298,11 @@ namespace OpenLibSys
                 {
                     // TODO: 释放托管状态(托管对象)。
                 }
-                sensor1.Dispose();
+                /*sensor1.Dispose();
                 foreach (FreqPMC f in PMC_List)
                 {
                     f.Dispose();
-                }
+                }*/
                 _ols.Dispose();
 
                 disposedValue = true;
