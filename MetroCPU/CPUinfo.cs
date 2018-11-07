@@ -14,6 +14,7 @@ namespace OpenLibSys
         private const int MaxIndDefined = 0x1f;
         private Ols _ols;
         private List<FreqPMC> PMC_List;
+        private readonly List<Sensor> FrequencySensor_List;
         public int test;
         public bool LoadSucceeded { get; }
         public bool SST_support { get; }
@@ -63,6 +64,7 @@ namespace OpenLibSys
                     Freq_List.Add(PMC_List[i].Frequency());
                 }
                 sensor1 = new Sensor(new GetData(PMC_List[0].GetCurrentFrequency));
+
             }
         }
 
