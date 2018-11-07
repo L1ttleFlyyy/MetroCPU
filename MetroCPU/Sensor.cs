@@ -8,9 +8,9 @@ namespace OpenLibSys
     struct TimeDataPair
     {
         public readonly DateTime Time;
-        public readonly double Data;
+        public readonly float Data;
 
-        public TimeDataPair(DateTime time, double data)
+        public TimeDataPair(DateTime time, float data)
         {
             Data = data;
             Time = time;
@@ -19,10 +19,10 @@ namespace OpenLibSys
 
     class Sensor : IDisposable
     {
-        public double CurrentData { get; private set; }
+        public float CurrentData { get; private set; }
         private Timer tm;
         private ConcurrentQueue<TimeDataPair> q = new ConcurrentQueue<TimeDataPair>();
-        private readonly Func<double> DataHandler;
+        private readonly Func<float> DataHandler;
         private int taskCount = 0;
         private bool disposing = false;
         public TimeDataPair[] TimeDatas
@@ -36,7 +36,7 @@ namespace OpenLibSys
         }
 
 
-        public Sensor(Func<double> dataHandler, double interval = 1000, int datacount = 60)
+        public Sensor(Func<float> dataHandler, double interval = 1000, int datacount = 60)
         {
             MaxCapacity = datacount;
             CurrentInterval = interval;

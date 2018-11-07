@@ -137,11 +137,13 @@ namespace MetroCPU
         {
             StringBuilder sb = new StringBuilder();
             int i = 0;
-            foreach(double d in cpuinfo.Freq)
+            foreach(Sensor s in cpuinfo.frequencyRatioSensors)
             {
-                sb.AppendLine($"Core{i}: {d} Mhz");
+                sb.AppendLine($"Core{i}: {s.CurrentData * cpuinfo.MaxClockSpeed} Mhz");
                 i++;
             }
+            sb.AppendLine($"PackageTemp: {cpuinfo.PackageTemperatureSensor.CurrentData} °C");
+            sb.AppendLine($"Core Voltage: {cpuinfo.CoreVoltageSensor.CurrentData*1000} mV");
             TextBox2.Text = sb.ToString();
         }
     }

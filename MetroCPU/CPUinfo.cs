@@ -21,17 +21,7 @@ namespace OpenLibSys
             PThread = new UIntPtr(ThreadAffinityMask);
         }
 
-        private ulong AperfCounts
-        {
-            get
-            {
-                uint eax_a = 0, edx_a = 0;
-                _ols.RdmsrTx(0xe8, ref eax_a, ref edx_a, PThread);
-                return ((ulong)edx_a << 32) + eax_a;
-            }
-        }
-
-        public double GetCurrentFrequencyRatio()
+        public float GetCurrentFrequencyRatio()
         {
             ulong mcnt_start, acnt_start, mcnt_stop, acnt_stop;
             do
@@ -61,7 +51,7 @@ namespace OpenLibSys
                 acnt_stop = ((ulong)edx_a << 32) + eax_a;
                 ThreadAffinity.Set(ThreadAffinityMask);
             } while (acnt_stop <= acnt_start || mcnt_stop <= mcnt_start);
-            return (double)(acnt_stop - acnt_start) / (mcnt_stop - mcnt_start);
+            return (float)(acnt_stop - acnt_start) / (mcnt_stop - mcnt_start);
         }
     }
 
@@ -70,8 +60,10 @@ namespace OpenLibSys
         private readonly WMICPUinfo wmi;
         private const int MaxIndDefined = 0x1f;
         private Ols _ols;
-        private readonly List<LogicalProcessor> logicalProcessors;
-        private readonly List<Sensor> frequencySensors;
+        public readonly List<LogicalProcessor> logicalProcessors;
+        public readonly Sensor CoreVoltageSensor;
+        public readonly Sensor PackageTemperatureSensor;
+        public readonly List<Sensor> frequencyRatioSensors;
         public int test;
         public bool LoadSucceeded { get; }
         public bool SST_support { get; }
@@ -86,19 +78,7 @@ namespace OpenLibSys
         public int ThreadCount { get => (int)wmi.NumberOfLogicalProcessors; }
         public int CoreCount { get => (int)wmi.NumberOfCores; }
         public readonly string ErrorMessage = "No error";
-        public bool IsHyperThreading { get=>ThreadCount>CoreCount; }
-        public double[] Freq
-        {
-            get
-            {
-                List<double> tmp = new List<double>(ThreadCount);
-                foreach (Sensor s in frequencySensors)
-                {
-                    tmp.Add(wmi.MaxClockSpeed * s.CurrentData);
-                }
-                return tmp.ToArray();
-            }
-        }
+        public bool IsHyperThreading { get => ThreadCount > CoreCount; }
         public bool SST_enabled
         {
             get
@@ -140,17 +120,23 @@ namespace OpenLibSys
                 _getCPUIDex();
                 SST_support = BitsSlicer(CPUID[6, 0], 7, 7) > 0;
                 logicalProcessors = new List<LogicalProcessor>(CoreCount);
-                frequencySensors = new List<Sensor>(CoreCount);
-                int times = IsHyperThreading?2:1;
+                frequencyRatioSensors = new List<Sensor>(CoreCount);
+                int times = IsHyperThreading ? 2 : 1;
                 for (int i = 0; i < CoreCount; i++)
                 {
-                    logicalProcessors.Add(new LogicalProcessor(_ols, i* times));
-                    frequencySensors.Add(new Sensor(logicalProcessors[i].GetCurrentFrequencyRatio));
+                    logicalProcessors.Add(new LogicalProcessor(_ols, i * times));
+                    frequencyRatioSensors.Add(new Sensor(logicalProcessors[i].GetCurrentFrequencyRatio));
+                }
+
+                if(Manufacturer == "GenuineIntel")
+                {
+                    CoreVoltageSensor = new Sensor(GetCurrentVoltage);
+                    PackageTemperatureSensor = new Sensor(GetCurrentTemprature);
                 }
 
             }
         }
-        
+
         private void _getCPUID()
         {
             CPUID = new uint[MaxIndDefined + 1, 4];
@@ -192,6 +178,40 @@ namespace OpenLibSys
                     _ols.Cpuid(tmp + 0x80000000, ref CPUID_ex[tmp, 0], ref CPUID_ex[tmp, 1], ref CPUID_ex[tmp, 2], ref CPUID_ex[tmp, 3]);
                 }
             }
+        }
+
+        private float GetCurrentVoltage()
+        {
+            if (Manufacturer == "GenuineIntel")
+            {
+                uint eax = 0, edx = 0;
+                if (_ols.Rdmsr(0x198, ref eax, ref edx) > 0)
+                {
+                    return (ushort)edx / 8192F;
+                }
+                else
+                    return 0;
+            }
+            else if (Manufacturer == "AuthenticAMD")
+                return 0;
+            else
+                return 0;
+        }
+
+        private float GetCurrentTemprature()
+        {
+            if (Manufacturer == "GenuineIntel")
+            {
+                uint tjmax, t_tmp;
+                uint eax = 0, edx = 0;
+                tjmax = (_ols.Rdmsr(0x1a2, ref eax, ref edx) > 0) ? BitsSlicer(eax, 22, 16) : 100;
+                t_tmp = (_ols.Rdmsr(0x1b1, ref eax, ref edx) > 0) ? BitsSlicer(eax, 22, 16) : 0;
+                return tjmax - t_tmp;
+            }
+            else if (Manufacturer == "AuthenticAMD")
+                return 0;
+            else
+                return 0;
         }
 
         public static uint BitsSlicer(uint exx, int Highest, int Lowest)
@@ -237,7 +257,7 @@ namespace OpenLibSys
                     this.CPUID = null;
                     this.CPUID_ex = null;
                 }
-                foreach (Sensor s in frequencySensors)
+                foreach (Sensor s in frequencyRatioSensors)
                 {
                     s.Dispose();
                 }
