@@ -21,10 +21,7 @@ namespace OpenLibSys
             uint eax_m = 0, edx_m = 0, eax_a = 0, edx_a = 0;
             ThreadAffinity.Set(mask);
             while (_ols.RdmsrTx(0xe8, ref eax_a, ref edx_a, pthread) == 0 || _ols.RdmsrTx(0xe7, ref eax_m, ref edx_m, pthread) == 0)
-            {
-                _ols.RdmsrTx(0xe8, ref eax_a, ref edx_a, pthread);
-                _ols.RdmsrTx(0xe7, ref eax_m, ref edx_m, pthread);
-            }
+            { }
             mcnt_start = ((ulong)edx_m << 32) + eax_m;
             acnt_start = ((ulong)edx_a << 32) + eax_a;
             System.Threading.Thread.Sleep(30);
@@ -34,7 +31,6 @@ namespace OpenLibSys
             acnt_stop = ((ulong)edx_a << 32) + eax_a;
             ThreadAffinity.Set(mask);
             return 2.7 * (acnt_stop - acnt_start) / (mcnt_stop - mcnt_start);
-            
         }
         /*
         public double GetCurrentFrequency()
@@ -55,7 +51,7 @@ namespace OpenLibSys
             ThreadAffinity.Set(mask);
             return 0;
         }
-
+        */
         public double Frequency()
         {
             ulong mask = 1UL << Thread;
@@ -114,7 +110,7 @@ namespace OpenLibSys
             double endError = (afterEnd - timeEnd) / delta;
             error = beginError + endError;
         }
-        */
+
 
     }
 }
