@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 
 namespace OpenLibSys
@@ -14,8 +12,8 @@ namespace OpenLibSys
         public int Thread { get; }
         public ulong ThreadAffinityMask { get; }
         public UIntPtr PThread { get; }
-        
-        public LogicalProcessor(Ols ols,int thread)
+
+        public LogicalProcessor(Ols ols, int thread)
         {
             _ols = ols;
             Thread = thread;
@@ -62,7 +60,7 @@ namespace OpenLibSys
                 mcnt_stop = ((ulong)edx_m << 32) + eax_m;
                 acnt_stop = ((ulong)edx_a << 32) + eax_a;
                 ThreadAffinity.Set(ThreadAffinityMask);
-            } while (acnt_stop<=acnt_start||mcnt_stop<=mcnt_start);
+            } while (acnt_stop <= acnt_start || mcnt_stop <= mcnt_start);
             return (double)(acnt_stop - acnt_start) / (mcnt_stop - mcnt_start);
         }
     }
@@ -82,62 +80,25 @@ namespace OpenLibSys
         public uint[,] CPUID_ex { get; private set; }
         public int MaxCPUIDexind { get; private set; }
         public bool IsCpuid { get; }
-        public string Model { get; }
-        public ManufacturerName Manufacturer { get; }
-        public int ThreadCount { get; }
-        public int CoreCount { get; }
-        public ArrayList Freq_List { get; }
+        public int MaxClockSpeed { get => (int)wmi.MaxClockSpeed; }
+        public string Model { get => wmi.Name; }
+        public string Manufacturer { get => wmi.Manufacturer; }
+        public int ThreadCount { get => (int)wmi.NumberOfLogicalProcessors; }
+        public int CoreCount { get => (int)wmi.NumberOfCores; }
         public readonly string ErrorMessage = "No error";
-        public int LogicalCoreCounts { get; }
-        public bool IsHyperThreading { get; }
-        public int DataCount { get => frequencySensors[0].AvailableDataCount; }
-        public double[] Freq { get {
+        public bool IsHyperThreading { get=>ThreadCount>CoreCount; }
+        public double[] Freq
+        {
+            get
+            {
                 List<double> tmp = new List<double>(ThreadCount);
-                foreach(Sensor s in frequencySensors)
+                foreach (Sensor s in frequencySensors)
                 {
                     tmp.Add(wmi.MaxClockSpeed * s.CurrentData);
                 }
                 return tmp.ToArray();
-            } }
-
-        public CPUinfo()
-        {
-            _ols = new Ols();
-            uint res = _ols.GetStatus();
-            if (res != 0)
-            {
-                ErrorMessage = ((Ols.Status)res).ToString() + "\n" + ((Ols.OlsDllStatus)_ols.GetDllStatus()).ToString();
-                LoadSucceeded = false;
-            }
-            else
-            {
-                wmi = new WMICPUinfo();
-                LoadSucceeded = true;
-                IsCpuid = _ols.IsCpuid() > 0;
-                _getCPUID();
-                _getCPUIDex();
-                Model = _getVendor();
-                Manufacturer = _getManufacturer();
-                SST_support = BitsSlicer(CPUID[6, 0], 7, 7) > 0;
-                IsHyperThreading = BitsSlicer(CPUID[1, 3], 28, 28) > 0;
-                ThreadCount = _getThreadCount();
-                CoreCount = IsHyperThreading ? ThreadCount >> 1 : ThreadCount;
-                logicalProcessors = new List<LogicalProcessor>(ThreadCount);
-                frequencySensors = new List<Sensor>(ThreadCount);
-                //PMC_List = new List<FreqPMC>(ThreadCount);
-                Freq_List = new ArrayList(ThreadCount);
-                for (int i = 0; i < ThreadCount; i++)
-                {
-                    //PMC_List.Add(new FreqPMC(_ols, Manufacturer, i, 0, 0x3c));
-                    logicalProcessors.Add(new LogicalProcessor(_ols,i));
-                    Freq_List.Add(wmi.MaxClockSpeed*logicalProcessors[i].GetCurrentFrequencyRatio());
-                    frequencySensors.Add(new Sensor(logicalProcessors[i].GetCurrentFrequencyRatio));
-                }
-
             }
         }
-
-
         public bool SST_enabled
         {
             get
@@ -161,59 +122,35 @@ namespace OpenLibSys
                     test = _ols.Wrmsr(0x770, 0, 0);
             }
         }
-
-        private int _getThreadCount()
+        public CPUinfo()
         {
-            uint eax = 0, ebx = 0, ecx = 0, edx = 0;
-            int cnt = 0;
-            while (_ols.CpuidTx(01, ref eax, ref ebx, ref ecx, ref edx, (UIntPtr)(1UL << cnt)) == 1)
+            _ols = new Ols();
+            uint res = _ols.GetStatus();
+            if (res != 0)
             {
-                cnt++;
+                ErrorMessage = ((Ols.Status)res).ToString() + "\n" + ((Ols.OlsDllStatus)_ols.GetDllStatus()).ToString();
+                LoadSucceeded = false;
             }
-            return cnt;
-        }
+            else
+            {
+                wmi = new WMICPUinfo();
+                LoadSucceeded = true;
+                IsCpuid = _ols.IsCpuid() > 0;
+                _getCPUID();
+                _getCPUIDex();
+                SST_support = BitsSlicer(CPUID[6, 0], 7, 7) > 0;
+                logicalProcessors = new List<LogicalProcessor>(CoreCount);
+                frequencySensors = new List<Sensor>(CoreCount);
+                int times = IsHyperThreading?2:1;
+                for (int i = 0; i < CoreCount; i++)
+                {
+                    logicalProcessors.Add(new LogicalProcessor(_ols, i* times));
+                    frequencySensors.Add(new Sensor(logicalProcessors[i].GetCurrentFrequencyRatio));
+                }
 
-        private ManufacturerName _getManufacturer()
-        {
-            /*StringBuilder sb = new StringBuilder();
-            uint[] ex = new uint[4] { 0, 0, 0, 0 };
-            _ols.Cpuid(0, ref ex[0], ref ex[1], ref ex[2], ref ex[3]);
-            foreach (uint i in new uint[] { ex[1], ex[3], ex[2] })
-                sb.Append(ExToString(i));
-            switch (sb.ToString())
-            {
-                case "GenuineIntel":
-                    return ManufacturerName.GenuineIntel;
-                case "AuthenticAMD":
-                    return ManufacturerName.AuthenticAMD;
-                default:
-                    return ManufacturerName.Unknown;
-            }*/
-            switch (wmi.Manufacturer)
-            {
-                case "GenuineIntel":
-                    return ManufacturerName.GenuineIntel;
-                case "AuthenticAMD":
-                    return ManufacturerName.AuthenticAMD;
-                default:
-                    return ManufacturerName.Unknown;
             }
         }
-
-        private string _getVendor()
-        {
-            /*StringBuilder sb = new StringBuilder();
-            uint[] ex = new uint[4] { 0, 0, 0, 0 };
-            foreach (uint ind in new uint[] { 0x80000002, 0x80000003, 0x80000004 })
-            {
-                _ols.Cpuid(ind, ref ex[0], ref ex[1], ref ex[2], ref ex[3]);
-                foreach (uint i in ex)
-                    sb.Append(ExToString(i));
-            }
-            return sb.ToString();*/
-            return wmi.Name;
-        }
-
+        
         private void _getCPUID()
         {
             CPUID = new uint[MaxIndDefined + 1, 4];
@@ -255,39 +192,6 @@ namespace OpenLibSys
                     _ols.Cpuid(tmp + 0x80000000, ref CPUID_ex[tmp, 0], ref CPUID_ex[tmp, 1], ref CPUID_ex[tmp, 2], ref CPUID_ex[tmp, 3]);
                 }
             }
-        }
-
-        public double GetCurrentFrequency(int thread)
-        {
-            int Thread = thread;
-            ulong mask = 1UL << Thread;
-            UIntPtr pthread = new UIntPtr(mask);
-            ulong mcnt_start, acnt_start, mcnt_stop, acnt_stop;
-            uint eax_m = 0, edx_m = 0, eax_a = 0, edx_a = 0;
-            int cnt = 0;
-            ThreadAffinity.Set(mask);
-            while (_ols.RdmsrTx(0xe8, ref eax_a, ref edx_a, pthread) == 0 || _ols.RdmsrTx(0xe7, ref eax_m, ref edx_m, pthread) == 0)
-            {
-                if (cnt < 4)
-                    cnt++;
-                else
-                    return 0;
-            }
-            mcnt_start = ((ulong)edx_m << 32) + eax_m;
-            acnt_start = ((ulong)edx_a << 32) + eax_a;
-            cnt = 0;
-            System.Threading.Thread.Sleep(30);
-            while (_ols.RdmsrTx(0xe8, ref eax_a, ref edx_a, pthread) == 0 || _ols.RdmsrTx(0xe7, ref eax_m, ref edx_m, pthread) == 0)
-            {
-                if (cnt < 4)
-                    cnt++;
-                else
-                    return 0;
-            }
-            mcnt_stop = ((ulong)edx_m << 32) + eax_m;
-            acnt_stop = ((ulong)edx_a << 32) + eax_a;
-            ThreadAffinity.Set(mask);
-            return 2.7 * (acnt_stop - acnt_start) / (mcnt_stop - mcnt_start);
         }
 
         public static uint BitsSlicer(uint exx, int Highest, int Lowest)
