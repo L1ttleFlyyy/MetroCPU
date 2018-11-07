@@ -56,9 +56,9 @@ namespace OpenLibSys
                 IsHyperThreading = BitsSlicer(CPUID[1, 3], 28, 28) > 0;
                 ThreadCount = _getThreadCount();
                 CoreCount = IsHyperThreading ? ThreadCount >> 1 : ThreadCount;
-                PMC_List = new List<FreqPMC>(ThreadCount);
-                Freq_List = new ArrayList(ThreadCount);
-                for (int i = 0; i < ThreadCount; i++)
+                PMC_List = new List<FreqPMC>(CoreCount);
+                Freq_List = new ArrayList(CoreCount);
+                for (int i = 0; i < CoreCount; i++)
                 {
                     PMC_List.Add(new FreqPMC(_ols, Manufacturer, i, 0, 0x3c));
                     Freq_List.Add(PMC_List[i].GetCurrentFrequency());
