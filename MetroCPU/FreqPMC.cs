@@ -14,7 +14,7 @@ namespace OpenLibSys
         {
         }
 
-        /*public double GetCurrentFrequency()
+        public double GetCurrentFrequency()
         {
             ulong mask = 1UL << Thread;
             ulong mcnt_start, acnt_start, mcnt_stop, acnt_stop;
@@ -31,9 +31,8 @@ namespace OpenLibSys
             acnt_stop = ((ulong)edx_a << 32) + eax_a;
             ThreadAffinity.Set(mask);
             return 2.7 * (acnt_stop - acnt_start) / (mcnt_stop - mcnt_start);
-            return GetCurrentFrequencyAsync().Result;
-        }*/
-
+        }
+        /*
         public double GetCurrentFrequency()
         {
             ulong mask = 1UL << Thread;
@@ -52,7 +51,7 @@ namespace OpenLibSys
             ThreadAffinity.Set(mask);
             return 0;
         }
-
+        */
         public double Frequency()
         {
             ulong mask = 1UL << Thread;
