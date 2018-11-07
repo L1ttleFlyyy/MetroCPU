@@ -61,7 +61,7 @@ namespace OpenLibSys
                 for (int i = 0; i < ThreadCount; i++)
                 {
                     PMC_List.Add(new FreqPMC(_ols, Manufacturer, i, 0, 0x3c));
-                    Freq_List.Add(PMC_List[i].Frequency());
+                    Freq_List.Add(PMC_List[i].GetCurrentFrequency());
                 }
                 sensor1 = new Sensor(new GetData(PMC_List[0].GetCurrentFrequency));
 
