@@ -98,6 +98,8 @@ namespace OpenLibSys
                         }
                         break;
                     case ManufacturerName.AuthenticAMD:
+                        Thread = thread;
+                        pthread = (UIntPtr)(1UL << Thread);
                         ErrorMessage = "Unsupported cpu vendor";
                         Dispose();
                         break;

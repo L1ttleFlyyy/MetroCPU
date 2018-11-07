@@ -19,14 +19,26 @@ namespace OpenLibSys
             ulong mask = 1UL << Thread;
             ulong mcnt_start, acnt_start, mcnt_stop, acnt_stop;
             uint eax_m = 0, edx_m = 0, eax_a = 0, edx_a = 0;
+            int cnt = 0;
             ThreadAffinity.Set(mask);
             while (_ols.RdmsrTx(0xe8, ref eax_a, ref edx_a, pthread) == 0 || _ols.RdmsrTx(0xe7, ref eax_m, ref edx_m, pthread) == 0)
-            { }
+            {
+                if (cnt < 4)
+                    cnt++;
+                else
+                    return 0;
+            }
             mcnt_start = ((ulong)edx_m << 32) + eax_m;
             acnt_start = ((ulong)edx_a << 32) + eax_a;
+            cnt = 0;
             System.Threading.Thread.Sleep(30);
             while (_ols.RdmsrTx(0xe8, ref eax_a, ref edx_a, pthread) == 0 || _ols.RdmsrTx(0xe7, ref eax_m, ref edx_m, pthread) == 0)
-            { }
+            {
+                if (cnt < 4)
+                    cnt++;
+                else
+                    return 0;
+            }
             mcnt_stop = ((ulong)edx_m << 32) + eax_m;
             acnt_stop = ((ulong)edx_a << 32) + eax_a;
             ThreadAffinity.Set(mask);
