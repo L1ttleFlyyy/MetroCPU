@@ -13,8 +13,46 @@ namespace OpenLibSys
         public FreqPMC(Ols ols, ManufacturerName manufacturer, int thread, byte uMask, byte eventSelect) : base(ols, manufacturer, thread, uMask, eventSelect)
         {
         }
-        
-        
+
+        /*public double GetCurrentFrequency()
+        {
+            ulong mask = 1UL << Thread;
+            ulong mcnt_start, acnt_start, mcnt_stop, acnt_stop;
+            uint eax_m = 0, edx_m = 0, eax_a = 0, edx_a = 0;
+            ThreadAffinity.Set(mask);
+            while (_ols.RdmsrTx(0xe8, ref eax_a, ref edx_a, pthread) == 0 || _ols.RdmsrTx(0xe7, ref eax_m, ref edx_m, pthread) == 0)
+            { }
+            mcnt_start = ((ulong)edx_m << 32) + eax_m;
+            acnt_start = ((ulong)edx_a << 32) + eax_a;
+            System.Threading.Thread.Sleep(30);
+            while (_ols.RdmsrTx(0xe8, ref eax_a, ref edx_a, pthread) == 0 || _ols.RdmsrTx(0xe7, ref eax_m, ref edx_m, pthread) == 0)
+            { }
+            mcnt_stop = ((ulong)edx_m << 32) + eax_m;
+            acnt_stop = ((ulong)edx_a << 32) + eax_a;
+            ThreadAffinity.Set(mask);
+            return 2.7 * (acnt_stop - acnt_start) / (mcnt_stop - mcnt_start);
+            return GetCurrentFrequencyAsync().Result;
+        }*/
+
+        public double GetCurrentFrequency()
+        {
+            ulong mask = 1UL << Thread;
+            ulong start_tsc, stop_tsc;
+            ulong start_pmc, stop_pmc;
+            ThreadAffinity.Set(mask);
+            if (GetPMCTSC(out start_pmc, out start_tsc))
+            {
+                System.Threading.Thread.Sleep(30);
+                ThreadAffinity.Set(mask);
+                if (GetPMCTSC(out stop_pmc, out stop_tsc))
+                {
+                    return (double)(stop_pmc - start_pmc) / (stop_tsc - start_tsc);
+                }
+            }
+            ThreadAffinity.Set(mask);
+            return 0;
+        }
+
         public double Frequency()
         {
             ulong mask = 1UL << Thread;

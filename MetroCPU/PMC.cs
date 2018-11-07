@@ -9,9 +9,36 @@ namespace OpenLibSys
         public int UMask { get; }
         public int EventSelect { get; }
         private readonly uint PMC_num;
-        private readonly Ols _ols;
-
-        public string ErrorMessage { get; }
+        private readonly uint PMC_num_msr;
+        protected readonly Ols _ols;
+        protected readonly UIntPtr pthread;
+        public string ErrorMessage { get; private set; }
+        public bool GetPMCTSC(out ulong pmc_count, out ulong tsc_count)
+        {
+            uint eax_pmc = 0, edx_pmc = 0;
+            uint eax_tsc = 0, edx_tsc = 0;
+            try
+            {
+                if ((_ols.RdmsrTx(PMC_num_msr, ref eax_pmc, ref edx_pmc, pthread) > 0)
+                    && (_ols.RdtscTx(ref eax_tsc, ref edx_tsc, pthread) > 0))
+                {
+                    pmc_count = ((ulong)edx_pmc << 32) + eax_tsc;
+                    tsc_count = ((ulong)edx_tsc << 32) + eax_tsc;
+                    return true;
+                }
+                else
+                    pmc_count = 0;
+                    tsc_count = 0;
+                    return false;
+            }
+            catch(Exception e)
+            {
+                ErrorMessage = e.Message;
+                pmc_count = 0;
+                tsc_count = 0;
+                return false;
+            }
+        }
         public ulong EventCounts
         {
             get
@@ -19,7 +46,7 @@ namespace OpenLibSys
                 uint eax = 0, edx = 0;
                 try
                 {
-                    _ols.RdmsrTx(0x0c1 + PMC_num, ref eax, ref edx, (UIntPtr)(1UL << Thread));
+                    _ols.RdmsrTx(PMC_num_msr, ref eax, ref edx, pthread);
 
                     return ((ulong)edx << 32) + eax;
                 }
@@ -39,6 +66,7 @@ namespace OpenLibSys
                 {
                     case ManufacturerName.GenuineIntel:
                         Thread = thread;
+                        pthread = (UIntPtr)(1UL << Thread);
                         UMask = uMask;
                         EventSelect = eventSelect;
                         uint eax = 0, edx = 0;
@@ -50,13 +78,16 @@ namespace OpenLibSys
                                 {
                                     PMC_num = i;
                                     edx = 0;
-                                    eax = eventSelect + uMask * 256U + 0x41 * 256 * 256;
+                                    eax = eventSelect + uMask * 256U + 0x43 * 256 * 256;
                                     if (_ols.WrmsrTx(PMC_num + 0x186, eax, edx, (UIntPtr)(1UL << Thread)) == 0)
                                     {
                                         ErrorMessage = "Wrmsr failed";
                                         Dispose();
+                                        return ;
                                     }
+                                    PMC_num_msr = 0x0c1+PMC_num;
                                     break;
+
                                 }
                             }
                             else
