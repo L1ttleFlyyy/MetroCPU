@@ -8,13 +8,72 @@ namespace OpenLibSys
 {
     enum ManufacturerName { GenuineIntel, AuthenticAMD, Unknown };
 
+    class LogicalProcessor
+    {
+        private Ols _ols;
+        public int Thread { get; }
+        public ulong ThreadAffinityMask { get; }
+        public UIntPtr PThread { get; }
+        
+        public LogicalProcessor(Ols ols,int thread)
+        {
+            _ols = ols;
+            Thread = thread;
+            ThreadAffinityMask = 1UL << Thread;
+            PThread = new UIntPtr(ThreadAffinityMask);
+        }
+
+        private ulong AperfCounts
+        {
+            get
+            {
+                uint eax_a = 0, edx_a = 0;
+                _ols.RdmsrTx(0xe8, ref eax_a, ref edx_a, PThread);
+                return ((ulong)edx_a << 32) + eax_a;
+            }
+        }
+
+        public double GetCurrentFrequencyRatio()
+        {
+            ulong mcnt_start, acnt_start, mcnt_stop, acnt_stop;
+            do
+            {
+                uint eax_m = 0, edx_m = 0, eax_a = 0, edx_a = 0;
+                int cnt = 0;
+                ThreadAffinity.Set(ThreadAffinityMask);
+                while (_ols.RdmsrTx(0xe8, ref eax_a, ref edx_a, PThread) == 0 || _ols.RdmsrTx(0xe7, ref eax_m, ref edx_m, PThread) == 0)
+                {
+                    if (cnt < 4)
+                        cnt++;
+                    else
+                        return 0;
+                }
+                mcnt_start = ((ulong)edx_m << 32) + eax_m;
+                acnt_start = ((ulong)edx_a << 32) + eax_a;
+                cnt = 0;
+                System.Threading.Thread.Sleep(30);
+                while (_ols.RdmsrTx(0xe8, ref eax_a, ref edx_a, PThread) == 0 || _ols.RdmsrTx(0xe7, ref eax_m, ref edx_m, PThread) == 0)
+                {
+                    if (cnt < 4)
+                        cnt++;
+                    else
+                        return 0;
+                }
+                mcnt_stop = ((ulong)edx_m << 32) + eax_m;
+                acnt_stop = ((ulong)edx_a << 32) + eax_a;
+                ThreadAffinity.Set(ThreadAffinityMask);
+            } while (acnt_stop<=acnt_start||mcnt_stop<=mcnt_start);
+            return (double)(acnt_stop - acnt_start) / (mcnt_stop - mcnt_start);
+        }
+    }
+
     class CPUinfo : IDisposable
     {
-
+        private readonly WMICPUinfo wmi;
         private const int MaxIndDefined = 0x1f;
         private Ols _ols;
-        private List<FreqPMC> PMC_List;
-        private readonly List<Sensor> FrequencySensor_List;
+        private readonly List<LogicalProcessor> logicalProcessors;
+        private readonly List<Sensor> frequencySensors;
         public int test;
         public bool LoadSucceeded { get; }
         public bool SST_support { get; }
@@ -23,7 +82,7 @@ namespace OpenLibSys
         public uint[,] CPUID_ex { get; private set; }
         public int MaxCPUIDexind { get; private set; }
         public bool IsCpuid { get; }
-        public string Vendor { get; }
+        public string Model { get; }
         public ManufacturerName Manufacturer { get; }
         public int ThreadCount { get; }
         public int CoreCount { get; }
@@ -31,9 +90,15 @@ namespace OpenLibSys
         public readonly string ErrorMessage = "No error";
         public int LogicalCoreCounts { get; }
         public bool IsHyperThreading { get; }
-        private Sensor sensor1;
-        public int DataCount { get => sensor1.AvailableDataCount; }
-        public double Freq { get => sensor1.CurrentData; }
+        public int DataCount { get => frequencySensors[0].AvailableDataCount; }
+        public double[] Freq { get {
+                List<double> tmp = new List<double>(ThreadCount);
+                foreach(Sensor s in frequencySensors)
+                {
+                    tmp.Add(wmi.MaxClockSpeed * s.CurrentData);
+                }
+                return tmp.ToArray();
+            } }
 
         public CPUinfo()
         {
@@ -46,24 +111,28 @@ namespace OpenLibSys
             }
             else
             {
+                wmi = new WMICPUinfo();
                 LoadSucceeded = true;
                 IsCpuid = _ols.IsCpuid() > 0;
                 _getCPUID();
                 _getCPUIDex();
-                Vendor = _getVendor();
+                Model = _getVendor();
                 Manufacturer = _getManufacturer();
                 SST_support = BitsSlicer(CPUID[6, 0], 7, 7) > 0;
                 IsHyperThreading = BitsSlicer(CPUID[1, 3], 28, 28) > 0;
                 ThreadCount = _getThreadCount();
                 CoreCount = IsHyperThreading ? ThreadCount >> 1 : ThreadCount;
-                PMC_List = new List<FreqPMC>(CoreCount);
-                Freq_List = new ArrayList(CoreCount);
-                for (int i = 0; i < CoreCount; i++)
+                logicalProcessors = new List<LogicalProcessor>(ThreadCount);
+                frequencySensors = new List<Sensor>(ThreadCount);
+                //PMC_List = new List<FreqPMC>(ThreadCount);
+                Freq_List = new ArrayList(ThreadCount);
+                for (int i = 0; i < ThreadCount; i++)
                 {
-                    PMC_List.Add(new FreqPMC(_ols, Manufacturer, i, 0, 0x3c));
-                    Freq_List.Add(PMC_List[i].GetCurrentFrequency());
+                    //PMC_List.Add(new FreqPMC(_ols, Manufacturer, i, 0, 0x3c));
+                    logicalProcessors.Add(new LogicalProcessor(_ols,i));
+                    Freq_List.Add(wmi.MaxClockSpeed*logicalProcessors[i].GetCurrentFrequencyRatio());
+                    frequencySensors.Add(new Sensor(logicalProcessors[i].GetCurrentFrequencyRatio));
                 }
-                sensor1 = new Sensor(new GetData(PMC_List[0].GetCurrentFrequency));
 
             }
         }
@@ -106,7 +175,7 @@ namespace OpenLibSys
 
         private ManufacturerName _getManufacturer()
         {
-            StringBuilder sb = new StringBuilder();
+            /*StringBuilder sb = new StringBuilder();
             uint[] ex = new uint[4] { 0, 0, 0, 0 };
             _ols.Cpuid(0, ref ex[0], ref ex[1], ref ex[2], ref ex[3]);
             foreach (uint i in new uint[] { ex[1], ex[3], ex[2] })
@@ -119,12 +188,21 @@ namespace OpenLibSys
                     return ManufacturerName.AuthenticAMD;
                 default:
                     return ManufacturerName.Unknown;
+            }*/
+            switch (wmi.Manufacturer)
+            {
+                case "GenuineIntel":
+                    return ManufacturerName.GenuineIntel;
+                case "AuthenticAMD":
+                    return ManufacturerName.AuthenticAMD;
+                default:
+                    return ManufacturerName.Unknown;
             }
         }
 
         private string _getVendor()
         {
-            StringBuilder sb = new StringBuilder();
+            /*StringBuilder sb = new StringBuilder();
             uint[] ex = new uint[4] { 0, 0, 0, 0 };
             foreach (uint ind in new uint[] { 0x80000002, 0x80000003, 0x80000004 })
             {
@@ -132,8 +210,8 @@ namespace OpenLibSys
                 foreach (uint i in ex)
                     sb.Append(ExToString(i));
             }
-            return sb.ToString();
-
+            return sb.ToString();*/
+            return wmi.Name;
         }
 
         private void _getCPUID()
@@ -178,67 +256,39 @@ namespace OpenLibSys
                 }
             }
         }
-        /*
-        private void EstimatePerformanceMonitoringCounterFrequency(out double frequency, out double error)
+
+        public double GetCurrentFrequency(int thread)
         {
-
-            // preload the function
-            EstimatePerformanceMonitoringCounterFrequency(0, out double f, out double e);
-            EstimatePerformanceMonitoringCounterFrequency(0, out f, out e);
-
-            // estimate the frequency
-            error = double.MaxValue;
-            frequency = 0;
-            for (int i = 0; i < 5; i++)
+            int Thread = thread;
+            ulong mask = 1UL << Thread;
+            UIntPtr pthread = new UIntPtr(mask);
+            ulong mcnt_start, acnt_start, mcnt_stop, acnt_stop;
+            uint eax_m = 0, edx_m = 0, eax_a = 0, edx_a = 0;
+            int cnt = 0;
+            ThreadAffinity.Set(mask);
+            while (_ols.RdmsrTx(0xe8, ref eax_a, ref edx_a, pthread) == 0 || _ols.RdmsrTx(0xe7, ref eax_m, ref edx_m, pthread) == 0)
             {
-                EstimatePerformanceMonitoringCounterFrequency(0.025, out f, out e);
-                if (e < error)
-                {
-                    error = e;
-                    frequency = f;
-                }
-
-                if (error < 1e-4)
-                    break;
+                if (cnt < 4)
+                    cnt++;
+                else
+                    return 0;
             }
+            mcnt_start = ((ulong)edx_m << 32) + eax_m;
+            acnt_start = ((ulong)edx_a << 32) + eax_a;
+            cnt = 0;
+            System.Threading.Thread.Sleep(30);
+            while (_ols.RdmsrTx(0xe8, ref eax_a, ref edx_a, pthread) == 0 || _ols.RdmsrTx(0xe7, ref eax_m, ref edx_m, pthread) == 0)
+            {
+                if (cnt < 4)
+                    cnt++;
+                else
+                    return 0;
+            }
+            mcnt_stop = ((ulong)edx_m << 32) + eax_m;
+            acnt_stop = ((ulong)edx_a << 32) + eax_a;
+            ThreadAffinity.Set(mask);
+            return 2.7 * (acnt_stop - acnt_start) / (mcnt_stop - mcnt_start);
         }
-
-        private void EstimatePerformanceMonitoringCounterFrequency(double timeWindow, out double frequency, out double error)
-        {
-            long ticks = (long)(timeWindow * Stopwatch.Frequency);
-            ulong countBegin, countEnd;
-
-            long timeBegin = Stopwatch.GetTimestamp() +
-              (long)Math.Ceiling(0.001 * ticks);
-            long timeEnd = timeBegin + ticks;
-
-            while (Stopwatch.GetTimestamp() < timeBegin) { }
-            countBegin = RdTSC();
-            long afterBegin = Stopwatch.GetTimestamp();
-
-            while (Stopwatch.GetTimestamp() < timeEnd) { }
-            countEnd = RdTSC();
-            long afterEnd = Stopwatch.GetTimestamp();
-
-            double delta = (timeEnd - timeBegin);
-            frequency = 1e-6 *
-              (((double)(countEnd - countBegin)) * Stopwatch.Frequency) / delta;
-
-            double beginError = (afterBegin - timeBegin) / delta;
-            double endError = (afterEnd - timeEnd) / delta;
-            error = beginError + endError;
-        }
-
-
-        private ulong RdTSC()
-        {
-            //uint eax = 0, edx = 0;
-            //int res = _ols.RdmsrTx(0x0c1, ref eax, ref edx, (UIntPtr)(1UL));
-            //_ols.Rdtsc(ref eax, ref edx);
-            //_ols.RdtscTx(ref eax, ref edx, (UIntPtr)(1UL<<5));
-            //return ((ulong)edx << 32) + eax;
-            return pMC.EventCounts;
-        }*/
 
         public static uint BitsSlicer(uint exx, int Highest, int Lowest)
         {
@@ -280,12 +330,12 @@ namespace OpenLibSys
             {
                 if (disposing)
                 {
-                    // TODO: 释放托管状态(托管对象)。
+                    this.CPUID = null;
+                    this.CPUID_ex = null;
                 }
-                sensor1.Dispose();
-                foreach (FreqPMC f in PMC_List)
+                foreach (Sensor s in frequencySensors)
                 {
-                    f.Dispose();
+                    s.Dispose();
                 }
                 _ols.Dispose();
 

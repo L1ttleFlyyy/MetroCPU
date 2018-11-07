@@ -5,9 +5,6 @@ using System.Timers;
 
 namespace OpenLibSys
 {
-    public delegate double GetData();
-
-
     struct TimeDataPair
     {
         public readonly DateTime Time;
@@ -25,7 +22,7 @@ namespace OpenLibSys
         public double CurrentData { get; private set; }
         private Timer tm;
         private ConcurrentQueue<TimeDataPair> q = new ConcurrentQueue<TimeDataPair>();
-        private readonly GetData DataHandler;
+        private readonly Func<double> DataHandler;
         private int taskCount = 0;
         private bool disposing = false;
         public TimeDataPair[] TimeDatas
@@ -39,7 +36,7 @@ namespace OpenLibSys
         }
 
 
-        public Sensor(GetData dataHandler, double interval = 1000, int datacount = 60)
+        public Sensor(Func<double> dataHandler, double interval = 1000, int datacount = 60)
         {
             MaxCapacity = datacount;
             CurrentInterval = interval;
@@ -78,7 +75,7 @@ namespace OpenLibSys
             disposing = true;
             while (taskCount > 0)
             {
-                System.Threading.Thread.Sleep(100);
+                System.Threading.Thread.Sleep(10);
             }
             tm.Dispose();
         }
