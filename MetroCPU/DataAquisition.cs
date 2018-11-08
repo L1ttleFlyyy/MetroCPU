@@ -72,6 +72,13 @@ namespace OpenLibSys
         public readonly float PU;
         public readonly float ESU;
         public readonly float TU;
+        public float TDP { get
+            {
+                uint eax=0, edx=0;
+                _ols.Rdmsr(0x614,ref eax,ref edx);
+                return CPUinfo.BitsSlicer(eax,14,0)*PU;
+            }
+        }
         private string Manufacturer;
 
         public PackageMonitor(Ols ols, string manufacturer)

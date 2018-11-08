@@ -64,11 +64,10 @@ namespace MetroCPU
             CurrentValue = y[i - 1].ToString("G3");
             MaxValue = max_y.ToString("G3");
             MinValue = min_y.ToString("G3");
-            float delta_y = max_y - min_y;
+            //float delta_y = max_y - min_y;
             for (i = 0; i < datacounts; i++)
             {
                 x[i] = x[i] / max_x;
-                y[i] = (y[i] - min_y) / delta_y;
             }
             lineGraph.Dispatcher.Invoke(() => {
                 if (IsTextBox)

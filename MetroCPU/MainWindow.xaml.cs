@@ -68,6 +68,7 @@ namespace MetroCPU
                     Sensor2LineGraph s2l1 = new Sensor2LineGraph(cpuinfo.CoreVoltageSensor, CoreVoltagePlotter,VoltaCurrent,VoltaMax,VoltaMin);
                     Sensor2LineGraph s2l2 = new Sensor2LineGraph(cpuinfo.PackagePowerSensor, PackagePowerPlotter,PowerCurrent,PowerMax,PowerMin);
                     Sensor2LineGraph s2l3 = new Sensor2LineGraph(cpuinfo.PackageTemperatureSensor, PackageTemperaturePlotter,TempCurrent,TempMax,TempMin);
+                    PackagePowerPlotter.PlotHeight = (int)(cpuinfo.PPM.TDP);
                 }
                 int tmp = 0;
                 List<Sensor2LineGraph> S2LGs = new List<Sensor2LineGraph>(cpuinfo.CoreCount);

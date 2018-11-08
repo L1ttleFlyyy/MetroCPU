@@ -35,7 +35,7 @@
                             <RowDefinition Height="3*"/>
                         </Grid.RowDefinitions>
                         <Border Grid.Row="1" ClipToBounds="True">
-                            <WPF:Chart Foreground="CornflowerBlue" Margin="-26,0,0,-26" IsAutoFitEnabled="False" IsHorizontalNavigationEnabled="False" IsVerticalNavigationEnabled="False" PlotHeight="1.3" PlotOriginY="-0.1">
+                            <WPF:Chart Foreground="CornflowerBlue" Margin="-2,0,0,-26" IsAutoFitEnabled="False" IsHorizontalNavigationEnabled="False" IsVerticalNavigationEnabled="False" PlotHeight="5">
                                 <WPF:Chart.LegendContent>
                                     <WPF:LegendItemsPanel>
                                         <WPF:LegendItemsPanel.Resources>
@@ -81,7 +81,7 @@
                             <TextBlock Name="TempMax" TextWrapping="Wrap" Text="MaxData" TextAlignment="Center" FontSize="11" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
                             <TextBlock Name="TempMin" TextWrapping="Wrap" Text="MinData" TextAlignment="Center" FontSize="11" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
                             <Border  Grid.Column="2" Grid.RowSpan="4" ClipToBounds="True" >
-                                <WPF:Chart Foreground="Brown" LegendVisibility="Collapsed" Margin="-26,0,0,-26" IsAutoFitEnabled="False" PlotHeight="1.4" PlotOriginY="-0.2" IsHorizontalNavigationEnabled="False" IsVerticalNavigationEnabled="False" IsHitTestVisible="False">
+                                <WPF:Chart Foreground="Brown" LegendVisibility="Collapsed" Margin="2,0,0,-26" IsAutoFitEnabled="False" PlotHeight="99" IsHorizontalNavigationEnabled="False" IsVerticalNavigationEnabled="False" IsHitTestVisible="False">
                                     <WPF:LineGraph Stroke="Brown"  Name="PackageTemperaturePlotter"></WPF:LineGraph>
                                 </WPF:Chart>
                             </Border>
@@ -106,7 +106,7 @@
                             <TextBlock Name="PowerMax" TextWrapping="Wrap" Text="MaxData" TextAlignment="Center" FontSize="11" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
                             <TextBlock Name="PowerMin" TextWrapping="Wrap" Text="MinData" TextAlignment="Center" FontSize="11" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
                             <Border  Grid.Column="2" Grid.RowSpan="4" ClipToBounds="True" >
-                                <WPF:Chart Foreground="Purple" LegendVisibility="Collapsed" Margin="-26,0,0,-26" PlotHeight="1.4" PlotOriginY="-0.2" IsHorizontalNavigationEnabled="False" IsVerticalNavigationEnabled="False" IsHitTestVisible="False">
+                                <WPF:Chart Foreground="Purple" LegendVisibility="Collapsed" Margin="2,0,0,-26" PlotHeight="50" IsHorizontalNavigationEnabled="False" IsVerticalNavigationEnabled="False" IsHitTestVisible="False">
                                     <WPF:LineGraph Stroke="Purple"  Name="PackagePowerPlotter" IsAutoFitEnabled="False"></WPF:LineGraph>
                                 </WPF:Chart>
                             </Border>
@@ -130,7 +130,7 @@
                             <TextBlock Name="VoltaMax" TextWrapping="Wrap" Text="MaxData" TextAlignment="Center" FontSize="11" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
                             <TextBlock Name="VoltaMin" TextWrapping="Wrap" Text="MinData" TextAlignment="Center" FontSize="11" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
                             <Border  Grid.Column="2" Grid.RowSpan="4" ClipToBounds="True" >
-                                <WPF:Chart Foreground="Green" LegendVisibility="Collapsed" Margin="-26,0,0,-26" IsAutoFitEnabled="False" PlotHeight="1.4" PlotOriginY="-0.2" IsHorizontalNavigationEnabled="False" IsVerticalNavigationEnabled="False" IsHitTestVisible="False">
+                                <WPF:Chart Foreground="Green" LegendVisibility="Collapsed" Margin="0,0,0,-26" IsAutoFitEnabled="False" PlotHeight="1.8" IsHorizontalNavigationEnabled="False" IsVerticalNavigationEnabled="False" IsHitTestVisible="False">
                                     <WPF:LineGraph Stroke="Green"  Name="CoreVoltagePlotter"></WPF:LineGraph>
                                 </WPF:Chart>
                             </Border>
