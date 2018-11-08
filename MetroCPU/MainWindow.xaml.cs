@@ -6,6 +6,8 @@ using System.Windows;
 using System.Windows.Documents;
 using MahApps.Metro.Controls;
 using OpenLibSys;
+using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace MetroCPU
 {
@@ -37,10 +39,10 @@ namespace MetroCPU
                         + $" {cpuinfo.CPUID[i, 2].ToString("X8")}H"
                         + $" {cpuinfo.CPUID[i, 3].ToString("X8")}H\n");
                 }
-                sb.Append(cpuinfo.Manufacturer+"\n");
+                sb.Append(cpuinfo.Manufacturer + "\n");
                 for (int i = 0; i <= cpuinfo.MaxCPUIDexind; i++)
                 {
-                    sb.Append($"{(0x80000000+i).ToString("X8")}H :"
+                    sb.Append($"{(0x80000000 + i).ToString("X8")}H :"
                         + $" {cpuinfo.CPUID_ex[i, 0].ToString("X8")}H"
                         + $" {cpuinfo.CPUID_ex[i, 1].ToString("X8")}H"
                         + $" {cpuinfo.CPUID_ex[i, 2].ToString("X8")}H"
@@ -58,8 +60,12 @@ namespace MetroCPU
                 {
                     Toggle1.IsChecked = cpuinfo.SST_enabled;
                 }
-                PackagePowerPlotter.Plot(new double[] { 1,2,3,4}, new double[] { 4, 3, 2, 1 });
-
+                if (cpuinfo.Manufacturer == "GenuineIntel")
+                {
+                    Sensor2LineGraph s2l1 = new Sensor2LineGraph(cpuinfo.CoreVoltageSensor, CoreVoltagePlotter,VoltaCurrent,VoltaMax,VoltaMin);
+                    Sensor2LineGraph s2l2 = new Sensor2LineGraph(cpuinfo.PackagePowerSensor, PackagePowerPlotter,PowerCurrent,PowerMax,PowerMin);
+                    Sensor2LineGraph s2l3 = new Sensor2LineGraph(cpuinfo.PackageTemperatureSensor, PackageTemperaturePlotter,TempCurrent,TempMax,TempMin);
+                }
             }
         }
 
