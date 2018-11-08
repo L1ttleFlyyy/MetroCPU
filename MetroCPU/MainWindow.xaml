@@ -64,9 +64,9 @@
                         </Grid.RowDefinitions>
                         <Grid Grid.RowSpan="1" Margin="0,0,0,4">
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
                                 <ColumnDefinition Width="30"/>
                                 <ColumnDefinition Width="70"/>
-                                <ColumnDefinition Width="1*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="0.5*"/>
@@ -74,14 +74,14 @@
                                 <RowDefinition Height="1*"/>
                                 <RowDefinition Height="1*"/>
                             </Grid.RowDefinitions>
-                            <TextBlock TextWrapping="Wrap" Text="Package Temperature(°C)" TextAlignment="Center" FontSize="8" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}"/>
-                            <TextBlock Name="TempCurrent" TextWrapping="Wrap" Text="CurrentData" TextAlignment="Center" FontSize="16" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Bottom" FontWeight="Bold"/>
-                            <TextBlock TextWrapping="Wrap" Text="Max" TextAlignment="Center" FontSize="11" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}"/>
-                            <TextBlock TextWrapping="Wrap" Text="Min" TextAlignment="Center" FontSize="11" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}"/>
-                            <TextBlock Name="TempMax" TextWrapping="Wrap" Text="MaxData" TextAlignment="Center" FontSize="11" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
-                            <TextBlock Name="TempMin" TextWrapping="Wrap" Text="MinData" TextAlignment="Center" FontSize="11" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
-                            <Border  Grid.Column="2" Grid.RowSpan="4" ClipToBounds="True" >
-                                <WPF:Chart Foreground="Brown" LegendVisibility="Collapsed" Margin="2,0,0,-26" IsAutoFitEnabled="False" PlotHeight="99" IsHorizontalNavigationEnabled="False" IsVerticalNavigationEnabled="False" IsHitTestVisible="False">
+                            <TextBlock TextWrapping="Wrap" Text="Package Temperature(°C)" TextAlignment="Center" FontSize="8" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}" Grid.Column="1"/>
+                            <TextBlock Name="TempCurrent" TextWrapping="Wrap" Text="CurrentData" TextAlignment="Center" FontSize="16" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Bottom" FontWeight="Bold" Grid.Column="1"/>
+                            <TextBlock TextWrapping="Wrap" Text="Max" TextAlignment="Center" FontSize="11" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}" Grid.Column="1"/>
+                            <TextBlock TextWrapping="Wrap" Text="Min" TextAlignment="Center" FontSize="11" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}" Grid.Column="1"/>
+                            <TextBlock Name="TempMax" TextWrapping="Wrap" Text="MaxData" TextAlignment="Center" FontSize="11" Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
+                            <TextBlock Name="TempMin" TextWrapping="Wrap" Text="MinData" TextAlignment="Center" FontSize="11" Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
+                            <Border Grid.RowSpan="4" ClipToBounds="True" >
+                                <WPF:Chart Foreground="Brown" LegendVisibility="Collapsed" Margin="2,0,4,-26" IsAutoFitEnabled="False" PlotHeight="99" IsHorizontalNavigationEnabled="False" IsVerticalNavigationEnabled="False" IsHitTestVisible="False">
                                     <WPF:LineGraph Stroke="Brown"  Name="PackageTemperaturePlotter"></WPF:LineGraph>
                                 </WPF:Chart>
                             </Border>
@@ -89,9 +89,9 @@
 
                         <Grid Grid.RowSpan="1" Grid.Row="1" Margin="0,0,0,4">
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
                                 <ColumnDefinition Width="30"/>
                                 <ColumnDefinition Width="70"/>
-                                <ColumnDefinition Width="1*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="0.5*"/>
@@ -99,23 +99,23 @@
                                 <RowDefinition Height="1*"/>
                                 <RowDefinition Height="1*"/>
                             </Grid.RowDefinitions>
-                            <TextBlock TextWrapping="Wrap" Text="Power Consumption (W)" TextAlignment="Center" FontSize="8" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}"/>
-                            <TextBlock Name="PowerCurrent" TextWrapping="Wrap" Text="CurrentData" TextAlignment="Center" FontSize="16" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Bottom" FontWeight="Bold"/>
-                            <TextBlock TextWrapping="Wrap" Text="Max" TextAlignment="Center" FontSize="11" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}"/>
-                            <TextBlock TextWrapping="Wrap" Text="Min" TextAlignment="Center" FontSize="11" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}"/>
-                            <TextBlock Name="PowerMax" TextWrapping="Wrap" Text="MaxData" TextAlignment="Center" FontSize="11" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
-                            <TextBlock Name="PowerMin" TextWrapping="Wrap" Text="MinData" TextAlignment="Center" FontSize="11" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
-                            <Border  Grid.Column="2" Grid.RowSpan="4" ClipToBounds="True" >
-                                <WPF:Chart Name="PackagePowerChart" Foreground="Purple" LegendVisibility="Collapsed" Margin="2,0,0,-26" PlotHeight="50" IsHorizontalNavigationEnabled="False" IsVerticalNavigationEnabled="False" IsHitTestVisible="False">
+                            <TextBlock TextWrapping="Wrap" Text="Power Consumption (W)" TextAlignment="Center" FontSize="8" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}" Grid.Column="1"/>
+                            <TextBlock Name="PowerCurrent" TextWrapping="Wrap" Text="CurrentData" TextAlignment="Center" FontSize="16" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Bottom" FontWeight="Bold" Grid.Column="1"/>
+                            <TextBlock TextWrapping="Wrap" Text="Max" TextAlignment="Center" FontSize="11" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}" Grid.Column="1"/>
+                            <TextBlock TextWrapping="Wrap" Text="Min" TextAlignment="Center" FontSize="11" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}" Grid.Column="1"/>
+                            <TextBlock Name="PowerMax" TextWrapping="Wrap" Text="MaxData" TextAlignment="Center" FontSize="11" Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
+                            <TextBlock Name="PowerMin" TextWrapping="Wrap" Text="MinData" TextAlignment="Center" FontSize="11" Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
+                            <Border Grid.RowSpan="4" ClipToBounds="True" >
+                                <WPF:Chart Name="PackagePowerChart" Foreground="Purple" LegendVisibility="Collapsed" Margin="2,0,4,-26" PlotHeight="50" IsHorizontalNavigationEnabled="False" IsVerticalNavigationEnabled="False" IsHitTestVisible="False">
                                     <WPF:LineGraph Stroke="Purple"  Name="PackagePowerPlotter" IsAutoFitEnabled="False"></WPF:LineGraph>
                                 </WPF:Chart>
                             </Border>
                         </Grid>
                         <Grid Grid.RowSpan="1" Grid.Row="2" Margin="0,0,0,4">
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
                                 <ColumnDefinition Width="30"/>
                                 <ColumnDefinition Width="70"/>
-                                <ColumnDefinition Width="1*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="0.5*"/>
@@ -123,14 +123,14 @@
                                 <RowDefinition Height="1*"/>
                                 <RowDefinition Height="1*"/>
                             </Grid.RowDefinitions>
-                            <TextBlock TextWrapping="Wrap" Text="Core Voltage (V)" TextAlignment="Center" FontSize="8" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}"/>
-                            <TextBlock Name="VoltaCurrent" TextWrapping="Wrap" Text="CurrentData" TextAlignment="Center" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Bottom" FontWeight="Bold" FontSize="16"/>
-                            <TextBlock TextWrapping="Wrap" Text="Max" TextAlignment="Center" FontSize="11" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}"/>
-                            <TextBlock TextWrapping="Wrap" Text="Min" TextAlignment="Center" FontSize="11" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}"/>
-                            <TextBlock Name="VoltaMax" TextWrapping="Wrap" Text="MaxData" TextAlignment="Center" FontSize="11" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
-                            <TextBlock Name="VoltaMin" TextWrapping="Wrap" Text="MinData" TextAlignment="Center" FontSize="11" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
-                            <Border  Grid.Column="2" Grid.RowSpan="4" ClipToBounds="True" >
-                                <WPF:Chart Foreground="Green" LegendVisibility="Collapsed" Margin="0,0,0,-26" IsAutoFitEnabled="False" PlotHeight="1.8" IsHorizontalNavigationEnabled="False" IsVerticalNavigationEnabled="False" IsHitTestVisible="False">
+                            <TextBlock TextWrapping="Wrap" Text="Core Voltage (V)" TextAlignment="Center" FontSize="8" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}" Grid.Column="1" Grid.ColumnSpan="2"/>
+                            <TextBlock Name="VoltaCurrent" TextWrapping="Wrap" Text="CurrentData" TextAlignment="Center" Grid.Row="1" VerticalAlignment="Bottom" FontWeight="Bold" FontSize="16" Grid.Column="1" Grid.ColumnSpan="2"/>
+                            <TextBlock TextWrapping="Wrap" Text="Max" TextAlignment="Center" FontSize="11" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}" Grid.Column="1"/>
+                            <TextBlock TextWrapping="Wrap" Text="Min" TextAlignment="Center" FontSize="11" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}" Grid.Column="1"/>
+                            <TextBlock Name="VoltaMax" TextWrapping="Wrap" Text="MaxData" TextAlignment="Center" FontSize="11" Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
+                            <TextBlock Name="VoltaMin" TextWrapping="Wrap" Text="MinData" TextAlignment="Center" FontSize="11" Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
+                            <Border Grid.RowSpan="4" ClipToBounds="True" >
+                                <WPF:Chart Foreground="Green" LegendVisibility="Collapsed" Margin="0,0,4,-26" IsAutoFitEnabled="False" PlotHeight="1.8" IsHorizontalNavigationEnabled="False" IsVerticalNavigationEnabled="False" IsHitTestVisible="False">
                                     <WPF:LineGraph Stroke="Green"  Name="CoreVoltagePlotter"></WPF:LineGraph>
                                 </WPF:Chart>
                             </Border>
