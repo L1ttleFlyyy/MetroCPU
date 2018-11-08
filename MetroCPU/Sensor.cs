@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -21,6 +22,7 @@ namespace OpenLibSys
     class Sensor : IDisposable
     {
         public event Action NewDataAvailable;
+
         public float MaxValue { get; private set; }
         public float MinValue { get; private set; }
         public float CurrentValue { get; private set; }
@@ -39,7 +41,7 @@ namespace OpenLibSys
             set;
         }
 
-        public Sensor(Func<float> dataHandler, double interval = 400, int datacount = 100)
+        public Sensor(Func<float> dataHandler, double interval = 200, int datacount = 100)
         {
             MaxValue = 0;
             MinValue = float.MaxValue;

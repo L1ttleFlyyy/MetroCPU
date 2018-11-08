@@ -15,13 +15,20 @@ namespace OpenLibSys
         public int Thread { get; }
         public ulong ThreadAffinityMask { get; }
         public UIntPtr PThread { get; }
+        public readonly int MaxFrequency;
 
-        public LogicalProcessor(Ols ols, int thread)
+        public LogicalProcessor(Ols ols, int thread, int maxFreq)
         {
+            MaxFrequency = maxFreq;
             _ols = ols;
             Thread = thread;
             ThreadAffinityMask = 1UL << Thread;
             PThread = new UIntPtr(ThreadAffinityMask);
+        }
+
+        public float GetCurrentFrequency()
+        {
+            return GetCurrentFrequencyRatio()* MaxFrequency/1000;
         }
 
         public float GetCurrentFrequencyRatio()

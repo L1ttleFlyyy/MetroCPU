@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using MahApps.Metro.Controls;
 using InteractiveDataDisplay.WPF;
 using OpenLibSys;
+using System.Windows.Data;
 
 namespace MetroCPU
 {
@@ -19,10 +20,12 @@ namespace MetroCPU
         private Sensor sensor;
         private LineGraph lineGraph;
         private TextBlock TB1,TB2,TB3;
+        private readonly bool IsTextBox;
         private float[] x, y;
         
         public Sensor2LineGraph(Sensor s, LineGraph l, TextBlock currentTB,TextBlock maxTB,TextBlock minTb)
         {
+            IsTextBox = true;
             sensor = s;
             lineGraph = l;
             sensor.NewDataAvailable += new Action(Refresh);
@@ -33,6 +36,7 @@ namespace MetroCPU
 
         public Sensor2LineGraph(Sensor s, LineGraph l)
         {
+            IsTextBox = false;
             sensor = s;
             lineGraph = l;
             sensor.NewDataAvailable += new Action(Refresh);
@@ -57,7 +61,7 @@ namespace MetroCPU
                 min_y = (y[i] < min_y) ? y[i] : min_y;
                 i++;
             }
-            CurrentValue = y[i - 1].ToString("G4");
+            CurrentValue = y[i - 1].ToString("G3");
             MaxValue = max_y.ToString("G3");
             MinValue = min_y.ToString("G3");
             float delta_y = max_y - min_y;
@@ -67,11 +71,28 @@ namespace MetroCPU
                 y[i] = (y[i] - min_y) / delta_y;
             }
             lineGraph.Dispatcher.Invoke(() => {
-                TB1.Text = CurrentValue;
-                TB2.Text = MaxValue;
-                TB3.Text = MinValue;
+                if (IsTextBox)
+                {
+                    TB1.Text = CurrentValue;
+                    TB2.Text = MaxValue;
+                    TB3.Text = MinValue;
+                }
+                lineGraph.Description = $"{CurrentValue} GHz";
                 lineGraph.Plot(x, y);
             });
+        }
+    }
+
+    public class VisibilityToCheckedConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return ((Visibility)value) == Visibility.Visible;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return ((bool)value) ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 

@@ -78,8 +78,8 @@ namespace OpenLibSys
                 int times = IsHyperThreading ? 2 : 1;
                 for (int i = 0; i < CoreCount; i++)
                 {
-                    logicalProcessors.Add(new LogicalProcessor(_ols, i * times));
-                    frequencyRatioSensors.Add(new Sensor(logicalProcessors[i].GetCurrentFrequencyRatio));
+                    logicalProcessors.Add(new LogicalProcessor(_ols, i * times, MaxClockSpeed));
+                    frequencyRatioSensors.Add(new Sensor(logicalProcessors[i].GetCurrentFrequency));
                 }
 
                 if (Manufacturer == "GenuineIntel")

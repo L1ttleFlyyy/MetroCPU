@@ -13,6 +13,7 @@
         <SolidColorBrush x:Key="AccentGray" Color="#FF686868"/>
         <SolidColorBrush x:Key="AccentBlue1" Color="#FF086F9E"/>
         <SolidColorBrush x:Key="AccentBlue2" Color="#CC119EDA"/>
+        <local:VisibilityToCheckedConverter x:Key="VisibilityToCheckedConverter"/>
     </Controls:MetroWindow.Resources>
     <Controls:MetroAnimatedTabControl Controls:TabControlHelper.IsUnderlined="True" Controls:TabControlHelper.Underlined="SelectedTabItem">
         <Controls:MetroTabItem Controls:TabControlHelper.UnderlineMouseOverSelectedBrush="#FF086F9E" Controls:TabControlHelper.UnderlineSelectedBrush="#CC119EDA" Width="120">
@@ -27,7 +28,33 @@
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
-                <GroupBox Header="CPUID" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Controls:ControlsHelper.ContentCharacterCasing="Upper" BorderThickness="2" Margin="4,2,2,4"/>
+                <GroupBox Header="CPUID" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Controls:ControlsHelper.ContentCharacterCasing="Upper" BorderThickness="2" Margin="4,2,2,4">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="2*"/>
+                            <RowDefinition Height="3*"/>
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="1" ClipToBounds="True">
+                            <WPF:Chart Foreground="CornflowerBlue" Margin="-26,0,0,-26" IsAutoFitEnabled="False" IsHorizontalNavigationEnabled="False" IsVerticalNavigationEnabled="False" PlotHeight="1.3" PlotOriginY="-0.1">
+                                <WPF:Chart.LegendContent>
+                                    <WPF:LegendItemsPanel>
+                                        <WPF:LegendItemsPanel.Resources>
+                                            <DataTemplate x:Key="InteractiveDataDisplay.WPF.LineGraph">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <CheckBox IsChecked="{Binding Path=Visibility, Converter={StaticResource VisibilityToCheckedConverter}, Mode=TwoWay}"/>
+                                                    <Line Width="15" Height="15" X1="0" Y1="0" X2="15" Y2="15" Stroke="{Binding Path=Stroke}"/>
+                                                    <TextBlock Margin="5,0,0,0" Text="{Binding Path=Description}"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </WPF:LegendItemsPanel.Resources>
+                                    </WPF:LegendItemsPanel>
+                                </WPF:Chart.LegendContent>
+                                <Grid Name="lines"/>
+                            </WPF:Chart>
+                        </Border>
+                    </Grid>
+                </GroupBox>
+
                 <GroupBox Header="Monitoring" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Controls:ControlsHelper.ContentCharacterCasing="Upper" BorderThickness="2" Grid.Column="1" Margin="2,2,4,4">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -55,7 +82,7 @@
                             <TextBlock Name="TempMin" TextWrapping="Wrap" Text="MinData" TextAlignment="Center" FontSize="11" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
                             <Border  Grid.Column="2" Grid.RowSpan="4" ClipToBounds="True" >
                                 <WPF:Chart Foreground="Brown" LegendVisibility="Collapsed" Margin="-26,0,0,-26" IsAutoFitEnabled="False" PlotHeight="1.4" PlotOriginY="-0.2" IsHorizontalNavigationEnabled="False" IsVerticalNavigationEnabled="False" IsHitTestVisible="False">
-                                    <WPF:LineGraph Stroke="Brown" StrokeThickness="1.5" Name="PackageTemperaturePlotter"></WPF:LineGraph>
+                                    <WPF:LineGraph Stroke="Brown"  Name="PackageTemperaturePlotter"></WPF:LineGraph>
                                 </WPF:Chart>
                             </Border>
                         </Grid>
@@ -80,7 +107,7 @@
                             <TextBlock Name="PowerMin" TextWrapping="Wrap" Text="MinData" TextAlignment="Center" FontSize="11" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
                             <Border  Grid.Column="2" Grid.RowSpan="4" ClipToBounds="True" >
                                 <WPF:Chart Foreground="Purple" LegendVisibility="Collapsed" Margin="-26,0,0,-26" PlotHeight="1.4" PlotOriginY="-0.2" IsHorizontalNavigationEnabled="False" IsVerticalNavigationEnabled="False" IsHitTestVisible="False">
-                                    <WPF:LineGraph Stroke="Purple" StrokeThickness="1.5" Name="PackagePowerPlotter" IsAutoFitEnabled="False"></WPF:LineGraph>
+                                    <WPF:LineGraph Stroke="Purple"  Name="PackagePowerPlotter" IsAutoFitEnabled="False"></WPF:LineGraph>
                                 </WPF:Chart>
                             </Border>
                         </Grid>
@@ -104,7 +131,7 @@
                             <TextBlock Name="VoltaMin" TextWrapping="Wrap" Text="MinData" TextAlignment="Center" FontSize="11" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
                             <Border  Grid.Column="2" Grid.RowSpan="4" ClipToBounds="True" >
                                 <WPF:Chart Foreground="Green" LegendVisibility="Collapsed" Margin="-26,0,0,-26" IsAutoFitEnabled="False" PlotHeight="1.4" PlotOriginY="-0.2" IsHorizontalNavigationEnabled="False" IsVerticalNavigationEnabled="False" IsHitTestVisible="False">
-                                    <WPF:LineGraph Stroke="Green" StrokeThickness="1.5" Name="CoreVoltagePlotter"></WPF:LineGraph>
+                                    <WPF:LineGraph Stroke="Green"  Name="CoreVoltagePlotter"></WPF:LineGraph>
                                 </WPF:Chart>
                             </Border>
                         </Grid>
