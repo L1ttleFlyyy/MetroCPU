@@ -97,6 +97,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DataAquisition.cs" />
     <Compile Include="DataVisualization.cs" />
     <Compile Include="Sensor.cs" />
     <Compile Include="ThreadAffinity.cs" />
