@@ -10,6 +10,7 @@ namespace OpenLibSys
         public readonly DateTime Time;
         public readonly float Data;
 
+
         public TimeDataPair(DateTime time, float data)
         {
             Data = data;
@@ -19,7 +20,10 @@ namespace OpenLibSys
 
     class Sensor : IDisposable
     {
-        public float CurrentData { get; private set; }
+        public event Action NewDataAvailable;
+        public float MaxValue { get; private set; }
+        public float MinValue { get; private set; }
+        public float CurrentValue { get; private set; }
         private Timer tm;
         private ConcurrentQueue<TimeDataPair> q = new ConcurrentQueue<TimeDataPair>();
         private readonly Func<float> DataHandler;
@@ -38,6 +42,8 @@ namespace OpenLibSys
 
         public Sensor(Func<float> dataHandler, double interval = 1000, int datacount = 60)
         {
+            MaxValue = 0;
+            MinValue = float.MaxValue;
             MaxCapacity = datacount;
             CurrentInterval = interval;
             tm = new Timer(CurrentInterval);
@@ -55,9 +61,11 @@ namespace OpenLibSys
                 if (!disposing)
                 {
                     taskCount++;
-                    CurrentData = DataHandler();
+                    CurrentValue = DataHandler();
+                    MaxValue = (CurrentValue > MaxValue) ? CurrentValue : MaxValue;
+                    MinValue = (CurrentValue < MinValue) ? CurrentValue : MinValue;
                     DateTime tmptime = DateTime.Now;
-                    q.Enqueue(new TimeDataPair(tmptime, CurrentData));
+                    q.Enqueue(new TimeDataPair(tmptime, CurrentValue));
                     while (q.Count > MaxCapacity)
                     {
                         var tmp = new TimeDataPair();
@@ -68,16 +76,20 @@ namespace OpenLibSys
             }));
             if (tm.Interval != CurrentInterval)
                 tm.Interval = CurrentInterval;
+            NewDataAvailable?.Invoke();
         }
 
         public void Dispose()
         {
-            disposing = true;
-            while (taskCount > 0)
+            if (!disposing)
             {
-                System.Threading.Thread.Sleep(10);
+                disposing = true;
+                while (taskCount > 0)
+                {
+                    System.Threading.Thread.Sleep(10);
+                }
+                tm.Dispose();
             }
-            tm.Dispose();
         }
 
         private int maxCapacity;

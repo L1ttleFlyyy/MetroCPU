@@ -183,11 +183,11 @@ namespace OpenLibSys
                 }
                 foreach (Sensor s in frequencyRatioSensors)
                 {
-                    s.Dispose();
+                    s?.Dispose();
                 }
-                CoreVoltageSensor.Dispose();
-                PackageTemperatureSensor.Dispose();
-                PackagePowerSensor.Dispose();
+                CoreVoltageSensor?.Dispose();
+                PackageTemperatureSensor?.Dispose();
+                PackagePowerSensor?.Dispose();
                 _ols.Dispose();
 
                 disposedValue = true;

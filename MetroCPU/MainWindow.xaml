@@ -7,7 +7,7 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:WPF="clr-namespace:InteractiveDataDisplay.WPF;assembly=InteractiveDataDisplay.WPF" x:Class="MetroCPU.MainWindow"
         mc:Ignorable="d"
-        Title="MetroCPU" Height="450" Width="800" MaxWidth="800" MaxHeight="450" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Icon="CPU.ico" Closing="MetroWindow_Closing">
+        Title="MetroCPU" Height="596" Width="800" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Icon="CPU.ico" Closing="MetroWindow_Closing" MinWidth="800" MinHeight="600">
     <Controls:MetroWindow.Resources>
         <SolidColorBrush x:Key="AccentBlue" Color="#FF41B1E1"/>
         <SolidColorBrush x:Key="AccentGray" Color="#FF686868"/>
@@ -15,11 +15,11 @@
         <SolidColorBrush x:Key="AccentBlue2" Color="#CC119EDA"/>
     </Controls:MetroWindow.Resources>
     <Controls:MetroAnimatedTabControl Controls:TabControlHelper.IsUnderlined="True" Controls:TabControlHelper.Underlined="SelectedTabItem">
-        <Controls:MetroTabItem Controls:TabControlHelper.UnderlineMouseOverSelectedBrush="#FF086F9E" Controls:TabControlHelper.UnderlineSelectedBrush="#CC119EDA">
+        <Controls:MetroTabItem Controls:TabControlHelper.UnderlineMouseOverSelectedBrush="#FF086F9E" Controls:TabControlHelper.UnderlineSelectedBrush="#CC119EDA" Width="120">
             <Controls:MetroTabItem.Header>
-                <StackPanel Orientation="Horizontal" Width="100">
+                <StackPanel Orientation="Horizontal">
                     <Image Height="auto" Width="auto" Source="pulse.png" />
-                    <TextBlock Text="Tuning" TextAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" HorizontalAlignment="Center" FontSize="20"/>
+                    <TextBlock Text="Monitor" TextAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" HorizontalAlignment="Center" FontSize="18"/>
                 </StackPanel>
             </Controls:MetroTabItem.Header>
             <Grid>
@@ -27,20 +27,95 @@
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
-                <GroupBox Header="CPUID" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Controls:ControlsHelper.ContentCharacterCasing="Upper" BorderThickness="1"/>
-                <GroupBox Header="Monitoring" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Controls:ControlsHelper.ContentCharacterCasing="Upper" BorderThickness="1" Grid.Column="1">
-                    <DockPanel>
+                <GroupBox Header="CPUID" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Controls:ControlsHelper.ContentCharacterCasing="Upper" BorderThickness="2" Margin="4,2,2,4"/>
+                <GroupBox Header="Monitoring" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Controls:ControlsHelper.ContentCharacterCasing="Upper" BorderThickness="2" Grid.Column="1" Margin="2,2,4,4">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="2*"/>
+                            <RowDefinition Height="2*"/>
+                            <RowDefinition Height="2*"/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.RowSpan="1" Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="30"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.5*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock TextWrapping="Wrap" Text="Package Temperature(°C)" TextAlignment="Center" FontSize="8" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}"/>
+                            <TextBlock TextWrapping="Wrap" Text="CurrentData" TextAlignment="Center" FontSize="16" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Bottom" FontWeight="Bold"/>
+                            <TextBlock TextWrapping="Wrap" Text="Max" TextAlignment="Center" FontSize="11" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}"/>
+                            <TextBlock TextWrapping="Wrap" Text="Min" TextAlignment="Center" FontSize="11" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}"/>
+                            <TextBlock TextWrapping="Wrap" Text="MaxData" TextAlignment="Center" FontSize="11" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
+                            <TextBlock TextWrapping="Wrap" Text="MinData" TextAlignment="Center" FontSize="11" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
+                            <Border  Grid.Column="2" Grid.RowSpan="4" ClipToBounds="True" >
+                                <WPF:Chart LegendVisibility="Collapsed" Margin="-27,0,0,-26">
+                                    <WPF:LineGraph Name="PackageTemperaturePlotter"></WPF:LineGraph>
+                                </WPF:Chart>
+                            </Border>
+                        </Grid>
 
-                        <WPF:Chart/>
-
-                    </DockPanel>
+                        <Grid Grid.RowSpan="1" Grid.Row="1" Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="30"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.5*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock TextWrapping="Wrap" Text="Power Consumption (W)" TextAlignment="Center" FontSize="8" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}"/>
+                            <TextBlock TextWrapping="Wrap" Text="CurrentData" TextAlignment="Center" FontSize="16" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Bottom" FontWeight="Bold"/>
+                            <TextBlock TextWrapping="Wrap" Text="Max" TextAlignment="Center" FontSize="11" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}"/>
+                            <TextBlock TextWrapping="Wrap" Text="Min" TextAlignment="Center" FontSize="11" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}"/>
+                            <TextBlock TextWrapping="Wrap" Text="MaxData" TextAlignment="Center" FontSize="11" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
+                            <TextBlock TextWrapping="Wrap" Text="MinData" TextAlignment="Center" FontSize="11" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
+                            <Border  Grid.Column="2" Grid.RowSpan="4" ClipToBounds="True" >
+                                <WPF:Chart LegendVisibility="Collapsed" Margin="-27,0,0,-26">
+                                    <WPF:LineGraph Name="CoreVoltagePlotter"></WPF:LineGraph>
+                                </WPF:Chart>
+                            </Border>
+                        </Grid>
+                        <Grid Grid.RowSpan="1" Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="30"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.5*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock TextWrapping="Wrap" Text="Core Voltage (mV)" TextAlignment="Center" FontSize="8" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}"/>
+                            <TextBlock TextWrapping="Wrap" Text="CurrentData" TextAlignment="Center" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Bottom" FontWeight="Bold" FontSize="16"/>
+                            <TextBlock TextWrapping="Wrap" Text="Max" TextAlignment="Center" FontSize="11" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}"/>
+                            <TextBlock TextWrapping="Wrap" Text="Min" TextAlignment="Center" FontSize="11" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}"/>
+                            <TextBlock TextWrapping="Wrap" Text="MaxData" TextAlignment="Center" FontSize="11" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
+                            <TextBlock TextWrapping="Wrap" Text="MinData" TextAlignment="Center" FontSize="11" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Bottom"/>
+                            <Border  Grid.Column="2" Grid.RowSpan="4" ClipToBounds="True" >
+                                <WPF:Chart LegendVisibility="Collapsed" Margin="-27,0,0,-26">
+                                    <WPF:LineGraph Name="PackagePowerPlotter"></WPF:LineGraph>
+                                </WPF:Chart>
+                            </Border>
+                        </Grid>
+                    </Grid>
                 </GroupBox>
             </Grid>
         </Controls:MetroTabItem>
 
-        <Controls:MetroTabItem Controls:TabControlHelper.UnderlineMouseOverSelectedBrush="#FF086F9E" Controls:TabControlHelper.UnderlineSelectedBrush="#CC119EDA">
+        <Controls:MetroTabItem Controls:TabControlHelper.UnderlineMouseOverSelectedBrush="#FF086F9E" Controls:TabControlHelper.UnderlineSelectedBrush="#CC119EDA" Width="120">
             <Controls:MetroTabItem.Header>
-                <StackPanel Orientation="Horizontal" Width="100">
+                <StackPanel Orientation="Horizontal">
                     <Image Height="auto" Width="auto" Source="pulse.png" />
                     <TextBlock Text="Tuning" TextAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" HorizontalAlignment="Center" FontSize="20"/>
                 </StackPanel>
@@ -62,7 +137,7 @@
             </Grid>
         </Controls:MetroTabItem>
 
-        <Controls:MetroTabItem>
+        <Controls:MetroTabItem Width="120">
             <Controls:MetroTabItem.Header>
                 <StackPanel ToolTip="ONLY Available on latest Intel® CPUs(Skylake, Kabylake, Coffeelake or newer family)" Orientation="Horizontal" Width="100">
                     <Image Height="auto" Width="auto" Source="intel.png" Margin="10,0,0,0" />
@@ -70,7 +145,7 @@
                 </StackPanel>
             </Controls:MetroTabItem.Header>
             <DockPanel x:Name="SST_Dock" Margin="4">
-                <GroupBox x:Name="SST_Group"  Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Controls:ControlsHelper.ContentCharacterCasing="Normal" BorderThickness="1" DockPanel.Dock="Top">
+                <GroupBox x:Name="SST_Group"  Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Controls:ControlsHelper.ContentCharacterCasing="Normal" BorderThickness="2" DockPanel.Dock="Top">
                     <GroupBox.Header >
                         <Hyperlink ToolTip="ONLY Available on latest Intel® CPUs(Skylake, Kabylake, Coffeelake or newer family)" Foreground="White" NavigateUri="https://www.anandtech.com/show/9751/examining-intel-skylake-speed-shift-more-responsive-processors" TextDecorations="{x:Null}" RequestNavigate="Hyperlink_Click">
                             <Run Text="Intel® Speed Shift Technology"/>
@@ -108,7 +183,7 @@
                         <Controls:ToggleSwitchButton x:Name="Toggle1" Height="Auto" Width="35" HorizontalAlignment="Left" Click="Toggle1_Click"/>
                     </DockPanel>
                 </GroupBox>
-                <GroupBox x:Name="EPP_Group" Header="Energy Performance Preference" DockPanel.Dock="Top" Controls:ControlsHelper.ContentCharacterCasing="Normal" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Margin="0,4,0,0" Controls:GroupBoxHelper.HeaderForeground="{x:Null}"/>
+                <GroupBox x:Name="EPP_Group" Header="Energy Performance Preference" DockPanel.Dock="Top" Controls:ControlsHelper.ContentCharacterCasing="Normal" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Margin="0,4,0,0" Controls:GroupBoxHelper.HeaderForeground="{x:Null}" BorderThickness="2"/>
             </DockPanel>
 
         </Controls:MetroTabItem>

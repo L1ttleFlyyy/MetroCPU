@@ -37,7 +37,6 @@ namespace MetroCPU
                         + $" {cpuinfo.CPUID[i, 2].ToString("X8")}H"
                         + $" {cpuinfo.CPUID[i, 3].ToString("X8")}H\n");
                 }
-
                 sb.Append(cpuinfo.Manufacturer+"\n");
                 for (int i = 0; i <= cpuinfo.MaxCPUIDexind; i++)
                 {
@@ -59,6 +58,8 @@ namespace MetroCPU
                 {
                     Toggle1.IsChecked = cpuinfo.SST_enabled;
                 }
+                PackagePowerPlotter.Plot(new double[] { 1,2,3,4}, new double[] { 4, 3, 2, 1 });
+
             }
         }
 
@@ -129,12 +130,15 @@ namespace MetroCPU
             int i = 0;
             foreach(Sensor s in cpuinfo.frequencyRatioSensors)
             {
-                sb.AppendLine($"Core{i}: {s.CurrentData * cpuinfo.MaxClockSpeed} Mhz");
+                sb.AppendLine($"Core{i}: {s.CurrentValue * cpuinfo.MaxClockSpeed} Mhz");
                 i++;
             }
-            sb.AppendLine($"PackageTemp: {cpuinfo.PackageTemperatureSensor.CurrentData} °C");
-            sb.AppendLine($"PlatformPower: {cpuinfo.PackagePowerSensor.CurrentData} W");
-            sb.AppendLine($"Core Voltage: {cpuinfo.CoreVoltageSensor.CurrentData*1000} mV");
+            if (cpuinfo.Manufacturer == "GenuineIntel")
+            {
+                sb.AppendLine($"PackageTemp: {cpuinfo.PackageTemperatureSensor.CurrentValue} °C");
+                sb.AppendLine($"PlatformPower: {cpuinfo.PackagePowerSensor.CurrentValue} W");
+                sb.AppendLine($"Core Voltage: {cpuinfo.CoreVoltageSensor.CurrentValue * 1000} mV");
+            }
             TextBox2.Text = sb.ToString();
         }
     }
