@@ -20,11 +20,13 @@ namespace MetroCPU
         private Sensor sensor;
         private LineGraph lineGraph;
         private TextBlock TB1,TB2,TB3;
+        private string DataFormat;
         private readonly bool IsTextBox;
         private float[] x, y;
         
-        public Sensor2LineGraph(Sensor s, LineGraph l, TextBlock currentTB,TextBlock maxTB,TextBlock minTb)
+        public Sensor2LineGraph(Sensor s, LineGraph l, string dataFormat,TextBlock currentTB,TextBlock maxTB,TextBlock minTb)
         {
+            DataFormat = dataFormat;
             IsTextBox = true;
             sensor = s;
             lineGraph = l;
@@ -34,8 +36,9 @@ namespace MetroCPU
             TB3 = minTb;
         }
 
-        public Sensor2LineGraph(Sensor s, LineGraph l)
+        public Sensor2LineGraph(Sensor s, LineGraph l, string dataFormat)
         {
+            DataFormat = dataFormat;
             IsTextBox = false;
             sensor = s;
             lineGraph = l;
@@ -61,9 +64,9 @@ namespace MetroCPU
                 min_y = (y[i] < min_y) ? y[i] : min_y;
                 i++;
             }
-            CurrentValue = y[i - 1].ToString("G3");
-            MaxValue = max_y.ToString("G3");
-            MinValue = min_y.ToString("G3");
+            CurrentValue = y[i - 1].ToString(DataFormat);
+            MaxValue = max_y.ToString(DataFormat);
+            MinValue = min_y.ToString(DataFormat);
             //float delta_y = max_y - min_y;
             for (i = 0; i < datacounts; i++)
             {

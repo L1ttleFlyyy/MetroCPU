@@ -65,20 +65,20 @@ namespace MetroCPU
                 }
                 if (cpuinfo.Manufacturer == "GenuineIntel")
                 {
-                    Sensor2LineGraph s2l1 = new Sensor2LineGraph(cpuinfo.CoreVoltageSensor, CoreVoltagePlotter,VoltaCurrent,VoltaMax,VoltaMin);
-                    Sensor2LineGraph s2l2 = new Sensor2LineGraph(cpuinfo.PackagePowerSensor, PackagePowerPlotter,PowerCurrent,PowerMax,PowerMin);
-                    Sensor2LineGraph s2l3 = new Sensor2LineGraph(cpuinfo.PackageTemperatureSensor, PackageTemperaturePlotter,TempCurrent,TempMax,TempMin);
-                    PackagePowerPlotter.PlotHeight = (int)(cpuinfo.PPM.TDP);
+                    Sensor2LineGraph s2l1 = new Sensor2LineGraph(cpuinfo.CoreVoltageSensor, CoreVoltagePlotter, "G4", VoltaCurrent, VoltaMax, VoltaMin);
+                    Sensor2LineGraph s2l2 = new Sensor2LineGraph(cpuinfo.PackagePowerSensor, PackagePowerPlotter, "G3", PowerCurrent, PowerMax, PowerMin);
+                    Sensor2LineGraph s2l3 = new Sensor2LineGraph(cpuinfo.PackageTemperatureSensor, PackageTemperaturePlotter, "F2", TempCurrent, TempMax, TempMin);
+                    PackagePowerChart.PlotHeight = (int)(cpuinfo.PPM.TDP);
                 }
                 int tmp = 0;
                 List<Sensor2LineGraph> S2LGs = new List<Sensor2LineGraph>(cpuinfo.CoreCount);
-                foreach(Sensor s in cpuinfo.frequencyRatioSensors)
+                foreach (Sensor s in cpuinfo.frequencyRatioSensors)
                 {
                     var lg = new LineGraph();
                     lines.Children.Add(lg);
-                    lg.Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 128, (byte)(255*Math.Pow(2,-tmp))));
+                    lg.Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 128, (byte)(255 * Math.Pow(2, -tmp))));
                     lg.Description = "0 Ghz";
-                    S2LGs.Add(new Sensor2LineGraph(s,lg));
+                    S2LGs.Add(new Sensor2LineGraph(s, lg, "F2"));
                     tmp++;
                 }
             }
@@ -149,7 +149,7 @@ namespace MetroCPU
         {
             StringBuilder sb = new StringBuilder();
             int i = 0;
-            foreach(Sensor s in cpuinfo.frequencyRatioSensors)
+            foreach (Sensor s in cpuinfo.frequencyRatioSensors)
             {
                 sb.AppendLine($"Core{i}: {s.CurrentValue * cpuinfo.MaxClockSpeed} Mhz");
                 i++;
