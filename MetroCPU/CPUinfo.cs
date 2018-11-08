@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
+using System.Threading;
 
 namespace OpenLibSys
 {
-    enum ManufacturerName { GenuineIntel, AuthenticAMD, Unknown };
-
     class LogicalProcessor
     {
         private Ols _ols;
@@ -55,14 +55,61 @@ namespace OpenLibSys
         }
     }
 
+    class PackagePowerMonitor
+    {
+        public bool RAPL_supported { get; private set; }
+        private Ols _ols;
+        public readonly float PU;
+        public readonly float ESU;
+        public readonly float TU;
+
+        public PackagePowerMonitor(Ols ols, string manufacturer)
+        {
+            if (manufacturer == "GenuineIntel")
+            {
+                _ols = ols;
+                uint edx = 0, eax = 0;
+                if (_ols.Rdmsr(0x606, ref eax, ref edx) > 0)
+                {
+                    PU = 1F / (float)Math.Pow(2, CPUinfo.BitsSlicer(eax, 3, 0));
+                    ESU = 1F / (float)Math.Pow(2, CPUinfo.BitsSlicer(eax, 12, 8));
+                    TU = 1F / (float)Math.Pow(2, CPUinfo.BitsSlicer(eax, 19, 16));
+                    RAPL_supported = true;
+                }
+                RAPL_supported = true;
+            }
+            else
+                RAPL_supported = false;
+        }
+
+        public float GetPackagePower()
+        {
+            uint eax_start = 0, eax_stop = 0, edx = 0;
+            long t_start, t_stop, f;
+            do
+            {
+                _ols.Rdmsr(0x611, ref eax_start, ref edx);
+                t_start = Stopwatch.GetTimestamp();
+                f = Stopwatch.Frequency;
+                Thread.Sleep(30);
+                _ols.Rdmsr(0x611, ref eax_stop, ref edx);
+                t_stop = Stopwatch.GetTimestamp();
+            } while (eax_start > eax_stop);
+            return ESU * (eax_stop - eax_start) / (t_stop - t_start) * f;
+        }
+
+    }
+
     class CPUinfo : IDisposable
     {
         private readonly WMICPUinfo wmi;
         private const int MaxIndDefined = 0x1f;
         private Ols _ols;
         public readonly List<LogicalProcessor> logicalProcessors;
+        public readonly PackagePowerMonitor PPM;
         public readonly Sensor CoreVoltageSensor;
         public readonly Sensor PackageTemperatureSensor;
+        public readonly Sensor PackagePowerSensor;
         public readonly List<Sensor> frequencyRatioSensors;
         public int test;
         public bool LoadSucceeded { get; }
@@ -128,10 +175,12 @@ namespace OpenLibSys
                     frequencyRatioSensors.Add(new Sensor(logicalProcessors[i].GetCurrentFrequencyRatio));
                 }
 
-                if(Manufacturer == "GenuineIntel")
+                if (Manufacturer == "GenuineIntel")
                 {
                     CoreVoltageSensor = new Sensor(GetCurrentVoltage);
                     PackageTemperatureSensor = new Sensor(GetCurrentTemprature);
+                    PPM = new PackagePowerMonitor(_ols, Manufacturer);
+                    PackagePowerSensor = new Sensor(PPM.GetPackagePower);
                 }
 
             }
@@ -254,13 +303,16 @@ namespace OpenLibSys
             {
                 if (disposing)
                 {
-                    this.CPUID = null;
-                    this.CPUID_ex = null;
+                    CPUID = null;
+                    CPUID_ex = null;
                 }
                 foreach (Sensor s in frequencyRatioSensors)
                 {
                     s.Dispose();
                 }
+                CoreVoltageSensor.Dispose();
+                PackageTemperatureSensor.Dispose();
+                PackagePowerSensor.Dispose();
                 _ols.Dispose();
 
                 disposedValue = true;

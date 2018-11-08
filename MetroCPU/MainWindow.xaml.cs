@@ -28,14 +28,6 @@ namespace MetroCPU
             }
             else
             {
-                /*StringBuilder freqsb = new StringBuilder();
-                foreach(double ii in cpuinfo.Freq_List)
-                    freqsb.AppendLine(ii.ToString());
-                
-                MessageBox.Show($"SST: {cpuinfo.SST_support}\n"
-                    + $"Frequency: {freqsb}\n"
-                    + $"Physical corecount: {cpuinfo.CoreCount}\n"
-                    + $"Logical corecount: {cpuinfo.ThreadCount}");*/
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i <= cpuinfo.MaxCPUIDind; i++)
                 {
@@ -57,9 +49,7 @@ namespace MetroCPU
                 }
 
                 TextBox1.Text = sb.ToString();
-                //TextBox2.Text = $"Count: {cpuinfo.DataCount}\n" + $"Freq: {cpuinfo.Freq}";
                 TextBox2.Text = string.Empty;
-                //Environment.Exit(0);
                 if (!cpuinfo.SST_support)
                 {
                     SST_TextBlock.Text = "Unavailable";
@@ -143,6 +133,7 @@ namespace MetroCPU
                 i++;
             }
             sb.AppendLine($"PackageTemp: {cpuinfo.PackageTemperatureSensor.CurrentData} °C");
+            sb.AppendLine($"PlatformPower: {cpuinfo.PackagePowerSensor.CurrentData} W");
             sb.AppendLine($"Core Voltage: {cpuinfo.CoreVoltageSensor.CurrentData*1000} mV");
             TextBox2.Text = sb.ToString();
         }
