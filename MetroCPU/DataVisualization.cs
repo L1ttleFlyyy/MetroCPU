@@ -33,6 +33,7 @@ namespace MetroCPU
         //private Timer tm;
         //private Point? Point0, Point1;
         //private Queue<Point> PlotBuffer;
+        private float[] xs, ys;
         private const int Multiplier = 40;
         private float maxY = 0, minY = float.MaxValue;
 
@@ -100,6 +101,28 @@ namespace MetroCPU
         //    }
         //}
 
+        public void RefreshUI()
+        {
+            if (xs != null)
+            {
+                lineGraph.Dispatcher.Invoke(() =>
+                {
+                    lineGraph.Plot(xs, ys);
+                    lineGraph.PlotOriginY = Origin_Y;
+                    lineGraph.PlotHeight = Height_Y;
+                    lineGraph.PlotOriginX = x_actual[1];
+                    lineGraph.PlotWidth = x_actual[x_actual.Count - 2] - x_actual[1];
+                    if (IsTextBox)
+                    {
+                        TB1.Text = CurrentValue;
+                        TB2.Text = maxY.ToString(DataFormat);
+                        TB3.Text = minY.ToString(DataFormat);
+                    }
+                    lineGraph.Description = $"{CurrentValue} GHz";
+                });
+            }
+        }
+
         private void RefreshData()
         {
             TimeDataPair tdp = sensor.CurrentValue;
@@ -119,11 +142,11 @@ namespace MetroCPU
             if (N < 3) return;
 
             float stepsize = (x_actual[N - 1] - x_actual[0]) / (N - 1) / Multiplier;
-            List<float> arrayList = new List<float>(1 + (N - 1) * Multiplier);
+            List<float> arrayList = new List<float>((N - 1) * Multiplier + 1);
             CubicSpline spline = new CubicSpline();
             for (int i = 0; i < 1 + (N - 1) * Multiplier; i++) { arrayList.Add(x_actual[0] + stepsize * i); }
-            float[] xs = arrayList.ToArray();
-            float[] ys = spline.FitAndEval(x_actual.ToArray(), y_actual.ToArray(), xs);
+            xs = arrayList.ToArray();
+            ys = spline.FitAndEval(x_actual.ToArray(), y_actual.ToArray(), xs);
 
             //if (PlotBuffer == null) { PlotBuffer = new Queue<Point>(); }
             //for (int i = (N - 2) * Multiplier+1; i < (N - 1) * Multiplier + 1; i++)
@@ -133,21 +156,6 @@ namespace MetroCPU
             CurrentValue = y_actual[N - 1].ToString(DataFormat);
             maxY = (maxY > y_actual[N - 1]) ? maxY : y_actual[N - 1];
             minY = (minY < y_actual[N - 1]) ? minY : y_actual[N - 1];
-            lineGraph.Dispatcher.Invoke(() =>
-            {
-                lineGraph.Plot(xs, ys);
-                lineGraph.PlotOriginY = Origin_Y;
-                lineGraph.PlotHeight = Height_Y;
-                lineGraph.PlotOriginX = x_actual[0];
-                lineGraph.PlotWidth = x_actual[N - 1] - x_actual[0];
-                if (IsTextBox)
-                {
-                    TB1.Text = CurrentValue;
-                    TB2.Text = maxY.ToString(DataFormat);
-                    TB3.Text = minY.ToString(DataFormat);
-                }
-                lineGraph.Description = $"{CurrentValue} GHz";
-            });
 
         }
 
@@ -212,6 +220,7 @@ namespace MetroCPU
 
     public partial class MainWindow : MetroWindow
     {
+        private System.Windows.Threading.DispatcherTimer UITimer;
     }
 
     class TransitionText
