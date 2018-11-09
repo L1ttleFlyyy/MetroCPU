@@ -134,11 +134,11 @@ namespace MetroCPU
             minY = (minY < y_actual[N - 1]) ? minY : y_actual[N - 1];
             lineGraph.Dispatcher.Invoke(() =>
             {
-                lineGraph.Plot(xs,ys);
+                lineGraph.Plot(xs, ys);
                 lineGraph.PlotOriginY = Origin_Y;
                 lineGraph.PlotHeight = Height_Y;
                 lineGraph.PlotOriginX = x_actual[0];
-                lineGraph.PlotWidth = x_actual[N-1]- x_actual[0];
+                lineGraph.PlotWidth = x_actual[N - 1] - x_actual[0];
                 if (IsTextBox)
                 {
                     TB1.Text = CurrentValue;
@@ -211,6 +211,40 @@ namespace MetroCPU
 
     public partial class MainWindow : MetroWindow
     {
-
     }
+
+    class TransitionText
+    {
+        private TextBlock TB1;
+        private TextBlock TB2;
+        private TransitioningContentControl TCC;
+        public bool selector { get; private set; }
+        public string Text
+        {
+            get => selector ? TB1.Text : TB2.Text;
+            set
+            {
+                if (selector)
+                {
+                    TB1.Text = value;
+                    TCC.Content = TB1;
+                    selector = false;
+                }
+                else
+                {
+                    TB2.Text = value;
+                    TCC.Content = TB2;
+                    selector = true;
+                }
+            }
+        }
+        public TransitionText(TransitioningContentControl tcc)
+        {
+            TCC = tcc;
+            selector = false;
+            TB1 = new TextBlock() { FontSize = 16, FontWeight = FontWeights.Bold, VerticalAlignment = VerticalAlignment.Bottom, HorizontalAlignment = HorizontalAlignment.Center, TextAlignment = TextAlignment.Center };
+            TB2 = new TextBlock() { FontSize = 16, FontWeight = FontWeights.Bold, VerticalAlignment = VerticalAlignment.Bottom, HorizontalAlignment = HorizontalAlignment.Center, TextAlignment = TextAlignment.Center };
+        }
+    }
+
 }
