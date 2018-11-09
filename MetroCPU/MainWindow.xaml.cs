@@ -65,9 +65,9 @@ namespace MetroCPU
                 }
                 if (cpuinfo.Manufacturer == "GenuineIntel")
                 {
-                    Sensor2LineGraph s2l1 = new Sensor2LineGraph(cpuinfo.CoreVoltageSensor, CoreVoltagePlotter, "G4", -0.1, 1.9, VoltaCurrent, VoltaMax, VoltaMin);
-                    Sensor2LineGraph s2l2 = new Sensor2LineGraph(cpuinfo.PackagePowerSensor, PackagePowerPlotter, "G3", -1, cpuinfo.PPM.TDP+1, PowerCurrent, PowerMax, PowerMin);
-                    Sensor2LineGraph s2l3 = new Sensor2LineGraph(cpuinfo.PackageTemperatureSensor, PackageTemperaturePlotter, "F2", -2, 101, TempCurrent, TempMax, TempMin);
+                    Sensor2LineGraph s2l1 = new Sensor2LineGraph(cpuinfo.CoreVoltageSensor, CoreVoltagePlotter, "G4", -0.1, 1.9, new TransitionText(VoltaCurrent), VoltaMax, VoltaMin);
+                    Sensor2LineGraph s2l2 = new Sensor2LineGraph(cpuinfo.PackagePowerSensor, PackagePowerPlotter, "G3", -1, cpuinfo.PPM.TDP+1, new TransitionText(PowerCurrent), PowerMax, PowerMin);
+                    Sensor2LineGraph s2l3 = new Sensor2LineGraph(cpuinfo.PackageTemperatureSensor, PackageTemperaturePlotter, "F2", -2, 101, new TransitionText(TempCurrent), TempMax, TempMin);
 
                 }
                 int tmp = 0;

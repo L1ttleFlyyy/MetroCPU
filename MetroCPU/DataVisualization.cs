@@ -22,7 +22,8 @@ namespace MetroCPU
         private double Height_Y;
         private Sensor sensor;
         private LineGraph lineGraph;
-        private TextBlock TB1, TB2, TB3;
+        private TransitionText TB1;
+        private TextBlock TB2, TB3;
         private string DataFormat;
         private readonly bool IsTextBox;
         //private List<double> x;
@@ -35,7 +36,7 @@ namespace MetroCPU
         private const int Multiplier = 40;
         private float maxY = 0, minY = float.MaxValue;
 
-        public Sensor2LineGraph(Sensor s, LineGraph l, string dataFormat, double o, double h, TextBlock currentTB, TextBlock maxTB, TextBlock minTb)
+        public Sensor2LineGraph(Sensor s, LineGraph l, string dataFormat, double o, double h, TransitionText currentTB, TextBlock maxTB, TextBlock minTb)
         {
             Origin_Y = o;
             Height_Y = h;
@@ -242,8 +243,8 @@ namespace MetroCPU
         {
             TCC = tcc;
             selector = false;
-            TB1 = new TextBlock() { FontSize = 16, FontWeight = FontWeights.Bold, VerticalAlignment = VerticalAlignment.Bottom, HorizontalAlignment = HorizontalAlignment.Center, TextAlignment = TextAlignment.Center };
-            TB2 = new TextBlock() { FontSize = 16, FontWeight = FontWeights.Bold, VerticalAlignment = VerticalAlignment.Bottom, HorizontalAlignment = HorizontalAlignment.Center, TextAlignment = TextAlignment.Center };
+            TB1 = new TextBlock() { TextAlignment = TextAlignment.Center };
+            TB2 = new TextBlock() { TextAlignment = TextAlignment.Center };
         }
     }
 
