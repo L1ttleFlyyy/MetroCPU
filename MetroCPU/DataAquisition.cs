@@ -28,40 +28,40 @@ namespace OpenLibSys
 
         public float GetCurrentFrequency()
         {
-            return GetCurrentFrequencyRatio() * MaxFrequency / 1000;
+            float err,ratio;
+            do {
+                ratio = GetCurrentFrequencyRatio(out err);
+            }
+            while (err > 1e-3);
+            return ratio * MaxFrequency / 1000;
         }
 
-        public float GetCurrentFrequencyRatio()
+        public float GetCurrentFrequencyRatio(out float error)
         {
             ulong mcnt_start, acnt_start, mcnt_stop, acnt_stop;
+            ulong err_start, err_stop;
             do
             {
-                uint eax_m = 0, edx_m = 0, eax_a = 0, edx_a = 0;
-                int cnt = 0;
+                uint eax_m = 0, edx_m = 0, eax_a = 0, edx_a = 0, eax_e = 0, edx_e = 0;
                 ThreadAffinity.Set(ThreadAffinityMask);
-                while (_ols.RdmsrTx(0xe8, ref eax_a, ref edx_a, PThread) == 0 || _ols.RdmsrTx(0xe7, ref eax_m, ref edx_m, PThread) == 0)
-                {
-                    if (cnt < 4)
-                        cnt++;
-                    else
-                        return 0;
-                }
+                _ols.RdmsrTx(0xe8, ref eax_a, ref edx_a, PThread);
+                _ols.RdmsrTx(0xe7, ref eax_m, ref edx_m, PThread);
+                _ols.RdmsrTx(0xe8, ref eax_e, ref edx_e, PThread);
                 mcnt_start = ((ulong)edx_m << 32) + eax_m;
                 acnt_start = ((ulong)edx_a << 32) + eax_a;
-                cnt = 0;
-                System.Threading.Thread.Sleep(30);
-                while (_ols.RdmsrTx(0xe8, ref eax_a, ref edx_a, PThread) == 0 || _ols.RdmsrTx(0xe7, ref eax_m, ref edx_m, PThread) == 0)
-                {
-                    if (cnt < 4)
-                        cnt++;
-                    else
-                        return 0;
-                }
+                err_start = ((ulong)edx_a << 32) + eax_e;
+                System.Threading.Thread.Sleep(20);
+                _ols.RdmsrTx(0xe8, ref eax_a, ref edx_a, PThread);
+                _ols.RdmsrTx(0xe7, ref eax_m, ref edx_m, PThread);
+                _ols.RdmsrTx(0xe8, ref eax_e, ref edx_e, PThread);
                 mcnt_stop = ((ulong)edx_m << 32) + eax_m;
                 acnt_stop = ((ulong)edx_a << 32) + eax_a;
+                err_stop = ((ulong)edx_a << 32) + eax_e;
                 ThreadAffinity.Set(ThreadAffinityMask);
-            } while (acnt_stop <= acnt_start || mcnt_stop <= mcnt_start || mcnt_stop - mcnt_start > 1UL << 32 || acnt_stop - acnt_start > 1UL << 32);
-            return (float)(acnt_stop - acnt_start) / (mcnt_stop - mcnt_start);
+            } while (acnt_stop <= acnt_start || mcnt_stop <= mcnt_start);
+            float res = (float)(acnt_stop - acnt_start) / (mcnt_stop - mcnt_start);
+            error = Math.Abs(res-(float)(err_stop - err_start) / (mcnt_stop - mcnt_start))/res;
+            return res;
         }
     }
 

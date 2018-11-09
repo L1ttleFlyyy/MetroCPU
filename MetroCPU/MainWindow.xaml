@@ -35,7 +35,7 @@
                             <RowDefinition Height="3*"/>
                         </Grid.RowDefinitions>
                         <Border Grid.Row="1" ClipToBounds="True">
-                            <WPF:Chart Foreground="DodgerBlue" Margin="-2,0,0,-26" IsAutoFitEnabled="False" IsHorizontalNavigationEnabled="False" IsVerticalNavigationEnabled="False" PlotHeight="5.2" PlotOriginY="-0.1">
+                            <WPF:Chart Name="CPUFreqChart" Foreground="DodgerBlue" Margin="-2,0,0,-26" IsVerticalNavigationEnabled="False" IsHorizontalNavigationEnabled="False" PlotOriginY="0">
                                 <WPF:Chart.LegendContent>
                                     <WPF:LegendItemsPanel>
                                         <WPF:LegendItemsPanel.Resources>

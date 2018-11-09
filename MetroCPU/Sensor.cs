@@ -25,7 +25,7 @@ namespace OpenLibSys
 
         public float MaxValue { get; private set; }
         public float MinValue { get; private set; }
-        public float CurrentValue { get; private set; }
+        public TimeDataPair CurrentValue { get; private set; }
         private Timer tm;
         private ConcurrentQueue<TimeDataPair> q = new ConcurrentQueue<TimeDataPair>();
         private readonly Func<float> DataHandler;
@@ -41,7 +41,7 @@ namespace OpenLibSys
             set;
         }
 
-        public Sensor(Func<float> dataHandler, double interval = 100, int datacount = 300)
+        public Sensor(Func<float> dataHandler, double interval = 1000, int datacount = 10)
         {
             MaxValue = 0;
             MinValue = float.MaxValue;
@@ -59,25 +59,27 @@ namespace OpenLibSys
         {
             await Task.Run(new Action(() =>
             {
-                if (!disposing&&!TaskRunning)
+                if (!disposing && !TaskRunning)
                 {
                     TaskRunning = true;
-                    CurrentValue = DataHandler();
-                    MaxValue = (CurrentValue > MaxValue) ? CurrentValue : MaxValue;
-                    MinValue = (CurrentValue < MinValue) ? CurrentValue : MinValue;
+                    float tmpdata;
+                    tmpdata = DataHandler();
+                    MaxValue = (tmpdata > MaxValue) ? tmpdata : MaxValue;
+                    MinValue = (tmpdata < MinValue) ? tmpdata : MinValue;
                     DateTime tmptime = DateTime.Now;
-                    q.Enqueue(new TimeDataPair(tmptime, CurrentValue));
+                    CurrentValue = new TimeDataPair(tmptime,tmpdata);
+                    q.Enqueue(CurrentValue);
                     while (q.Count > MaxCapacity)
                     {
                         var tmp = new TimeDataPair();
                         q.TryDequeue(out tmp);
                     }
+                    if (tm.Interval != CurrentInterval)
+                        tm.Interval = CurrentInterval;
+                    NewDataAvailable?.Invoke();
                     TaskRunning = false;
                 }
             }));
-            if (tm.Interval != CurrentInterval)
-                tm.Interval = CurrentInterval;
-            NewDataAvailable?.Invoke();
         }
 
         public void Dispose()

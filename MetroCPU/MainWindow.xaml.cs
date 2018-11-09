@@ -151,14 +151,14 @@ namespace MetroCPU
             int i = 0;
             foreach (Sensor s in cpuinfo.frequencyRatioSensors)
             {
-                sb.AppendLine($"Core{i}: {s.CurrentValue * cpuinfo.MaxClockSpeed} Mhz");
+                sb.AppendLine($"Core{i}: {s.CurrentValue.Data * cpuinfo.MaxClockSpeed} Mhz");
                 i++;
             }
             if (cpuinfo.Manufacturer == "GenuineIntel")
             {
-                sb.AppendLine($"PackageTemp: {cpuinfo.PackageTemperatureSensor.CurrentValue} °C");
-                sb.AppendLine($"PlatformPower: {cpuinfo.PackagePowerSensor.CurrentValue} W");
-                sb.AppendLine($"Core Voltage: {cpuinfo.CoreVoltageSensor.CurrentValue * 1000} mV");
+                sb.AppendLine($"PackageTemp: {cpuinfo.PackageTemperatureSensor.CurrentValue.Data} °C");
+                sb.AppendLine($"PlatformPower: {cpuinfo.PackagePowerSensor.CurrentValue.Data} W");
+                sb.AppendLine($"Core Voltage: {cpuinfo.CoreVoltageSensor.CurrentValue.Data * 1000} mV");
             }
             TextBox2.Text = sb.ToString();
         }
