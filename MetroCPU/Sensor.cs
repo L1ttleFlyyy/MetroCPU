@@ -41,7 +41,7 @@ namespace OpenLibSys
             set;
         }
 
-        public Sensor(Func<float> dataHandler, double interval = 1000, int datacount = 10)
+        public Sensor(Func<float> dataHandler, double interval = 500, int datacount = 20)
         {
             MaxValue = 0;
             MinValue = float.MaxValue;
@@ -55,31 +55,28 @@ namespace OpenLibSys
             tm.Start();
         }
 
-        public async void GetData()
+        public void GetData()
         {
-            await Task.Run(new Action(() =>
+            if (!disposing && !TaskRunning)
             {
-                if (!disposing && !TaskRunning)
+                TaskRunning = true;
+                float tmpdata;
+                tmpdata = DataHandler();
+                MaxValue = (tmpdata > MaxValue) ? tmpdata : MaxValue;
+                MinValue = (tmpdata < MinValue) ? tmpdata : MinValue;
+                DateTime tmptime = DateTime.Now;
+                CurrentValue = new TimeDataPair(tmptime, tmpdata);
+                q.Enqueue(CurrentValue);
+                while (q.Count > MaxCapacity)
                 {
-                    TaskRunning = true;
-                    float tmpdata;
-                    tmpdata = DataHandler();
-                    MaxValue = (tmpdata > MaxValue) ? tmpdata : MaxValue;
-                    MinValue = (tmpdata < MinValue) ? tmpdata : MinValue;
-                    DateTime tmptime = DateTime.Now;
-                    CurrentValue = new TimeDataPair(tmptime,tmpdata);
-                    q.Enqueue(CurrentValue);
-                    while (q.Count > MaxCapacity)
-                    {
-                        var tmp = new TimeDataPair();
-                        q.TryDequeue(out tmp);
-                    }
-                    if (tm.Interval != CurrentInterval)
-                        tm.Interval = CurrentInterval;
-                    NewDataAvailable?.Invoke();
-                    TaskRunning = false;
+                    var tmp = new TimeDataPair();
+                    q.TryDequeue(out tmp);
                 }
-            }));
+                if (tm.Interval != CurrentInterval)
+                    tm.Interval = CurrentInterval;
+                TaskRunning = false;
+                NewDataAvailable?.Invoke();
+            }
         }
 
         public void Dispose()

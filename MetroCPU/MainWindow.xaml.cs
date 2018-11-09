@@ -65,10 +65,10 @@ namespace MetroCPU
                 }
                 if (cpuinfo.Manufacturer == "GenuineIntel")
                 {
-                    Sensor2LineGraph s2l1 = new Sensor2LineGraph(cpuinfo.CoreVoltageSensor, CoreVoltagePlotter, "G4", VoltaCurrent, VoltaMax, VoltaMin);
-                    Sensor2LineGraph s2l2 = new Sensor2LineGraph(cpuinfo.PackagePowerSensor, PackagePowerPlotter, "G3", PowerCurrent, PowerMax, PowerMin);
-                    Sensor2LineGraph s2l3 = new Sensor2LineGraph(cpuinfo.PackageTemperatureSensor, PackageTemperaturePlotter, "F2", TempCurrent, TempMax, TempMin);
-                    PackagePowerChart.PlotHeight = (int)(cpuinfo.PPM.TDP);
+                    Sensor2LineGraph s2l1 = new Sensor2LineGraph(cpuinfo.CoreVoltageSensor, CoreVoltagePlotter, "G4", -0.1, 1.9, VoltaCurrent, VoltaMax, VoltaMin);
+                    Sensor2LineGraph s2l2 = new Sensor2LineGraph(cpuinfo.PackagePowerSensor, PackagePowerPlotter, "G3", -1, cpuinfo.PPM.TDP+1, PowerCurrent, PowerMax, PowerMin);
+                    Sensor2LineGraph s2l3 = new Sensor2LineGraph(cpuinfo.PackageTemperatureSensor, PackageTemperaturePlotter, "F2", -2, 101, TempCurrent, TempMax, TempMin);
+
                 }
                 int tmp = 0;
                 List<Sensor2LineGraph> S2LGs = new List<Sensor2LineGraph>(cpuinfo.CoreCount);
@@ -78,7 +78,7 @@ namespace MetroCPU
                     lines.Children.Add(lg);
                     lg.Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 128, (byte)(255 * Math.Pow(2, -tmp))));
                     lg.Description = "0 Ghz";
-                    S2LGs.Add(new Sensor2LineGraph(s, lg, "F2"));
+                    S2LGs.Add(new Sensor2LineGraph(s, lg, "F2",-0.2,cpuinfo.MaxClockSpeed/1000.0+0.4));
                     tmp++;
                 }
             }

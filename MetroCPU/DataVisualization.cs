@@ -18,6 +18,8 @@ namespace MetroCPU
         //public string MaxValue { get; private set; }
         //public string MinValue { get; private set; }
         public string CurrentValue { get; private set; }
+        private double Origin_Y;
+        private double Height_Y;
         private Sensor sensor;
         private LineGraph lineGraph;
         private TextBlock TB1, TB2, TB3;
@@ -34,9 +36,11 @@ namespace MetroCPU
         private const int Multiplier = 20;
         private float maxY = 0, minY = float.MaxValue;
 
-        public Sensor2LineGraph(Sensor s, LineGraph l, string dataFormat, TextBlock currentTB, TextBlock maxTB, TextBlock minTb)
+        public Sensor2LineGraph(Sensor s, LineGraph l, string dataFormat, double o, double h, TextBlock currentTB, TextBlock maxTB, TextBlock minTb)
         {
             pointer = 0;
+            Origin_Y = o;
+            Height_Y = h;
             //PlotBuffer = new Queue<Point>();
             DataFormat = dataFormat;
             IsTextBox = true;
@@ -55,9 +59,11 @@ namespace MetroCPU
             TB3 = minTb;
         }
 
-        public Sensor2LineGraph(Sensor s, LineGraph l, string dataFormat)
+        public Sensor2LineGraph(Sensor s, LineGraph l, string dataFormat, double o, double h)
         {
             pointer = 0;
+            Origin_Y = o;
+            Height_Y = h;
             //PlotBuffer = new Queue<Point>();
             DataFormat = dataFormat;
             IsTextBox = false;
@@ -132,6 +138,10 @@ namespace MetroCPU
             lineGraph.Dispatcher.Invoke(() =>
             {
                 lineGraph.Plot(xs,ys);
+                lineGraph.PlotOriginY = Origin_Y;
+                lineGraph.PlotHeight = Height_Y;
+                lineGraph.PlotOriginX = x_actual[0];
+                lineGraph.PlotWidth = x_actual[N-1]- x_actual[0];
                 if (IsTextBox)
                 {
                     TB1.Text = CurrentValue;

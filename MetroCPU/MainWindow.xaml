@@ -31,11 +31,11 @@
                 <GroupBox Header="CPUID" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Controls:ControlsHelper.ContentCharacterCasing="Upper" BorderThickness="2" Margin="4,2,2,4">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="2*"/>
                             <RowDefinition Height="3*"/>
+                            <RowDefinition Height="2*"/>
                         </Grid.RowDefinitions>
                         <Border Grid.Row="1" ClipToBounds="True">
-                            <WPF:Chart Name="CPUFreqChart" Foreground="DodgerBlue" Margin="-2,0,0,-26" IsVerticalNavigationEnabled="False" IsHorizontalNavigationEnabled="False" PlotOriginY="0">
+                            <WPF:Chart Name="CPUFreqChart" Foreground="DodgerBlue" Margin="-2,0,0,-26" IsVerticalNavigationEnabled="False" IsHorizontalNavigationEnabled="False" PlotOriginY="0" IsAutoFitEnabled="False">
                                 <WPF:Chart.LegendContent>
                                     <WPF:LegendItemsPanel>
                                         <WPF:LegendItemsPanel.Resources>
