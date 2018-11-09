@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.ComponentModel;
-using System.Threading.Tasks;
 using System.Timers;
 
 namespace OpenLibSys
@@ -41,7 +39,7 @@ namespace OpenLibSys
             set;
         }
 
-        public Sensor(Func<float> dataHandler, double interval = 500, int datacount = 20)
+        public Sensor(Func<float> dataHandler, double interval = 600, int datacount = 30)
         {
             MaxValue = 0;
             MinValue = float.MaxValue;

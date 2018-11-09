@@ -30,15 +30,13 @@ namespace MetroCPU
         private List<float> x_actual;
         private List<float> y_actual;
         //private Timer tm;
-        private int pointer;
         //private Point? Point0, Point1;
         //private Queue<Point> PlotBuffer;
-        private const int Multiplier = 20;
+        private const int Multiplier = 40;
         private float maxY = 0, minY = float.MaxValue;
 
         public Sensor2LineGraph(Sensor s, LineGraph l, string dataFormat, double o, double h, TextBlock currentTB, TextBlock maxTB, TextBlock minTb)
         {
-            pointer = 0;
             Origin_Y = o;
             Height_Y = h;
             //PlotBuffer = new Queue<Point>();
@@ -61,7 +59,6 @@ namespace MetroCPU
 
         public Sensor2LineGraph(Sensor s, LineGraph l, string dataFormat, double o, double h)
         {
-            pointer = 0;
             Origin_Y = o;
             Height_Y = h;
             //PlotBuffer = new Queue<Point>();
