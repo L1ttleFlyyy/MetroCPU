@@ -6,8 +6,6 @@ using System.Windows;
 using System.Windows.Documents;
 using MahApps.Metro.Controls;
 using OpenLibSys;
-using System.Windows.Controls;
-using System.Windows.Data;
 using InteractiveDataDisplay.WPF;
 using System.Windows.Media;
 using System.Collections.Generic;
@@ -16,6 +14,7 @@ namespace MetroCPU
 {
     public partial class MainWindow : MetroWindow
     {
+
         public MainWindow()
         {
             if (!IsAdmin())
@@ -63,12 +62,18 @@ namespace MetroCPU
                 {
                     Toggle1.IsChecked = cpuinfo.SST_enabled;
                 }
+
+                UITimer = new System.Windows.Threading.DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(20) };
                 if (cpuinfo.Manufacturer == "GenuineIntel")
                 {
                     Sensor2LineGraph s2l1 = new Sensor2LineGraph(cpuinfo.CoreVoltageSensor, CoreVoltagePlotter, "G4", -0.1, 1.9, new TransitionText(VoltaCurrent), VoltaMax, VoltaMin);
                     Sensor2LineGraph s2l2 = new Sensor2LineGraph(cpuinfo.PackagePowerSensor, PackagePowerPlotter, "G3", -1, cpuinfo.PPM.TDP+1, new TransitionText(PowerCurrent), PowerMax, PowerMin);
                     Sensor2LineGraph s2l3 = new Sensor2LineGraph(cpuinfo.PackageTemperatureSensor, PackageTemperaturePlotter, "F2", -2, 101, new TransitionText(TempCurrent), TempMax, TempMin);
-
+                    UITimer.Tick += new EventHandler((sender,e)=> {
+                        s2l1.RefreshUI();
+                        s2l2.RefreshUI();
+                        s2l3.RefreshUI();
+                    });
                 }
                 int tmp = 0;
                 List<Sensor2LineGraph> S2LGs = new List<Sensor2LineGraph>(cpuinfo.CoreCount);
@@ -78,9 +83,12 @@ namespace MetroCPU
                     lines.Children.Add(lg);
                     lg.Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 128, (byte)(255 * Math.Pow(Math.E, -tmp))));
                     lg.Description = "0 Ghz";
-                    S2LGs.Add(new Sensor2LineGraph(s, lg, "F2",-0.2,cpuinfo.MaxClockSpeed/1000.0+2));
+                    var s2lg = new Sensor2LineGraph(s, lg, "F2", -0.2, cpuinfo.MaxClockSpeed / 1000.0 + 2);
+                    UITimer.Tick += new EventHandler((sender,e)=>s2lg.RefreshUI());
+                    S2LGs.Add(s2lg);
                     tmp++;
                 }
+                UITimer.Start();
             }
         }
 
