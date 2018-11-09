@@ -29,7 +29,7 @@ namespace OpenLibSys
         private Timer tm;
         private ConcurrentQueue<TimeDataPair> q = new ConcurrentQueue<TimeDataPair>();
         private readonly Func<float> DataHandler;
-        private int taskCount = 0;
+        private bool TaskRunning = false;
         private bool disposing = false;
         public TimeDataPair[] TimeDatas
         {
@@ -41,7 +41,7 @@ namespace OpenLibSys
             set;
         }
 
-        public Sensor(Func<float> dataHandler, double interval = 500, int datacount = 60)
+        public Sensor(Func<float> dataHandler, double interval = 100, int datacount = 300)
         {
             MaxValue = 0;
             MinValue = float.MaxValue;
@@ -59,9 +59,9 @@ namespace OpenLibSys
         {
             await Task.Run(new Action(() =>
             {
-                if (!disposing)
+                if (!disposing&&!TaskRunning)
                 {
-                    taskCount++;
+                    TaskRunning = true;
                     CurrentValue = DataHandler();
                     MaxValue = (CurrentValue > MaxValue) ? CurrentValue : MaxValue;
                     MinValue = (CurrentValue < MinValue) ? CurrentValue : MinValue;
@@ -72,7 +72,7 @@ namespace OpenLibSys
                         var tmp = new TimeDataPair();
                         q.TryDequeue(out tmp);
                     }
-                    taskCount--;
+                    TaskRunning = false;
                 }
             }));
             if (tm.Interval != CurrentInterval)
@@ -85,7 +85,7 @@ namespace OpenLibSys
             if (!disposing)
             {
                 disposing = true;
-                while (taskCount > 0)
+                while (TaskRunning)
                 {
                     System.Threading.Thread.Sleep(10);
                 }

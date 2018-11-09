@@ -28,7 +28,7 @@ namespace OpenLibSys
 
         public float GetCurrentFrequency()
         {
-            return GetCurrentFrequencyRatio()* MaxFrequency/1000;
+            return GetCurrentFrequencyRatio() * MaxFrequency / 1000;
         }
 
         public float GetCurrentFrequencyRatio()
@@ -60,7 +60,7 @@ namespace OpenLibSys
                 mcnt_stop = ((ulong)edx_m << 32) + eax_m;
                 acnt_stop = ((ulong)edx_a << 32) + eax_a;
                 ThreadAffinity.Set(ThreadAffinityMask);
-            } while (acnt_stop <= acnt_start || mcnt_stop <= mcnt_start);
+            } while (acnt_stop <= acnt_start || mcnt_stop <= mcnt_start || mcnt_stop - mcnt_start > 1UL << 32 || acnt_stop - acnt_start > 1UL << 32);
             return (float)(acnt_stop - acnt_start) / (mcnt_stop - mcnt_start);
         }
     }
@@ -72,11 +72,13 @@ namespace OpenLibSys
         public readonly float PU;
         public readonly float ESU;
         public readonly float TU;
-        public float TDP { get
+        public float TDP
+        {
+            get
             {
-                uint eax=0, edx=0;
-                _ols.Rdmsr(0x614,ref eax,ref edx);
-                return CPUinfo.BitsSlicer(eax,14,0)*PU;
+                uint eax = 0, edx = 0;
+                _ols.Rdmsr(0x614, ref eax, ref edx);
+                return CPUinfo.BitsSlicer(eax, 14, 0) * PU;
             }
         }
         private string Manufacturer;
