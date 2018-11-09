@@ -39,7 +39,7 @@ namespace OpenLibSys
             set;
         }
 
-        public Sensor(Func<float> dataHandler, double interval = 600, int datacount = 30)
+        public Sensor(Func<float> dataHandler, double interval = 800, int datacount = 20)
         {
             MaxValue = 0;
             MinValue = float.MaxValue;

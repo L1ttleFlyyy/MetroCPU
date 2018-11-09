@@ -5,18 +5,13 @@ using MahApps.Metro.Controls;
 using InteractiveDataDisplay.WPF;
 using OpenLibSys;
 using System.Windows.Data;
-using System.Timers;
 using System.Collections.Generic;
-using System.Collections;
 using TestMySpline;
-using System.Collections.Concurrent;
 
 namespace MetroCPU
 {
     class Sensor2LineGraph
     {
-        //public string MaxValue { get; private set; }
-        //public string MinValue { get; private set; }
         public string CurrentValue { get; private set; }
         private double Origin_Y;
         private double Height_Y;
@@ -26,13 +21,8 @@ namespace MetroCPU
         private TextBlock TB2, TB3;
         private string DataFormat;
         private readonly bool IsTextBox;
-        //private List<double> x;
-        //private List<double> y;
         private List<float> x_actual;
         private List<float> y_actual;
-        //private Timer tm;
-        //private Point? Point0, Point1;
-        //private Queue<Point> PlotBuffer;
         private const int Multiplier = 40;
         private float maxY = 0, minY = float.MaxValue;
 
@@ -45,14 +35,9 @@ namespace MetroCPU
             IsTextBox = true;
             sensor = s;
             lineGraph = l;
-            //x = new List<double>(s.MaxCapacity * Multiplier);
-            //y = new List<double>(s.MaxCapacity * Multiplier);
             x_actual = new List<float>(s.MaxCapacity);
             y_actual = new List<float>(s.MaxCapacity);
-            //tm = new Timer(sensor.CurrentInterval / (Multiplier + 1)) { AutoReset = true };
-            //tm.Elapsed += (sender, e) => RefreshGraph();
             sensor.NewDataAvailable += new Action(RefreshData);
-            //tm.Start();
             TB1 = currentTB;
             TB2 = maxTB;
             TB3 = minTb;
@@ -62,43 +47,14 @@ namespace MetroCPU
         {
             Origin_Y = o;
             Height_Y = h;
-            //PlotBuffer = new Queue<Point>();
             DataFormat = dataFormat;
             IsTextBox = false;
             sensor = s;
             lineGraph = l;
-            //x = new List<double>(s.MaxCapacity * Multiplier);
-            //y = new List<double>(s.MaxCapacity * Multiplier);
             x_actual = new List<float>(s.MaxCapacity);
             y_actual = new List<float>(s.MaxCapacity);
-            //tm = new Timer(sensor.CurrentInterval / (Multiplier + 1)) { AutoReset = true };
-            //tm.Elapsed += (sender, e) => RefreshGraph();
             sensor.NewDataAvailable += new Action(RefreshData);
-            //tm.Start();
         }
-
-        //private void RefreshGraph()
-        //{
-        //    if (PlotBuffer?.Count > 0)
-        //    {
-        //        if (x.Count < x.Capacity)
-        //        {
-        //            x.Add(PlotBuffer.Peek().X);
-        //            y.Add(PlotBuffer.Dequeue().Y);
-        //        }
-        //        else
-        //        {
-        //            x.RemoveAt(0);
-        //            x.Add(PlotBuffer.Peek().X);
-        //            y.RemoveAt(0);
-        //            y.Add(PlotBuffer.Dequeue().Y);
-        //        }
-        //        lineGraph.Dispatcher.Invoke(() => {
-        //            lineGraph.Plot(x, y);
-        //            pointer++;
-        //            });
-        //    }
-        //}
 
         private void RefreshData()
         {
@@ -150,42 +106,6 @@ namespace MetroCPU
             });
 
         }
-
-        //private void Refresh()
-        //{
-        //    TimeDataPair[] tmppairs = new TimeDataPair[sensor.TimeDatas.Length];
-        //    sensor.TimeDatas.CopyTo(tmppairs, 0);
-        //    int datacounts = tmppairs.Length;
-        //    x = new long[datacounts];
-        //    y = new float[datacounts];
-        //    int i = 0;
-        //    float max_y = 0, min_y = float.MaxValue;
-        //    foreach (TimeDataPair tdp in tmppairs)
-        //    {
-        //        x[i] = DateTime2MilliSecond(tdp.Time);
-        //        y[i] = tdp.Data;
-        //        if (IsTextBox)
-        //        {
-        //            max_y = (y[i] > max_y) ? y[i] : max_y;
-        //            min_y = (y[i] < min_y) ? y[i] : min_y;
-        //        }
-        //        i++;
-        //    }
-        //    CurrentValue = y[i - 1].ToString(DataFormat);
-        //    MaxValue = max_y.ToString(DataFormat);
-        //    MinValue = min_y.ToString(DataFormat);
-        //    lineGraph.Dispatcher.Invoke(() =>
-        //    {
-        //        if (IsTextBox)
-        //        {
-        //            TB1.Text = CurrentValue;
-        //            TB2.Text = MaxValue;
-        //            TB3.Text = MinValue;
-        //        }
-        //        lineGraph.Description = $"{CurrentValue} GHz";
-        //        lineGraph.Plot(x, y);
-        //    });
-        //}
 
         public static long DateTime2MilliSecond(DateTime dt)
         {

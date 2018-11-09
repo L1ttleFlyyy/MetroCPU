@@ -76,7 +76,7 @@ namespace MetroCPU
                 {
                     var lg = new LineGraph();
                     lines.Children.Add(lg);
-                    lg.Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 128, (byte)(255 * Math.Pow(2, -tmp))));
+                    lg.Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 128, (byte)(255 * Math.Pow(Math.E, -tmp))));
                     lg.Description = "0 Ghz";
                     S2LGs.Add(new Sensor2LineGraph(s, lg, "F2",-0.2,cpuinfo.MaxClockSpeed/1000.0+2));
                     tmp++;

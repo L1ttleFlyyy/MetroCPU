@@ -76,7 +76,7 @@
                                 <RowDefinition Height="1*"/>
                             </Grid.RowDefinitions>
                             <TextBlock TextWrapping="Wrap" Text="Package Temperature(°C)" TextAlignment="Center" FontSize="8" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}" Grid.Column="1"/>
-                            <Controls:TransitioningContentControl Name="TempCurrent" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Bottom" FontWeight="Bold" Grid.Column="1"/>
+                            <Controls:TransitioningContentControl Name="TempCurrent" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Bottom" FontWeight="Bold" Grid.Column="1" FontSize="16" Transition="Down"/>
                             <TextBlock TextWrapping="Wrap" Text="Max" TextAlignment="Center" FontSize="11" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Column="1"/>
                             <TextBlock TextWrapping="Wrap" Text="Min" TextAlignment="Center" FontSize="11" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Column="1"/>
                             <TextBlock Name="TempMax" TextWrapping="Wrap" Text="MaxData" TextAlignment="Center" FontSize="11" Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Center"/>
@@ -101,7 +101,7 @@
                                 <RowDefinition Height="1*"/>
                             </Grid.RowDefinitions>
                             <TextBlock TextWrapping="Wrap" Text="Power Consumption (W)" TextAlignment="Center" FontSize="8" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}" Grid.Column="1"/>
-                            <Controls:TransitioningContentControl Name="PowerCurrent" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Bottom" FontWeight="Bold" Grid.Column="1"/>
+                            <Controls:TransitioningContentControl Name="PowerCurrent" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Bottom" FontWeight="Bold" Grid.Column="1" FontSize="16" Transition="Down"/>
                             <TextBlock TextWrapping="Wrap" Text="Max" TextAlignment="Center" FontSize="11" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Column="1"/>
                             <TextBlock TextWrapping="Wrap" Text="Min" TextAlignment="Center" FontSize="11" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Column="1"/>
                             <TextBlock Name="PowerMax" TextWrapping="Wrap" Text="MaxData" TextAlignment="Center" FontSize="11" Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Center"/>
@@ -125,7 +125,7 @@
                                 <RowDefinition Height="1*"/>
                             </Grid.RowDefinitions>
                             <TextBlock TextWrapping="Wrap" Text="Core Voltage (V)" TextAlignment="Center" FontSize="8" VerticalAlignment="Bottom" Foreground="{DynamicResource AccentGray}" Grid.Column="1" Grid.ColumnSpan="2"/>
-                            <Controls:TransitioningContentControl Name="VoltaCurrent" Grid.Row="1" VerticalAlignment="Bottom" FontWeight="Bold" FontSize="16" Grid.Column="1" Grid.ColumnSpan="2"/>
+                            <Controls:TransitioningContentControl Name="VoltaCurrent" Grid.Row="1" VerticalAlignment="Bottom" FontWeight="Bold" FontSize="16" Grid.Column="1" Grid.ColumnSpan="2" Transition="Down"/>
                             <TextBlock TextWrapping="Wrap" Text="Max" TextAlignment="Center" FontSize="11" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Column="1"/>
                             <TextBlock TextWrapping="Wrap" Text="Min" TextAlignment="Center" FontSize="11" Grid.Row="3" Grid.ColumnSpan="1" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Column="1"/>
                             <TextBlock Name="VoltaMax" TextWrapping="Wrap" Text="MaxData" TextAlignment="Center" FontSize="11" Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Center"/>
