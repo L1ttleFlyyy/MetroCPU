@@ -45,7 +45,8 @@
       <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net45\ControlzEx.dll</HintPath>
     </Reference>
     <Reference Include="InteractiveDataDisplay.WPF, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\InteractiveDataDisplay.WPF.1.0.0\lib\net452\InteractiveDataDisplay.WPF.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\InteractiveDataDisplay.WPF\src\bin\Debug\net452\InteractiveDataDisplay.WPF.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro, Version=1.6.5.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.6.5\lib\net46\MahApps.Metro.dll</HintPath>
@@ -169,6 +170,25 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="imagesrc\help.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="imagesrc\EPYC.png" />
+    <Resource Include="imagesrc\GenericAMD.png" />
+    <Resource Include="imagesrc\i7.png" />
+    <Resource Include="imagesrc\i9.png" />
+    <Resource Include="imagesrc\r3.png" />
+    <Resource Include="imagesrc\r5.png" />
+    <Resource Include="imagesrc\r7.png" />
+    <Resource Include="imagesrc\threadripper.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="imagesrc\GenericIntel.png" />
+    <Resource Include="imagesrc\i3.png" />
+    <Resource Include="imagesrc\i5.png" />
+    <Resource Include="imagesrc\xeon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="imagesrc\socket.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

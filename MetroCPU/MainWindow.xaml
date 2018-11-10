@@ -36,15 +36,18 @@
                         </Grid.RowDefinitions>
                         <Grid Margin="4,4,2,4">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="130"/>
+                                <RowDefinition Height="140"/>
                                 <RowDefinition Height="1*"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="130"/>
+                                <ColumnDefinition Width="140"/>
                             </Grid.ColumnDefinitions>
-                            <Border BorderBrush="{DynamicResource AccentGray}" BorderThickness="1" Grid.Column="1" Background="{DynamicResource AccentGray}" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <Image Width="128" Height="128" Source="CPU.ico" Stretch="UniformToFill"/>
+                            <Border BorderThickness="1" Grid.Column="1">
+                                <Border.Background>
+                                    <ImageBrush ImageSource="imagesrc/socket.png" Stretch="Uniform"/>
+                                </Border.Background>
+                                <Image Width="120" Height="120" Source="imagesrc/i5.png" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
 
                         </Grid>
@@ -56,7 +59,7 @@
                                             <DataTemplate x:Key="InteractiveDataDisplay.WPF.LineGraph">
                                                 <StackPanel Orientation="Horizontal">
                                                     <CheckBox IsChecked="{Binding Path=Visibility, Converter={StaticResource VisibilityToCheckedConverter}, Mode=TwoWay}"/>
-                                                    <Line Width="15" Height="15" X1="0" Y1="0" X2="15" Y2="15" Stroke="{Binding Path=Stroke, Mode=OneWay}"/>
+                                                    <Line Width="15" Height="15" X1="0" Y1="0" X2="15" Y2="15" Stroke="{Binding Path=Stroke}"/>
                                                     <TextBlock Margin="5,0,0,0" Text="{Binding Path=Description}"/>
                                                 </StackPanel>
                                             </DataTemplate>

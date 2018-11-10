@@ -143,20 +143,6 @@ namespace MetroCPU
         }
     }
 
-    //public class SolidColorBrushToBrushConverter : IValueConverter
-    //{
-    //    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    //    {
-
-    //        return (SolidColorBrush)value;
-    //    }
-
-    //    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    //    {
-    //        return (Brush)value;
-    //    }
-    //}
-
     public partial class MainWindow : MetroWindow
     {
         private System.Windows.Threading.DispatcherTimer UITimer;

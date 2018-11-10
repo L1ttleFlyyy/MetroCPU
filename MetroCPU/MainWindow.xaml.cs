@@ -84,7 +84,7 @@ namespace MetroCPU
                     lg.Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 128, (byte)(255 * Math.Pow(2, -tmp))));
                     lg.Description = "0 Ghz";
                     var s2lg = new Sensor2LineGraph(s, lg, "F2", -0.2, cpuinfo.MaxClockSpeed / 1000.0 + 2);
-                    UITimer.Tick += new EventHandler((sender,e)=>s2lg.RefreshUI());
+                    UITimer.Tick += new EventHandler((sender, e) => s2lg.RefreshUI());
                     S2LGs.Add(s2lg);
                     tmp++;
                 }
