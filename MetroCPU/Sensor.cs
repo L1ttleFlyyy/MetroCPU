@@ -20,30 +20,19 @@ namespace OpenLibSys
     class Sensor : IDisposable
     {
         public event Action NewDataAvailable;
-
-        public float MaxValue { get; private set; }
-        public float MinValue { get; private set; }
         public TimeDataPair CurrentValue { get; private set; }
         private Timer tm;
-        private ConcurrentQueue<TimeDataPair> q = new ConcurrentQueue<TimeDataPair>();
         private readonly Func<float> DataHandler;
         private bool TaskRunning = false;
         private bool disposing = false;
-        public TimeDataPair[] TimeDatas
-        {
-            get => q.ToArray();
-        }
         public double CurrentInterval
         {
             get;
             set;
         }
 
-        public Sensor(Func<float> dataHandler, double interval = 800, int datacount = 10)
+        public Sensor(Func<float> dataHandler, double interval = 800)
         {
-            MaxValue = 0;
-            MinValue = float.MaxValue;
-            MaxCapacity = datacount;
             CurrentInterval = interval;
             tm = new Timer(CurrentInterval);
             DataHandler = dataHandler;
@@ -60,16 +49,8 @@ namespace OpenLibSys
                 TaskRunning = true;
                 float tmpdata;
                 tmpdata = DataHandler();
-                MaxValue = (tmpdata > MaxValue) ? tmpdata : MaxValue;
-                MinValue = (tmpdata < MinValue) ? tmpdata : MinValue;
                 DateTime tmptime = DateTime.Now;
                 CurrentValue = new TimeDataPair(tmptime, tmpdata);
-                q.Enqueue(CurrentValue);
-                while (q.Count > MaxCapacity)
-                {
-                    var tmp = new TimeDataPair();
-                    q.TryDequeue(out tmp);
-                }
                 if (tm.Interval != CurrentInterval)
                     tm.Interval = CurrentInterval;
                 TaskRunning = false;
@@ -89,20 +70,5 @@ namespace OpenLibSys
                 tm.Dispose();
             }
         }
-
-        private int maxCapacity;
-
-        public int MaxCapacity
-        {
-            set
-            {
-                maxCapacity = value;
-                while (q.Count > value)
-                { q.TryDequeue(out TimeDataPair tdpair); }
-            }
-            get => maxCapacity;
-        }
-
-        public int AvailableDataCount { get => q.Count; }
     }
 }
