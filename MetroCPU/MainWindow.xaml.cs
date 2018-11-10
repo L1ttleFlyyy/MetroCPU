@@ -33,27 +33,7 @@ namespace MetroCPU
             }
             else
             {
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i <= cpuinfo.MaxCPUIDind; i++)
-                {
-                    sb.Append($"{i.ToString("X2")}H :"
-                        + $" {cpuinfo.CPUID[i, 0].ToString("X8")}H"
-                        + $" {cpuinfo.CPUID[i, 1].ToString("X8")}H"
-                        + $" {cpuinfo.CPUID[i, 2].ToString("X8")}H"
-                        + $" {cpuinfo.CPUID[i, 3].ToString("X8")}H\n");
-                }
-                sb.Append(cpuinfo.Manufacturer + "\n");
-                for (int i = 0; i <= cpuinfo.MaxCPUIDexind; i++)
-                {
-                    sb.Append($"{(0x80000000 + i).ToString("X8")}H :"
-                        + $" {cpuinfo.CPUID_ex[i, 0].ToString("X8")}H"
-                        + $" {cpuinfo.CPUID_ex[i, 1].ToString("X8")}H"
-                        + $" {cpuinfo.CPUID_ex[i, 2].ToString("X8")}H"
-                        + $" {cpuinfo.CPUID_ex[i, 3].ToString("X8")}H\n");
-                }
-
-                TextBox1.Text = sb.ToString();
-                TextBox2.Text = string.Empty;
+                
                 if (!cpuinfo.SST_support)
                 {
                     SST_TextBlock.Text = "Unavailable";
@@ -100,7 +80,7 @@ namespace MetroCPU
                 CPUNameTextBox.Text = cpuinfo.wmi.Name;
                 CoresTextBox.Text = cpuinfo.CoreCount.ToString();
                 ThreadsTextBox.Text = cpuinfo.ThreadCount.ToString();
-                ManufacturerTextBox.Text = cpuinfo.wmi.Manufacturer;
+                ManufacturerTextBox.Text = cpuinfo.SimplifiedManufacturer;
                 SocketTextBox.Text = cpuinfo.wmi.SocketDesignation;
                 FamilyTextBox.Text = cpuinfo.wmi.Family;
                 ModelTextBox.Text = cpuinfo.wmi.Model;
@@ -174,24 +154,6 @@ namespace MetroCPU
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             cpuinfo.Dispose();
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            StringBuilder sb = new StringBuilder();
-            int i = 0;
-            foreach (Sensor s in cpuinfo.frequencyRatioSensors)
-            {
-                sb.AppendLine($"Core{i}: {s.CurrentValue.Data * cpuinfo.MaxClockSpeed} Mhz");
-                i++;
-            }
-            if (cpuinfo.Manufacturer == "GenuineIntel")
-            {
-                sb.AppendLine($"PackageTemp: {cpuinfo.PackageTemperatureSensor.CurrentValue.Data} °C");
-                sb.AppendLine($"PlatformPower: {cpuinfo.PackagePowerSensor.CurrentValue.Data} W");
-                sb.AppendLine($"Core Voltage: {cpuinfo.CoreVoltageSensor.CurrentValue.Data * 1000} mV");
-            }
-            TextBox2.Text = sb.ToString();
         }
     }
 }

@@ -56,6 +56,21 @@ namespace OpenLibSys
                     test = _ols.Wrmsr(0x770, 0, 0);
             }
         }
+        public string SimplifiedManufacturer
+        {
+            get
+            {
+                switch(Manufacturer)
+                {
+                    case "GenuineIntel":
+                        return "Intel";
+                    case "AuthenticAMD":
+                        return "AMD";
+                    default:
+                        return "Unknown";
+                }
+            }
+        }
         public CPUinfo()
         {
             _ols = new Ols();

@@ -70,7 +70,6 @@ namespace OpenLibSys
             switch(Manufacturer)
             {
                 case "GenuineIntel":
-                    Manufacturer = "Intel";
                     if (Name.Contains("Core"))
                     {
                         if (Name.Contains("i5"))
@@ -92,7 +91,6 @@ namespace OpenLibSys
                         CPUIcon = "imagesrc/GenericIntel.png";
                     break;
                 case "AuthenticAMD":
-                    Manufacturer = "AMD";
                     if(Name.Contains("Ryzen"))
                     {
                         if (Name.Contains("Threadripper"))

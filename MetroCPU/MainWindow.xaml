@@ -50,7 +50,7 @@
                                     <Border.Background>
                                         <ImageBrush ImageSource="imagesrc/socket.png" Stretch="Uniform"/>
                                     </Border.Background>
-                                    <Image Name="CPUIcon" Width="70" Height="70" Source="CPU.ico" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <Image Name="CPUIcon" Width="72" Height="72" Source="CPU.ico" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="4"/>
                                 </Border>
                                 <Border  Grid.Column="1" BorderBrush="#FF686868" BorderThickness="0,0,0,2">
                                     <Grid>
@@ -242,30 +242,6 @@
                             </Border>
                         </Grid>
                     </Grid>
-                </GroupBox>
-            </Grid>
-        </Controls:MetroTabItem>
-
-        <Controls:MetroTabItem Controls:TabControlHelper.UnderlineMouseOverSelectedBrush="#FF086F9E" Controls:TabControlHelper.UnderlineSelectedBrush="#CC119EDA" Width="120">
-            <Controls:MetroTabItem.Header>
-                <StackPanel Orientation="Horizontal">
-                    <Image Height="auto" Width="auto" Source="/imagesrc/pulse.png" />
-                    <TextBlock Text="Tuning" TextAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" HorizontalAlignment="Center" FontSize="20"/>
-                </StackPanel>
-            </Controls:MetroTabItem.Header>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>
-                </Grid.ColumnDefinitions>
-                <GroupBox Header="CPUID" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Controls:ControlsHelper.ContentCharacterCasing="Upper" BorderThickness="1">
-                    <TextBox x:Name="TextBox1" TextWrapping="Wrap" Text="TextBlock" TextAlignment="Center"/>
-                </GroupBox>
-                <GroupBox Header="Monitoring" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Controls:ControlsHelper.ContentCharacterCasing="Upper" BorderThickness="1" Grid.Column="1">
-                    <DockPanel>
-                        <Button DockPanel.Dock="Top" Click="Button_Click"/>
-                        <TextBox DockPanel.Dock="Top" x:Name="TextBox2"/>
-                    </DockPanel>
                 </GroupBox>
             </Grid>
         </Controls:MetroTabItem>
