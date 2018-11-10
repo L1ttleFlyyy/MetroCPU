@@ -153,6 +153,7 @@ namespace MetroCPU
         private TextBlock TB1;
         private TextBlock TB2;
         private TransitioningContentControl TCC;
+        private double tmp0=0,tmp1;
         public bool selector { get; private set; }
         public string Text
         {
@@ -161,12 +162,24 @@ namespace MetroCPU
             {
                 if (selector)
                 {
+                    tmp1 = double.Parse(value);
+                    if (tmp1 > tmp0)
+                        TCC.Transition = TransitionType.Up;
+                    else
+                        TCC.Transition = TransitionType.Down;
+                    tmp0 = tmp1;
                     TB1.Text = value;
                     TCC.Content = TB1;
                     selector = false;
                 }
                 else
                 {
+                    tmp1 = double.Parse(value);
+                    if (tmp1 > tmp0)
+                        TCC.Transition = TransitionType.Up;
+                    else
+                        TCC.Transition = TransitionType.Down;
+                    tmp0 = tmp1;
                     TB2.Text = value;
                     TCC.Content = TB2;
                     selector = true;
