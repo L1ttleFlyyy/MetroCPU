@@ -105,13 +105,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ArrayUtil.cs" />
-    <Compile Include="CubicSpline.cs" />
+    <Compile Include="ThirdPartyLib\ArrayUtil.cs" />
+    <Compile Include="ThirdPartyLib\CubicSpline.cs" />
     <Compile Include="DataAquisition.cs" />
     <Compile Include="DataVisualization.cs" />
     <Compile Include="Sensor.cs" />
-    <Compile Include="ThreadAffinity.cs" />
-    <Compile Include="TriDiagonalMatrix.cs" />
+    <Compile Include="ThirdPartyLib\ThreadAffinity.cs" />
+    <Compile Include="ThirdPartyLib\TriDiagonalMatrix.cs" />
     <Compile Include="WMICPUinfo.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -128,7 +128,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="OpenLibSys.cs" />
+    <Compile Include="ThirdPartyLib\OpenLibSys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -159,16 +159,16 @@
     <Resource Include="CPU.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="home.png" />
+    <Resource Include="imagesrc\home.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="pulse.png" />
+    <Resource Include="imagesrc\pulse.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="intel.png" />
+    <Resource Include="imagesrc\intel.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="help.png" />
+    <Resource Include="imagesrc\help.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

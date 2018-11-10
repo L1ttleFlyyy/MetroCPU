@@ -19,7 +19,7 @@
         <Controls:MetroTabItem Controls:TabControlHelper.UnderlineMouseOverSelectedBrush="#FF086F9E" Controls:TabControlHelper.UnderlineSelectedBrush="#CC119EDA" Width="120">
             <Controls:MetroTabItem.Header>
                 <StackPanel Orientation="Horizontal">
-                    <Image Height="auto" Width="auto" Source="pulse.png" />
+                    <Image Height="auto" Width="auto" Source="/imagesrc/pulse.png" />
                     <TextBlock Text="Monitor" TextAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" HorizontalAlignment="Center" FontSize="18"/>
                 </StackPanel>
             </Controls:MetroTabItem.Header>
@@ -56,7 +56,7 @@
                                             <DataTemplate x:Key="InteractiveDataDisplay.WPF.LineGraph">
                                                 <StackPanel Orientation="Horizontal">
                                                     <CheckBox IsChecked="{Binding Path=Visibility, Converter={StaticResource VisibilityToCheckedConverter}, Mode=TwoWay}"/>
-                                                    <Line Width="15" Height="15" X1="0" Y1="0" X2="15" Y2="15" Stroke="{Binding Path=Stroke}"/>
+                                                    <Line Width="15" Height="15" X1="0" Y1="0" X2="15" Y2="15" Stroke="{Binding Path=Stroke, Mode=OneWay}"/>
                                                     <TextBlock Margin="5,0,0,0" Text="{Binding Path=Description}"/>
                                                 </StackPanel>
                                             </DataTemplate>
@@ -157,7 +157,7 @@
         <Controls:MetroTabItem Controls:TabControlHelper.UnderlineMouseOverSelectedBrush="#FF086F9E" Controls:TabControlHelper.UnderlineSelectedBrush="#CC119EDA" Width="120">
             <Controls:MetroTabItem.Header>
                 <StackPanel Orientation="Horizontal">
-                    <Image Height="auto" Width="auto" Source="pulse.png" />
+                    <Image Height="auto" Width="auto" Source="/imagesrc/pulse.png" />
                     <TextBlock Text="Tuning" TextAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" HorizontalAlignment="Center" FontSize="20"/>
                 </StackPanel>
             </Controls:MetroTabItem.Header>
@@ -181,7 +181,7 @@
         <Controls:MetroTabItem Width="120">
             <Controls:MetroTabItem.Header>
                 <StackPanel ToolTip="ONLY Available on latest Intel® CPUs(Skylake, Kabylake, Coffeelake or newer family)" Orientation="Horizontal" Width="100">
-                    <Image Height="auto" Width="auto" Source="intel.png" Margin="10,0,0,0" />
+                    <Image Height="auto" Width="auto" Source="/imagesrc/intel.png" Margin="10,0,0,0" />
                     <TextBlock Text="SST" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" Margin="10,0,0,0" FontSize="20"/>
                 </StackPanel>
             </Controls:MetroTabItem.Header>
