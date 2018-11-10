@@ -9,6 +9,7 @@ using OpenLibSys;
 using InteractiveDataDisplay.WPF;
 using System.Windows.Media;
 using System.Collections.Generic;
+using System.Windows.Media.Imaging;
 
 namespace MetroCPU
 {
@@ -83,11 +84,33 @@ namespace MetroCPU
                     lines.Children.Add(lg);
                     lg.Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 128, (byte)(255 * Math.Pow(2, -tmp))));
                     lg.Description = "0 Ghz";
-                    var s2lg = new Sensor2LineGraph(s, lg, "F2", -0.2, cpuinfo.MaxClockSpeed / 1000.0 + 2);
+                    Sensor2LineGraph s2lg;
+                    if (tmp == 0)
+                    {
+                        s2lg = new Sensor2LineGraph(s, lg, "F2", -0.2, cpuinfo.MaxClockSpeed / 1000.0 + 2 , new TransitionText(CurrentFrequencyTransition),MaxFrequencyTextBox,MinFrequencyTextBox);
+                    }
+                    else
+                    {
+                        s2lg = new Sensor2LineGraph(s, lg, "F2", -0.2, cpuinfo.MaxClockSpeed / 1000.0 + 2);
+                    }
                     UITimer.Tick += new EventHandler((sender, e) => s2lg.RefreshUI());
                     S2LGs.Add(s2lg);
                     tmp++;
                 }
+                CPUNameTextBox.Text = cpuinfo.wmi.Name;
+                CoresTextBox.Text = cpuinfo.CoreCount.ToString();
+                ThreadsTextBox.Text = cpuinfo.ThreadCount.ToString();
+                ManufacturerTextBox.Text = cpuinfo.wmi.Manufacturer;
+                SocketTextBox.Text = cpuinfo.wmi.SocketDesignation;
+                FamilyTextBox.Text = cpuinfo.wmi.Family;
+                ModelTextBox.Text = cpuinfo.wmi.Model;
+                SteppingTextBox.Text = cpuinfo.wmi.Stepping;
+                L1TextBox.Text = cpuinfo.wmi.L1Cache;
+                L2TextBox.Text = cpuinfo.wmi.L2Cache;
+                L3TextBox.Text = cpuinfo.wmi.L3Cache;
+                MaxClockSpeedTextBox.Text = (cpuinfo.MaxClockSpeed/1000F).ToString();
+                CPUIcon.Source = new ImageSourceConverter().ConvertFromString(
+                    "pack://application:,,,/MetroCPU;component/"+cpuinfo.wmi.CPUIcon) as ImageSource;
                 UITimer.Start();
             }
         }

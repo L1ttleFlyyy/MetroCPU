@@ -9,7 +9,7 @@ namespace OpenLibSys
 
     class CPUinfo : IDisposable
     {
-        private readonly WMICPUinfo wmi;
+        public readonly WMICPUinfo wmi;
         private const int MaxIndDefined = 0x1f;
         private Ols _ols;
         public readonly List<LogicalProcessor> logicalProcessors;

@@ -11,17 +11,29 @@ namespace OpenLibSys
         public uint NumberOfLogicalProcessors { get; private set; }
         public string SocketDesignation { get; private set; }
         public string Description { get; private set; }
-        public uint L1Cache { get; private set; }
-        public uint L2Cache { get; private set; }
-        public uint L3Cache { get; private set; }
+        public string L1Cache { get; private set; }
+        public string L2Cache { get; private set; }
+        public string L3Cache { get; private set; }
         public string Family { get; private set; }
         public string Model { get; private set; }
         public string Stepping { get; private set; }
+        public string CPUIcon { get; private set; }
 
         public WMICPUinfo()
         {
             Refresh();
         }
+
+        private string CheckMB(uint number)
+        {
+            if (number < 1024)
+            {
+                return $"{number} KB";
+            }
+            else
+                return $"{number>>10} MB";
+        }
+
         public void Refresh()
         {
             using (ManagementObject mo = new ManagementObject("Win32_Processor.DeviceID='CPU0'"))
@@ -44,15 +56,78 @@ namespace OpenLibSys
             }
             using (ManagementObject Mo = new ManagementObject("Win32_CacheMemory.DeviceID='Cache Memory 0'"))
             {
-                L1Cache = (uint)Mo["InstalledSize"];
+                L1Cache = CheckMB((uint)Mo["InstalledSize"]);
             }
             using (ManagementObject Mo = new ManagementObject("Win32_CacheMemory.DeviceID='Cache Memory 1'"))
             {
-                L2Cache = (uint)Mo["InstalledSize"];
+                L2Cache = CheckMB((uint)Mo["InstalledSize"]);
             }
             using (ManagementObject Mo = new ManagementObject("Win32_CacheMemory.DeviceID='Cache Memory 2'"))
             {
-                L3Cache = (uint)Mo["InstalledSize"];
+                L3Cache = CheckMB((uint)Mo["InstalledSize"]);
+            }
+
+            switch(Manufacturer)
+            {
+                case "GenuineIntel":
+                    Manufacturer = "Intel";
+                    if (Name.Contains("Core"))
+                    {
+                        if (Name.Contains("i5"))
+                            CPUIcon = "imagesrc/i5.png";
+                        else if (Name.Contains("i7"))
+                            CPUIcon = "imagesrc/i7.png";
+                        else if (Name.Contains("i3"))
+                            CPUIcon = "imagesrc/i3.png";
+                        else if (Name.Contains("i9"))
+                            CPUIcon = "imagesrc/i9.png";
+                        else
+                            CPUIcon = "imagesrc/GenericIntel.png";
+                    }
+                    else if (Name.Contains("Xeon"))
+                    {
+                        CPUIcon = "imagesrc/xeon.png";
+                    }
+                    else
+                        CPUIcon = "imagesrc/GenericIntel.png";
+                    break;
+                case "AuthenticAMD":
+                    Manufacturer = "AMD";
+                    if(Name.Contains("Ryzen"))
+                    {
+                        if (Name.Contains("Threadripper"))
+                            CPUIcon = "imagesrc/threadripper.png";
+                        else
+                        {
+                            var tmp = Name.Substring(Name.IndexOf("Ryzen")+6,1);
+                            switch(tmp)
+                            {
+                                case "3":
+                                    CPUIcon = "imagesrc/r3.png";
+                                    break;
+                                case "5":
+                                    CPUIcon = "imagesrc/r5.png";
+                                    break;
+                                case "7":
+                                    CPUIcon = "imagesrc/r7.png";
+                                    break;
+                                default:
+                                    CPUIcon = "imagesrc/GenericAMD.png";
+                                    break;
+                            }
+                        }
+                    }
+                    else if(Name.Contains("EPYC"))
+                    {
+                        CPUIcon = "imagesrc/EPYC.png";
+                    }
+                    else
+                        CPUIcon = "imagesrc/GenericAMD.png";
+                    break;
+                default:
+                    Manufacturer = "Unknown";
+                    CPUIcon = "CPU.ico";
+                    break;
             }
         }
     }

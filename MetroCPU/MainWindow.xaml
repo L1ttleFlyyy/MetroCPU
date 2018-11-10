@@ -50,7 +50,7 @@
                                     <Border.Background>
                                         <ImageBrush ImageSource="imagesrc/socket.png" Stretch="Uniform"/>
                                     </Border.Background>
-                                    <Image Width="70" Height="70" Source="imagesrc/i5.png" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <Image Name="CPUIcon" Width="70" Height="70" Source="CPU.ico" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
                                 <Border  Grid.Column="1" BorderBrush="#FF686868" BorderThickness="0,0,0,2">
                                     <Grid>
@@ -65,15 +65,15 @@
                                             <RowDefinition Height="30*"/>
                                             <RowDefinition Height="30*"/>
                                         </Grid.RowDefinitions>
-                                        <TextBlock Text="AMD Ryzen 5 2400G with Radeon Vega Graphics" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="11" Grid.ColumnSpan="4" Margin="13,9,11.4,8.2"/>
+                                        <TextBlock Name="CPUNameTextBox" Text="AMD Ryzen 5 2400G with Radeon Vega Graphics" TextAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" FontSize="11" Grid.ColumnSpan="4" VerticalAlignment="Center"/>
                                         <TextBlock Grid.Row="1" Text="Cores:" Foreground="{DynamicResource AccentGray}" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
                                         <TextBlock Grid.Row="2" Text="Threads:" Foreground="{DynamicResource AccentGray}" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                        <TextBox Name="CoresTextBox" Text="4" TextAlignment="Center" Grid.Column="1" Grid.RowSpan="1" Grid.Row="1" FontWeight="Bold" BorderBrush="{x:Null}"/>
-                                        <TextBox Name="ThreadsTextBox" Grid.Row="2" Text="8" TextAlignment="Center" Grid.Column="1" FontWeight="Bold" BorderBrush="{x:Null}"/>
+                                        <TextBox Name="CoresTextBox" Text="4" TextAlignment="Center" Grid.Column="1" Grid.RowSpan="1" Grid.Row="1" FontWeight="Bold" BorderBrush="{x:Null}" IsReadOnly="True"/>
+                                        <TextBox Name="ThreadsTextBox" Grid.Row="2" Text="8" TextAlignment="Center" Grid.Column="1" FontWeight="Bold" BorderBrush="{x:Null}" IsReadOnly="True"/>
                                         <TextBlock Grid.Row="1" Text="Vendor:" Foreground="{DynamicResource AccentGray}" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2"></TextBlock>
                                         <TextBlock Grid.Row="2" Text="Socket:" Foreground="{DynamicResource AccentGray}" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2"></TextBlock>
-                                        <TextBox Name="ManufacturerTextBox" Grid.Row="1" Text="AMD" TextAlignment="Center" Grid.Column="3" FontWeight="Bold" BorderBrush="{x:Null}"/>
-                                        <TextBox Name="SocketTextBox" Grid.Row="2" Text="AM4" TextAlignment="Center" Grid.Column="3" FontWeight="Bold" BorderBrush="{x:Null}"/>
+                                        <TextBox Name="ManufacturerTextBox" Grid.Row="1" Text="AMD" TextAlignment="Center" Grid.Column="3" FontWeight="Bold" BorderBrush="{x:Null}" IsReadOnly="True"/>
+                                        <TextBox Name="SocketTextBox" Grid.Row="2" Text="AM4" TextAlignment="Center" Grid.Column="3" FontWeight="Bold" BorderBrush="{x:Null}" IsReadOnly="True"/>
                                     </Grid>
                                 </Border>
                                 <Grid Grid.Column="1" Grid.Row="1">
@@ -92,15 +92,17 @@
                                             <RowDefinition Height="2*"/>
                                             <RowDefinition Height="3*"/>
                                         </Grid.RowDefinitions>
-                                        <TextBlock Text="Non-Turbo Clock:" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}"></TextBlock>
-                                        <TextBox Name="MaxClockSpeedTextBox" Text="0" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Column="1" BorderBrush="{x:Null}"></TextBox>
-                                        <TextBlock Text="Max:" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Row="1"></TextBlock>
-                                        <TextBox Name="MaxFrequencyTextBox" Text="0" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Row="1" Grid.Column="1" BorderBrush="{x:Null}"></TextBox>
-                                        <TextBlock Text="Min:" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Row="2"></TextBlock>
-                                        <TextBox Name="MinFrequencyTextBox" Text="0" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Row="2" Grid.Column="1" BorderBrush="{x:Null}"></TextBox>
-                                        <Controls:TransitioningContentControl Name="CurrentFrequencyTransition" Grid.Row="3" Grid.ColumnSpan="2" Margin="0,0.2,0.4,-0.4" FontSize="16" FontWeight="Bold"></Controls:TransitioningContentControl>
+                                        <TextBlock Text="Non-Turbo(GHz):" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Row="2"></TextBlock>
+                                        <TextBox Name="MaxClockSpeedTextBox" Text="0" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" BorderBrush="{x:Null}" Grid.Row="2" FontWeight="Bold" IsReadOnly="True"/>
+                                        <TextBlock Text="Max(GHz):" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}"/>
+                                        <TextBlock Name="MaxFrequencyTextBox" Text="0" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" FontWeight="Bold"/>
+                                        <TextBlock Text="Min(GHz):" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Row="1"></TextBlock>
+                                        <TextBlock Name="MinFrequencyTextBox" Text="0" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" FontWeight="Bold"/>
+                                        <Border Grid.Row="3" Grid.ColumnSpan="2" BorderThickness="0,2,0,0" BorderBrush="{DynamicResource AccentGray}" >
+                                            <Controls:TransitioningContentControl Name="CurrentFrequencyTransition" Margin="0,0.2,0.4,-0.4" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"></Controls:TransitioningContentControl>
+                                        </Border>
                                     </Grid>
-                                    <Border BorderBrush="{DynamicResource AccentGray}" BorderThickness="0,0,1,0">
+                                    <Border BorderBrush="{DynamicResource AccentGray}" BorderThickness="0,0,2,0">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="1*"/>
@@ -110,12 +112,12 @@
                                                 <RowDefinition Height="1*"/>
                                                 <RowDefinition Height="1*"/>
                                             </Grid.RowDefinitions>
-                                            <TextBox Name="FamilyTextBox" Text="23" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="{x:Null}" FontWeight="Bold"></TextBox>
-                                            <TextBox Name="ModelTextBox" Text="23" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" BorderBrush="{x:Null}" FontWeight="Bold"/>
-                                            <TextBox Name="SteppingTextBox" Text="23" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="2" BorderBrush="{x:Null}" FontWeight="Bold"/>
-                                            <TextBox Name="L1TextBox" Text="0" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="3" BorderBrush="{x:Null}" FontWeight="Bold"/>
-                                            <TextBox Name="L2TextBox" Text="0" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="4" BorderBrush="{x:Null}" FontWeight="Bold"/>
-                                            <TextBox Name="L3TextBox" Text="0" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="5" BorderBrush="{x:Null}" FontWeight="Bold"/>
+                                            <TextBox Name="FamilyTextBox" Text="23" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="{x:Null}" FontWeight="Bold" IsReadOnly="True"></TextBox>
+                                            <TextBox Name="ModelTextBox" Text="23" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" BorderBrush="{x:Null}" FontWeight="Bold" IsReadOnly="True"/>
+                                            <TextBox Name="SteppingTextBox" Text="23" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="2" BorderBrush="{x:Null}" FontWeight="Bold" IsReadOnly="True"/>
+                                            <TextBox Name="L1TextBox" Text="0" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="3" BorderBrush="{x:Null}" FontWeight="Bold" IsReadOnly="True"/>
+                                            <TextBox Name="L2TextBox" Text="0" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="4" BorderBrush="{x:Null}" FontWeight="Bold" IsReadOnly="True"/>
+                                            <TextBox Name="L3TextBox" Text="0" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="5" BorderBrush="{x:Null}" FontWeight="Bold" IsReadOnly="True"/>
                                         </Grid>
                                     </Border>
                                 </Grid>
