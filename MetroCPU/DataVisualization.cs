@@ -25,6 +25,7 @@ namespace MetroCPU
         private TransitionText TB1;
         private TextBlock TB2, TB3;
         private string DataFormat;
+        private bool refreshed = true;
         private readonly bool IsTextBox;
         //private List<double> x;
         //private List<double> y;
@@ -103,7 +104,7 @@ namespace MetroCPU
 
         public void RefreshUI()
         {
-            if (xs != null)
+            if (xs != null&& !refreshed)
             {
                 lineGraph.Dispatcher.Invoke(() =>
                 {
@@ -120,6 +121,7 @@ namespace MetroCPU
                     }
                     lineGraph.Description = $"{CurrentValue} GHz";
                 });
+                refreshed = true;
             }
         }
 
@@ -156,7 +158,7 @@ namespace MetroCPU
             CurrentValue = y_actual[N - 1].ToString(DataFormat);
             maxY = (maxY > y_actual[N - 1]) ? maxY : y_actual[N - 1];
             minY = (minY < y_actual[N - 1]) ? minY : y_actual[N - 1];
-
+            refreshed = false;
         }
 
         //private void Refresh()

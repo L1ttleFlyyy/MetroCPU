@@ -63,7 +63,7 @@ namespace MetroCPU
                     Toggle1.IsChecked = cpuinfo.SST_enabled;
                 }
 
-                UITimer = new System.Windows.Threading.DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(500) };
+                UITimer = new System.Windows.Threading.DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(800) };
                 if (cpuinfo.Manufacturer == "GenuineIntel")
                 {
                     Sensor2LineGraph s2l1 = new Sensor2LineGraph(cpuinfo.CoreVoltageSensor, CoreVoltagePlotter, "G4", -0.1, 1.9, new TransitionText(VoltaCurrent), VoltaMax, VoltaMin);
