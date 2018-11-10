@@ -60,7 +60,7 @@ namespace OpenLibSys
         {
             get
             {
-                switch(Manufacturer)
+                switch (Manufacturer)
                 {
                     case "GenuineIntel":
                         return "Intel";
@@ -77,7 +77,7 @@ namespace OpenLibSys
             uint res = _ols.GetStatus();
             if (res != 0)
             {
-                ErrorMessage = ((Ols.Status)res).ToString() + "\n" + ((Ols.OlsDllStatus)_ols.GetDllStatus()).ToString();
+                ErrorMessage = ((Ols.Status)res).ToString();
                 LoadSucceeded = false;
             }
             else
@@ -196,10 +196,11 @@ namespace OpenLibSys
                     CPUID = null;
                     CPUID_ex = null;
                 }
-                foreach (Sensor s in frequencyRatioSensors)
-                {
-                    s?.Dispose();
-                }
+                if (frequencyRatioSensors != null)
+                    foreach (Sensor s in frequencyRatioSensors)
+                    {
+                        s?.Dispose();
+                    }
                 CoreVoltageSensor?.Dispose();
                 PackageTemperatureSensor?.Dispose();
                 PackagePowerSensor?.Dispose();

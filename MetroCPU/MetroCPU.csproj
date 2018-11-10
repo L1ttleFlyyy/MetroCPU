@@ -46,7 +46,7 @@
     </Reference>
     <Reference Include="InteractiveDataDisplay.WPF, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>.\InteractiveDataDisplay.WPF.dll</HintPath>
+      <HintPath>ThirdPartyLib\InteractiveDataDisplay.WPF.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro, Version=1.6.5.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.6.5\lib\net46\MahApps.Metro.dll</HintPath>
@@ -194,7 +194,7 @@
     <Resource Include="imagesrc\socket.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="InteractiveDataDisplay.WPF.dll" />
+    <Content Include="ThirdPartyLib\InteractiveDataDisplay.WPF.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
