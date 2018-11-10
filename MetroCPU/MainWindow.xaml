@@ -31,11 +31,24 @@
                 <GroupBox Header="CPUID" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Controls:ControlsHelper.ContentCharacterCasing="Upper" BorderThickness="2" Margin="4,2,2,4">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="1*"/>
                             <RowDefinition Height="2*"/>
                             <RowDefinition Height="2*"/>
                         </Grid.RowDefinitions>
-                        <Border Grid.Row="2" ClipToBounds="True">
+                        <Grid Margin="4,4,2,4">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="130"/>
+                                <RowDefinition Height="1*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="130"/>
+                            </Grid.ColumnDefinitions>
+                            <Border BorderBrush="{DynamicResource AccentGray}" BorderThickness="1" Grid.Column="1" Background="{DynamicResource AccentGray}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Image Width="128" Height="128" Source="CPU.ico" Stretch="UniformToFill"/>
+                            </Border>
+
+                        </Grid>
+                        <Border Grid.Row="1" ClipToBounds="True">
                             <WPF:Chart Name="CPUFreqChart" Foreground="DodgerBlue" Margin="-2,0,0,-26" IsVerticalNavigationEnabled="False" IsHorizontalNavigationEnabled="False" PlotOriginY="0" IsAutoFitEnabled="False">
                                 <WPF:Chart.LegendContent>
                                     <WPF:LegendItemsPanel>
