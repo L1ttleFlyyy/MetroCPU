@@ -155,6 +155,8 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="WinRing0\WinRing0.sys" />
+    <None Include="WinRing0\WinRing0x64.sys" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -195,6 +197,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ThirdPartyLib\InteractiveDataDisplay.WPF.dll" />
+    <Content Include="WinRing0\WinRing0.dll" />
+    <Content Include="WinRing0\WinRing0x64.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
