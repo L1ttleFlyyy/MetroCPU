@@ -14,6 +14,7 @@
         <SolidColorBrush x:Key="AccentBlue1" Color="#FF086F9E"/>
         <SolidColorBrush x:Key="AccentBlue2" Color="#CC119EDA"/>
         <local:VisibilityToCheckedConverter x:Key="VisibilityToCheckedConverter"/>
+        <local:ValueToTextConverter x:Key="ValueToTextConverter"/>
     </Controls:MetroWindow.Resources>
     <Controls:MetroAnimatedTabControl x:Name="Tabs" Controls:TabControlHelper.IsUnderlined="True" Controls:TabControlHelper.Underlined="SelectedTabItem" SelectionChanged="Tabs_SelectionChanged">
         <Controls:MetroTabItem Controls:TabControlHelper.UnderlineMouseOverSelectedBrush="#FF086F9E" Controls:TabControlHelper.UnderlineSelectedBrush="#CC119EDA" Width="120">
@@ -261,9 +262,10 @@
                 <Grid x:Name="SST_Dock" Margin="4,2,2,4">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="1*"/>
-                        <RowDefinition Height="9*"/>
+                        <RowDefinition Height="4*"/>
+                        <RowDefinition Height="5*"/>
                     </Grid.RowDefinitions>
-                    <GroupBox x:Name="SST_Group"  Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Controls:ControlsHelper.ContentCharacterCasing="Normal" BorderThickness="2" Margin="0,0,-0.4,0.2">
+                    <GroupBox x:Name="SST_Group"  Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Controls:ControlsHelper.ContentCharacterCasing="Normal" BorderThickness="2" Margin="0">
                         <GroupBox.Header >
                             <Hyperlink ToolTip="ONLY Available on latest Intel® CPUs(Skylake, Kabylake, Coffeelake or newer family)" Foreground="White" NavigateUri="https://www.anandtech.com/show/9751/examining-intel-skylake-speed-shift-more-responsive-processors" TextDecorations="{x:Null}" RequestNavigate="Hyperlink_Click">
                                 <Run Text="Intel® Speed Shift Technology"/>
@@ -298,12 +300,127 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <Controls:ToggleSwitchButton x:Name="Toggle1" Height="Auto" Width="35" HorizontalAlignment="Left" Click="Toggle1_Click"/>
+                            <Controls:ToggleSwitchButton x:Name="Toggle1" Height="Auto" Width="35" HorizontalAlignment="Left" Click="Toggle1_Click" Cursor="Hand"/>
                         </DockPanel>
                     </GroupBox>
-                    <GroupBox x:Name="EPP_Group" Header="Energy Performance Preference" Controls:ControlsHelper.ContentCharacterCasing="Normal" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Margin="0,4,-0.4,0.2" Controls:GroupBoxHelper.HeaderForeground="{x:Null}" BorderThickness="2" Grid.RowSpan="2" Grid.Row="1"/>
+                    <GroupBox x:Name="EPP_Group" Header="Energy Performance Preference" Controls:ControlsHelper.ContentCharacterCasing="Normal" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Margin="0,4,0,0" Controls:GroupBoxHelper.HeaderForeground="{x:Null}" BorderThickness="2" Grid.Row="1"/>
+                    <GroupBox Header="Undervolting (Voltage Offset)" Grid.Row="2" Margin="0,4,0,0" Controls:ControlsHelper.ContentCharacterCasing="Normal" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" BorderThickness="2">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="2*"/>
+                            </Grid.ColumnDefinitions>
+                            <!--#region Sliders-->
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="6*"/>
+                                    <ColumnDefinition Width="4*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="CPU Core" TextAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.ColumnSpan="2" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding ElementName=Slider0, Path=Value, Converter={StaticResource ValueToTextConverter}}" TextAlignment="Right" Grid.Row="1" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Text="mV" TextAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left"/>
+                            </Grid>
+                            <Slider Name="Slider0" Grid.Column="1" VerticalAlignment="Center" Style="{DynamicResource FlatSlider}" Maximum="150" Minimum="-150" TickFrequency="5" IsSnapToTickEnabled="True" />
+                            <Grid Grid.Row="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="6*"/>
+                                    <ColumnDefinition Width="4*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="GPU Core" TextAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.ColumnSpan="2" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding ElementName=Slider1, Path=Value, Converter={StaticResource ValueToTextConverter}}" TextAlignment="Right" Grid.Row="1" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Text="mV" TextAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left"/>
+                            </Grid>
+                            <Slider Name="Slider1" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Style="{DynamicResource FlatSlider}" Maximum="150" Minimum="-150" TickFrequency="5" IsSnapToTickEnabled="True" />
+                            <Grid Grid.Row="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="6*"/>
+                                    <ColumnDefinition Width="4*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="CPU Cache" TextAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.ColumnSpan="2" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding ElementName=Slider2, Path=Value, Converter={StaticResource ValueToTextConverter}}" TextAlignment="Right" Grid.Row="1" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Text="mV" TextAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left"/>
+                            </Grid>
+                            <Slider Name="Slider2" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Style="{DynamicResource FlatSlider}" Maximum="150" Minimum="-150" TickFrequency="5" IsSnapToTickEnabled="True" />
+                            <Grid Grid.Row="3">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="6*"/>
+                                    <ColumnDefinition Width="4*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Uncore" TextAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.ColumnSpan="2" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding ElementName=Slider3, Path=Value, Converter={StaticResource ValueToTextConverter}}" TextAlignment="Right" Grid.Row="1" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Text="mV" TextAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left"/>
+                            </Grid>
+                            <Slider Name="Slider3" Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" Style="{DynamicResource FlatSlider}" Maximum="150" Minimum="-150" TickFrequency="5" IsSnapToTickEnabled="True" />
+                            <Grid Grid.Row="4">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="6*"/>
+                                    <ColumnDefinition Width="4*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Analog I/O" TextAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.ColumnSpan="2" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding ElementName=Slider4, Path=Value, Converter={StaticResource ValueToTextConverter}}" TextAlignment="Right" Grid.Row="1" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Text="mV" TextAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left"/>
+                            </Grid>
+                            <Slider Name="Slider4" Grid.Column="1" Grid.Row="4" VerticalAlignment="Center" Style="{DynamicResource FlatSlider}" Maximum="150" Minimum="-150" TickFrequency="5" IsSnapToTickEnabled="True" />
+                            <Grid Grid.Row="5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="6*"/>
+                                    <ColumnDefinition Width="4*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Digital I/O" TextAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.ColumnSpan="2" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding ElementName=Slider5, Path=Value, Converter={StaticResource ValueToTextConverter}}" TextAlignment="Right" Grid.Row="1" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Text="mV" TextAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left"/>
+                            </Grid>
+                            <Slider Name="Slider5" Grid.Column="1" Grid.Row="5" VerticalAlignment="Center" Style="{DynamicResource FlatSlider}" Maximum="150" Minimum="-150" TickFrequency="5" IsSnapToTickEnabled="True" />
+                            <!--#endregion-->
+                            <ComboBox Grid.Column="2" SelectedIndex="0" VerticalAlignment="Bottom" HorizontalAlignment="Center" Width="80" Height="22">
+                                <ComboBoxItem Content="Default"></ComboBoxItem>
+                            </ComboBox>
+                            <Grid Grid.Column="2" Grid.Row="1" >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="115*"/>
+                                    <ColumnDefinition Width="36*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button VerticalAlignment="Bottom" Content="Save" Grid.ColumnSpan="2" Margin="0,0,0.2,-0.2" HorizontalAlignment="Center" Width="80" Height="28"/>
+                                <Image Grid.Column="1" Source="/imagesrc/Reset.png" Width="28" Height="28" HorizontalAlignment="Left" VerticalAlignment="Bottom" ToolTip="Reset to default" Cursor="Hand"/>
+                            </Grid>
+                            <Button Grid.Column="2" Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Apply" Width="80" Height="28" Click="Button_Click"></Button>
+                        </Grid>
+                    </GroupBox>
                 </Grid>
-                
+
             </Grid>
 
         </Controls:MetroTabItem>

@@ -9,25 +9,42 @@ namespace OpenLibSys
         private const uint RDBase = 0x80000010;
         private const uint WRBase = 0x80000011;
         public bool[] Support { get; private set; }
+        public int[] Settings { get; set; }
         public UnderVoltor(Ols ols)
         {
             _ols = ols;
             Support = new bool[6];
+            Settings = new int[6];
             for (int i = 0; i < 6; i++)
             {
-                if (SetVolta((Peripheral)i, 5))
+                
+                if (GetVolta((Peripheral)i, out int origin))
                 {
+                    SetVolta((Peripheral)i, origin+5);
                     GetVolta((Peripheral)i, out int tmp);
-                    if (tmp == 5)
+                    if (tmp == origin+5)
                     {
+                        Settings[i] = origin;
                         Support[i] = true;
-                        SetVolta((Peripheral)i, 0);
+                        SetVolta((Peripheral)i, origin);
                     }
                     else
                         Support[i] = false;
                 }
                 else
                     Support[i] = false;
+            }
+        }
+
+        public void SetSettings(int[] settings)
+        {
+            Settings = settings;
+            for (int i = 0; i < 6; i++)
+            {
+                if (Support[i])
+                {
+                    SetVolta((Peripheral)i, Settings[i]);
+                }
             }
         }
 

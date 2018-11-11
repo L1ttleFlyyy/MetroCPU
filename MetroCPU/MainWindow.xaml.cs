@@ -37,7 +37,8 @@ namespace MetroCPU
                 if (!cpuinfo.SST_support)
                 {
                     SST_TextBlock.Text = "Unavailable";
-                    SST_Dock.IsEnabled = false;
+                    SST_Group.IsEnabled = false;
+                    EPP_Group.IsEnabled = false;
                 }
                 else
                 {
@@ -55,6 +56,7 @@ namespace MetroCPU
                         s2l2.RefreshUI();
                         s2l3.RefreshUI();
                     });
+                    UV2S = new UnderVoltor2Sliders(cpuinfo.underVoltor,Slider0,Slider1,Slider2,Slider3,Slider4,Slider5);
                 }
                 int tmp = 0;
                 List<Sensor2LineGraph> S2LGs = new List<Sensor2LineGraph>(cpuinfo.CoreCount);
@@ -174,6 +176,11 @@ namespace MetroCPU
                     Tab2.Children.Add(MonitorGroup);
                 }
             }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            UV2S.Set();
         }
     }
 }

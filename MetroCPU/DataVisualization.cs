@@ -143,9 +143,23 @@ namespace MetroCPU
         }
     }
 
+    public class ValueToTextConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return ((double)value).ToString();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return double.Parse((string)value);
+        }
+    }
+
     public partial class MainWindow : MetroWindow
     {
         private System.Windows.Threading.DispatcherTimer UITimer;
+        private UnderVoltor2Sliders UV2S;
     }
 
     class TransitionText
@@ -197,24 +211,27 @@ namespace MetroCPU
 
     class UnderVoltor2Sliders
     {
-        private RangeSlider[] rangeSliders;
+        private Slider[] sliders;
         private UnderVoltor underVoltor;
+        public int[] CurrentSettings = new int[6];
         public void Set()
         {
             for (int i = 0; i < 6; i++)
             {
-                if (underVoltor.Support[i])
-                {
-                    underVoltor.SetVolta((Peripheral)i, (int)rangeSliders[i].Value);
-                }
+                CurrentSettings[i] = (int)sliders[i].Value;
+                //if (underVoltor.Support[i])
+                //{
+                //    underVoltor.SetVolta((Peripheral)i, (int)sliders[i].Value);
+                //}
             }
+            underVoltor.SetSettings(CurrentSettings);
             CheckStatus();
         }
 
         public void CheckStatus()
         {
             int i = 0;
-            foreach (RangeSlider rs in rangeSliders)
+            foreach (Slider rs in sliders)
             {
                 rs.Dispatcher.Invoke(() =>
                 {
@@ -223,6 +240,7 @@ namespace MetroCPU
                         if(underVoltor.GetVolta((Peripheral)i,out int tmp))
                         {
                             rs.Value = tmp;
+                            CurrentSettings[i] = tmp;
                         }
                     }
                 });
@@ -230,10 +248,10 @@ namespace MetroCPU
             }
         }
 
-        public UnderVoltor2Sliders(Ols ols, RangeSlider s0, RangeSlider s1, RangeSlider s2, RangeSlider s3, RangeSlider s4, RangeSlider s5)
+        public UnderVoltor2Sliders(UnderVoltor uv, Slider s0, Slider s1, Slider s2, Slider s3, Slider s4, Slider s5)
         {
-            rangeSliders = new RangeSlider[6] { s0, s1, s2, s3, s4, s5 };
-            underVoltor = new UnderVoltor(ols);
+            sliders = new Slider[6] { s0, s1, s2, s3, s4, s5 };
+            underVoltor = uv;
             CheckStatus();
         }
 
