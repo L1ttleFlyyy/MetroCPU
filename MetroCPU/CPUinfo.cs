@@ -18,6 +18,7 @@ namespace OpenLibSys
         public readonly Sensor PackageTemperatureSensor;
         public readonly Sensor PackagePowerSensor;
         public readonly List<Sensor> frequencyRatioSensors;
+        public UnderVoltor underVoltor;
         public int test;
         public bool LoadSucceeded { get; }
         public bool SST_support { get; }
@@ -96,7 +97,7 @@ namespace OpenLibSys
                     logicalProcessors.Add(new LogicalProcessor(_ols, i * times, MaxClockSpeed));
                     frequencyRatioSensors.Add(new Sensor(logicalProcessors[i].GetCurrentFrequency));
                 }
-
+                underVoltor = new UnderVoltor(_ols);
                 if (Manufacturer == "GenuineIntel")
                 {
                     PPM = new PackageMonitor(_ols, Manufacturer);

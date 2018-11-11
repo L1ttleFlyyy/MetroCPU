@@ -131,6 +131,7 @@
     <Compile Include="Sensor.cs" />
     <Compile Include="ThirdPartyLib\ThreadAffinity.cs" />
     <Compile Include="ThirdPartyLib\TriDiagonalMatrix.cs" />
+    <Compile Include="UnderVoltor.cs" />
     <Compile Include="WMICPUinfo.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -229,6 +230,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>copy $(ProjectDir)WinRing0\* $(ProjectDir)$(OutDir)</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
 </Project>
