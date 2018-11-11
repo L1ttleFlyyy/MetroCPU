@@ -102,13 +102,13 @@ namespace MetroCPU
                 y_actual.Enqueue(tdp.Data);
             }
             int N = x_actual.Count;
-            if (N < 3||IsBusy) return;
+            if (N < 3 || IsBusy) return;
             IsBusy = true;
             float start = x_actual.Peek();
             float stepsize = (DateTime2MilliSecond(tdp.Time) - start) / (N - 1) / Multiplier;
             float[] arrayList = new float[(N - 1) * Multiplier + 1];
             CubicSpline spline = new CubicSpline();
-            for (int i = 0; i < 1 + (N - 1) * Multiplier; i++){ arrayList[i] = start + stepsize * i; }
+            for (int i = 0; i < 1 + (N - 1) * Multiplier; i++) { arrayList[i] = start + stepsize * i; }
             xs = arrayList;
             ys = spline.FitAndEval(x_actual.ToArray(), y_actual.ToArray(), xs);
             CurrentValue = tdp.Data.ToString(DataFormat);
@@ -153,7 +153,7 @@ namespace MetroCPU
         private TextBlock TB1;
         private TextBlock TB2;
         private TransitioningContentControl TCC;
-        private double tmp0=0,tmp1;
+        private double tmp0 = 0, tmp1;
         public bool selector { get; private set; }
         public string Text
         {
@@ -193,6 +193,50 @@ namespace MetroCPU
             TB1 = new TextBlock() { TextAlignment = TextAlignment.Center };
             TB2 = new TextBlock() { TextAlignment = TextAlignment.Center };
         }
+    }
+
+    class UnderVoltor2Sliders
+    {
+        private RangeSlider[] rangeSliders;
+        private UnderVoltor underVoltor;
+        public void Set()
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                if (underVoltor.Support[i])
+                {
+                    underVoltor.SetVolta((Peripheral)i, (int)rangeSliders[i].Value);
+                }
+            }
+            CheckStatus();
+        }
+
+        public void CheckStatus()
+        {
+            int i = 0;
+            foreach (RangeSlider rs in rangeSliders)
+            {
+                rs.Dispatcher.Invoke(() =>
+                {
+                    if(rs.IsEnabled = underVoltor.Support[i])
+                    {
+                        if(underVoltor.GetVolta((Peripheral)i,out int tmp))
+                        {
+                            rs.Value = tmp;
+                        }
+                    }
+                });
+                i++;
+            }
+        }
+
+        public UnderVoltor2Sliders(Ols ols, RangeSlider s0, RangeSlider s1, RangeSlider s2, RangeSlider s3, RangeSlider s4, RangeSlider s5)
+        {
+            rangeSliders = new RangeSlider[6] { s0, s1, s2, s3, s4, s5 };
+            underVoltor = new UnderVoltor(ols);
+            CheckStatus();
+        }
+
     }
 
 }
