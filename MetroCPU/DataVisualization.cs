@@ -219,10 +219,6 @@ namespace MetroCPU
             for (int i = 0; i < 6; i++)
             {
                 CurrentSettings[i] = (int)sliders[i].Value;
-                //if (underVoltor.Support[i])
-                //{
-                //    underVoltor.SetVolta((Peripheral)i, (int)sliders[i].Value);
-                //}
             }
             underVoltor.SetSettings(CurrentSettings);
             CheckStatus();
