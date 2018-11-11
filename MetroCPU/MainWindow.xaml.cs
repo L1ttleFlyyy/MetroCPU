@@ -155,5 +155,25 @@ namespace MetroCPU
         {
             cpuinfo.Dispose();
         }
+
+        private void Tabs_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if(Tabs.SelectedIndex == 0)
+            {
+                if (!Tab1.Children.Contains(MonitorGroup))
+                {
+                    Tab2.Children.Remove(MonitorGroup);
+                    Tab1.Children.Add(MonitorGroup);
+                }
+            }
+            else if(Tabs.SelectedIndex ==1)
+            {
+                if (!Tab2.Children.Contains(MonitorGroup))
+                {
+                    Tab1.Children.Remove(MonitorGroup);
+                    Tab2.Children.Add(MonitorGroup);
+                }
+            }
+        }
     }
 }

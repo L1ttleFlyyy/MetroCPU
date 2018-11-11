@@ -212,6 +212,7 @@
     <Resource Include="imagesrc\socket.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="imagesrc\electricity.png" />
     <Content Include="ThirdPartyLib\InteractiveDataDisplay.WPF.dll" />
     <Content Include="WinRing0\WinRing0.dll" />
     <Content Include="WinRing0\WinRing0x64.dll" />
