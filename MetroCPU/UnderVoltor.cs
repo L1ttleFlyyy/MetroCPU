@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace OpenLibSys
 {
@@ -8,23 +10,54 @@ namespace OpenLibSys
         private Ols _ols;
         private const uint RDBase = 0x80000010;
         private const uint WRBase = 0x80000011;
+        public UnderVoltSettings SettingFile;
         public bool[] Support { get; private set; }
-        public int[] Settings { get; set; }
+        public int[] CurrentSettings
+        {
+            get
+            {
+                int[] tmp = new int[6];
+                for (int i = 0; i < 6; i++)
+                {
+                    if (Support[i])
+                    {
+                        GetVolta((Peripheral)i, out tmp[i]);
+                    }
+                }
+                return tmp;
+            }
+            set
+            {
+                for (int i = 0; i < 6; i++)
+                {
+                    if (Support[i])
+                    {
+                        SetVolta((Peripheral)i, value[i]);
+                    }
+                }
+            }
+        }
+
+        public void SaveSettings()
+        {
+            SettingFile.Settings = CurrentSettings;
+        }
+
         public UnderVoltor(Ols ols)
         {
             _ols = ols;
             Support = new bool[6];
-            Settings = new int[6];
+            CurrentSettings = new int[6];
             for (int i = 0; i < 6; i++)
             {
-                
+
                 if (GetVolta((Peripheral)i, out int origin))
                 {
-                    SetVolta((Peripheral)i, origin+5);
+                    SetVolta((Peripheral)i, origin + 5);
                     GetVolta((Peripheral)i, out int tmp);
-                    if (tmp == origin+5)
+                    if (tmp == origin + 5)
                     {
-                        Settings[i] = origin;
+                        CurrentSettings[i] = origin;
                         Support[i] = true;
                         SetVolta((Peripheral)i, origin);
                     }
@@ -34,18 +67,7 @@ namespace OpenLibSys
                 else
                     Support[i] = false;
             }
-        }
-
-        public void SetSettings(int[] settings)
-        {
-            Settings = settings;
-            for (int i = 0; i < 6; i++)
-            {
-                if (Support[i])
-                {
-                    SetVolta((Peripheral)i, Settings[i]);
-                }
-            }
+            SettingFile = new UnderVoltSettings("Untilization") { Settings = CurrentSettings };
         }
 
         public bool SetVolta(Peripheral p, int Volta)
@@ -76,6 +98,70 @@ namespace OpenLibSys
                 Support[(int)p] = false;
                 return false;
             }
+        }
+    }
+
+    class UnderVoltSettings
+    {
+        public string Name { get; private set; }
+        private string fileDirectory
+        {
+            get
+            {
+                string tempDir = Directory.GetCurrentDirectory() + @"\UnderVolt";
+                if (!Directory.Exists(tempDir))
+                {
+                    Directory.CreateDirectory(tempDir);
+                }
+                return tempDir;
+            }
+        }
+        private string filePath
+        {
+            get
+            {
+                string file = fileDirectory + @"\" + Name;
+                if (!File.Exists(file))
+                {
+                    using (StreamWriter sw = new StreamWriter(File.Create(file)))
+                    {
+                        for (int i = 0; i < 6; i++)
+                            sw.WriteLine("0");
+                    }
+                }
+                return file;
+            }
+        }
+        public int[] Settings
+        {
+            get => LoadSettingsFromFile();
+            set => SaveSettingsToFile(value);
+        }
+        private void SaveSettingsToFile(int[] settings)
+        {
+            using (FileStream fs = new FileStream(filePath, FileMode.Create))
+            using (StreamWriter sw = new StreamWriter(fs))
+            {
+                foreach (int i in settings)
+                    sw.WriteLine(i.ToString());
+            }
+        }
+        private int[] LoadSettingsFromFile()
+        {
+            int[] temp = new int[6];
+            using (StreamReader sr = new StreamReader(filePath))
+            {
+                foreach (int i in new int[] { 0, 1, 2, 3, 4, 5 })
+                {
+                    temp[i] = int.Parse(sr.ReadLine());
+                }
+            }
+            return temp;
+        }
+        public UnderVoltSettings(string displayName)
+        {
+            Name = displayName;
+            LoadSettingsFromFile();
         }
     }
 }

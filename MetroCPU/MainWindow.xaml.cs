@@ -10,6 +10,8 @@ using InteractiveDataDisplay.WPF;
 using System.Windows.Media;
 using System.Collections.Generic;
 using System.Windows.Media.Imaging;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace MetroCPU
 {
@@ -56,8 +58,9 @@ namespace MetroCPU
                         s2l2.RefreshUI();
                         s2l3.RefreshUI();
                     });
-                    UV2S = new UnderVoltor2Sliders(cpuinfo.underVoltor,Slider0,Slider1,Slider2,Slider3,Slider4,Slider5);
                 }
+                UV2S = new UnderVoltor2Sliders(cpuinfo.underVoltor, Slider0, Slider1, Slider2, Slider3, Slider4, Slider5,ApplyButton,SaveButton,ResetButton);
+
                 int tmp = 0;
                 List<Sensor2LineGraph> S2LGs = new List<Sensor2LineGraph>(cpuinfo.CoreCount);
                 foreach (Sensor s in cpuinfo.frequencyRatioSensors)
@@ -178,9 +181,5 @@ namespace MetroCPU
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            UV2S.Set();
-        }
     }
 }

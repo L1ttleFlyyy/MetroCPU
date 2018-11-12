@@ -8,7 +8,7 @@ using System.Windows.Data;
 using System.Collections.Generic;
 using TestMySpline;
 using System.Globalization;
-using System.Windows.Media;
+using System.Windows.Input;
 
 namespace MetroCPU
 {
@@ -177,10 +177,12 @@ namespace MetroCPU
                 if (selector)
                 {
                     tmp1 = double.Parse(value);
-                    if (tmp1 > tmp0)
+                    if (tmp1 < tmp0)
                         TCC.Transition = TransitionType.Up;
-                    else
+                    else if (tmp1 > tmp0)
                         TCC.Transition = TransitionType.Down;
+                    else
+                        TCC.Transition = TransitionType.Default;
                     tmp0 = tmp1;
                     TB1.Text = value;
                     TCC.Content = TB1;
@@ -189,10 +191,12 @@ namespace MetroCPU
                 else
                 {
                     tmp1 = double.Parse(value);
-                    if (tmp1 > tmp0)
+                    if (tmp1 < tmp0)
                         TCC.Transition = TransitionType.Up;
-                    else
+                    else if (tmp1 > tmp0)
                         TCC.Transition = TransitionType.Down;
+                    else
+                        TCC.Transition = TransitionType.Default;
                     tmp0 = tmp1;
                     TB2.Text = value;
                     TCC.Content = TB2;
@@ -213,42 +217,65 @@ namespace MetroCPU
     {
         private Slider[] sliders;
         private UnderVoltor underVoltor;
-        public int[] CurrentSettings = new int[6];
+        public int[] ActualSettings = new int[6];
+
         public void Set()
         {
             for (int i = 0; i < 6; i++)
             {
-                CurrentSettings[i] = (int)sliders[i].Value;
+                ActualSettings[i] = (int)sliders[i].Value;
             }
-            underVoltor.SetSettings(CurrentSettings);
-            CheckStatus();
+            underVoltor.CurrentSettings = ActualSettings;
+            ActualSettings = underVoltor.CurrentSettings;
+            SetSliders();
         }
 
-        public void CheckStatus()
+        public void SetSliders()
         {
             int i = 0;
             foreach (Slider rs in sliders)
             {
                 rs.Dispatcher.Invoke(() =>
                 {
-                    if(rs.IsEnabled = underVoltor.Support[i])
+                    if (rs.IsEnabled = underVoltor.Support[i])
                     {
-                        if(underVoltor.GetVolta((Peripheral)i,out int tmp))
-                        {
-                            rs.Value = tmp;
-                            CurrentSettings[i] = tmp;
-                        }
+                        rs.Value = ActualSettings[i];
                     }
                 });
                 i++;
             }
         }
 
-        public UnderVoltor2Sliders(UnderVoltor uv, Slider s0, Slider s1, Slider s2, Slider s3, Slider s4, Slider s5)
+        public UnderVoltor2Sliders(UnderVoltor uv, Slider s0, Slider s1, Slider s2, Slider s3, Slider s4, Slider s5, Button setButton, Button saveButton, Button resetButton)
         {
             sliders = new Slider[6] { s0, s1, s2, s3, s4, s5 };
             underVoltor = uv;
-            CheckStatus();
+            ActualSettings = underVoltor.CurrentSettings;
+            SetSliders();
+            setButton.Click += (s, e) =>
+            {
+                setButton.Cursor = Cursors.Wait;
+                Set();
+                setButton.Cursor = Cursors.Arrow;
+            };
+            saveButton.Click += (s, e) =>
+            {
+                saveButton.Cursor = Cursors.Wait;
+                Set();
+                uv.SaveSettings();
+                saveButton.Cursor = Cursors.Arrow;
+            };
+            resetButton.Click += (s, e) =>
+            {
+                setButton.Cursor = Cursors.Wait;
+                if (s0.IsEnabled) s0.Value = 0;
+                if (s1.IsEnabled) s1.Value = 0;
+                if (s2.IsEnabled) s2.Value = 0;
+                if (s3.IsEnabled) s3.Value = 0;
+                if (s4.IsEnabled) s4.Value = 0;
+                if (s5.IsEnabled) s5.Value = 0;
+                setButton.Cursor = Cursors.Arrow;
+            };
         }
 
     }

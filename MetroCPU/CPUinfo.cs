@@ -12,7 +12,6 @@ namespace OpenLibSys
         public readonly WMICPUinfo wmi;
         private const int MaxIndDefined = 0x1f;
         private Ols _ols;
-        public readonly UnderVoltor UnderVoltor;
         public readonly List<LogicalProcessor> logicalProcessors;
         public readonly PackageMonitor PPM;
         public readonly Sensor CoreVoltageSensor;
