@@ -1,142 +1,128 @@
-﻿using System;
-using System.Diagnostics;
-using System.Security.Principal;
-using System.Text;
-using System.Windows;
-using System.Windows.Documents;
+﻿using InteractiveDataDisplay.WPF;
 using MahApps.Metro.Controls;
 using OpenLibSys;
-using InteractiveDataDisplay.WPF;
-using System.Windows.Media;
+using System;
 using System.Collections.Generic;
-using System.Windows.Media.Imaging;
-using System.Windows.Controls;
-using System.Windows.Input;
+using System.Diagnostics;
+using System.Windows;
+using System.Windows.Documents;
+using System.Windows.Media;
 
 namespace MetroCPU
 {
     public partial class MainWindow : MetroWindow
     {
 
-        public MainWindow()
+        #region sensors
+        private Sensor CoreVoltageSensor;
+        private Sensor PackageTemperatureSensor;
+        private Sensor PackagePowerSensor;
+        private List<Sensor> frequencyRatioSensors;
+        #endregion
+
+        public MainWindow(CPUinfo cP)
         {
-            if (!IsAdmin())
-            {
-                RunAsRestart();
-                Environment.Exit(0);
-            }
             InitializeComponent();
-            cpuinfo = new CPUinfo();
-            if (!cpuinfo.LoadSucceeded)
+            cpuinfo = cP;
+            #region Initialize members
+            if (!cpuinfo.SST_support)
             {
-                MessageBox.Show(cpuinfo.ErrorMessage);
-                cpuinfo.Dispose();
-                Environment.Exit(1);
+                SST_TextBlock.Text = "Unavailable";
+                SST_Group.IsEnabled = false;
+                EPP_Group.IsEnabled = false;
             }
             else
             {
-                
-                if (!cpuinfo.SST_support)
+                Toggle1.IsChecked = cpuinfo.SST_enabled;
+            }
+            frequencyRatioSensors = new List<Sensor>(cpuinfo.CoreCount);
+            foreach (LogicalProcessor lp in cpuinfo.logicalProcessors)
+            {
+                frequencyRatioSensors.Add(new Sensor(lp.GetCurrentFrequency));
+            }
+
+
+
+            #endregion
+
+            UITimer = new System.Windows.Threading.DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(800) };
+            if (cpuinfo.Manufacturer == "GenuineIntel")
+            {
+                CoreVoltageSensor = new Sensor(cpuinfo.PPM.GetCurrentVoltage);
+                PackageTemperatureSensor = new Sensor(cpuinfo.PPM.GetCurrentTemprature);
+                PackagePowerSensor = new Sensor(cpuinfo.PPM.GetPackagePower);
+
+                Sensor2LineGraph s2l1 = new Sensor2LineGraph(CoreVoltageSensor, CoreVoltagePlotter, "G4", -0.1, 1.9, new TransitionText(VoltaCurrent), VoltaMax, VoltaMin);
+                Sensor2LineGraph s2l2 = new Sensor2LineGraph(PackagePowerSensor, PackagePowerPlotter, "G3", -1, cpuinfo.PPM.TDP + 1, new TransitionText(PowerCurrent), PowerMax, PowerMin);
+                Sensor2LineGraph s2l3 = new Sensor2LineGraph(PackageTemperatureSensor, PackageTemperaturePlotter, "G2", -2, 101, new TransitionText(TempCurrent), TempMax, TempMin);
+                UITimer.Tick += new EventHandler((sender, e) =>
                 {
-                    SST_TextBlock.Text = "Unavailable";
-                    SST_Group.IsEnabled = false;
-                    EPP_Group.IsEnabled = false;
+                    s2l1.RefreshUI();
+                    s2l2.RefreshUI();
+                    s2l3.RefreshUI();
+                });
+            }
+            UV2S = new UnderVoltor2Sliders(cpuinfo.underVoltor, Slider0, Slider1, Slider2, Slider3, Slider4, Slider5, ApplyButton, SaveButton, ResetButton);
+
+            int tmp = 0;
+            List<Sensor2LineGraph> S2LGs = new List<Sensor2LineGraph>(cpuinfo.CoreCount);
+            foreach (Sensor s in frequencyRatioSensors)
+            {
+                var lg = new LineGraph();
+                lines.Children.Add(lg);
+                lg.Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 128, (byte)(255 * Math.Pow(2, -tmp))));
+                lg.Description = "0 Ghz";
+                Sensor2LineGraph s2lg;
+                if (tmp == 0)
+                {
+                    s2lg = new Sensor2LineGraph(s, lg, "F2", -0.2, cpuinfo.MaxClockSpeed / 1000.0 + 2, new TransitionText(CurrentFrequencyTransition), MaxFrequencyTextBox, MinFrequencyTextBox);
                 }
                 else
                 {
-                    Toggle1.IsChecked = cpuinfo.SST_enabled;
+                    s2lg = new Sensor2LineGraph(s, lg, "F2", -0.2, cpuinfo.MaxClockSpeed / 1000.0 + 2);
                 }
-
-                UITimer = new System.Windows.Threading.DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(800) };
-                if (cpuinfo.Manufacturer == "GenuineIntel")
-                {
-                    Sensor2LineGraph s2l1 = new Sensor2LineGraph(cpuinfo.CoreVoltageSensor, CoreVoltagePlotter, "G4", -0.1, 1.9, new TransitionText(VoltaCurrent), VoltaMax, VoltaMin);
-                    Sensor2LineGraph s2l2 = new Sensor2LineGraph(cpuinfo.PackagePowerSensor, PackagePowerPlotter, "G3", -1, cpuinfo.PPM.TDP+1, new TransitionText(PowerCurrent), PowerMax, PowerMin);
-                    Sensor2LineGraph s2l3 = new Sensor2LineGraph(cpuinfo.PackageTemperatureSensor, PackageTemperaturePlotter, "G2", -2, 101, new TransitionText(TempCurrent), TempMax, TempMin);
-                    UITimer.Tick += new EventHandler((sender,e)=> {
-                        s2l1.RefreshUI();
-                        s2l2.RefreshUI();
-                        s2l3.RefreshUI();
-                    });
-                }
-                UV2S = new UnderVoltor2Sliders(cpuinfo.underVoltor, Slider0, Slider1, Slider2, Slider3, Slider4, Slider5,ApplyButton,SaveButton,ResetButton);
-
-                int tmp = 0;
-                List<Sensor2LineGraph> S2LGs = new List<Sensor2LineGraph>(cpuinfo.CoreCount);
-                foreach (Sensor s in cpuinfo.frequencyRatioSensors)
-                {
-                    var lg = new LineGraph();
-                    lines.Children.Add(lg);
-                    lg.Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 128, (byte)(255 * Math.Pow(2, -tmp))));
-                    lg.Description = "0 Ghz";
-                    Sensor2LineGraph s2lg;
-                    if (tmp == 0)
-                    {
-                        s2lg = new Sensor2LineGraph(s, lg, "F2", -0.2, cpuinfo.MaxClockSpeed / 1000.0 + 2 , new TransitionText(CurrentFrequencyTransition),MaxFrequencyTextBox,MinFrequencyTextBox);
-                    }
-                    else
-                    {
-                        s2lg = new Sensor2LineGraph(s, lg, "F2", -0.2, cpuinfo.MaxClockSpeed / 1000.0 + 2);
-                    }
-                    UITimer.Tick += new EventHandler((sender, e) => s2lg.RefreshUI());
-                    S2LGs.Add(s2lg);
-                    tmp++;
-                }
-                CPUNameTextBox.Text = cpuinfo.wmi.Name;
-                CoresTextBox.Text = cpuinfo.CoreCount.ToString();
-                ThreadsTextBox.Text = cpuinfo.ThreadCount.ToString();
-                ManufacturerTextBox.Text = cpuinfo.SimplifiedManufacturer;
-                SocketTextBox.Text = cpuinfo.wmi.SocketDesignation;
-                FamilyTextBox.Text = cpuinfo.wmi.Family;
-                ModelTextBox.Text = cpuinfo.wmi.Model;
-                SteppingTextBox.Text = cpuinfo.wmi.Stepping;
-                L1TextBox.Text = cpuinfo.wmi.L1Cache;
-                L2TextBox.Text = cpuinfo.wmi.L2Cache;
-                L3TextBox.Text = cpuinfo.wmi.L3Cache;
-                MaxClockSpeedTextBox.Text = (cpuinfo.MaxClockSpeed/1000F).ToString();
-                CPUIcon.Source = new ImageSourceConverter().ConvertFromString(
-                    "pack://application:,,,/MetroCPU;component/"+cpuinfo.wmi.CPUIcon) as ImageSource;
-                UITimer.Start();
-                psm = new PowerStatusMonitor(
-                    ()=> MessageBox.Show($"{psm.GetPowerLineStatus()}") 
-                ,()=> MessageBox.Show($"{psm.GetPowerLineStatus()}")
-                ,true);
+                UITimer.Tick += new EventHandler((sender, e) => s2lg.RefreshUI());
+                S2LGs.Add(s2lg);
+                tmp++;
             }
-        }
-        private PowerStatusMonitor psm;
-        private CPUinfo cpuinfo; 
+            #region Basic Info
+            CPUNameTextBox.Text = cpuinfo.wmi.Name;
+            CoresTextBox.Text = cpuinfo.CoreCount.ToString();
+            ThreadsTextBox.Text = cpuinfo.ThreadCount.ToString();
+            ManufacturerTextBox.Text = cpuinfo.SimplifiedManufacturer;
+            SocketTextBox.Text = cpuinfo.wmi.SocketDesignation;
+            FamilyTextBox.Text = cpuinfo.wmi.Family;
+            ModelTextBox.Text = cpuinfo.wmi.Model;
+            SteppingTextBox.Text = cpuinfo.wmi.Stepping;
+            L1TextBox.Text = cpuinfo.wmi.L1Cache;
+            L2TextBox.Text = cpuinfo.wmi.L2Cache;
+            L3TextBox.Text = cpuinfo.wmi.L3Cache;
+            MaxClockSpeedTextBox.Text = (cpuinfo.MaxClockSpeed / 1000F).ToString();
+            CPUIcon.Source = new ImageSourceConverter().ConvertFromString(
+                "pack://application:,,,/MetroCPU;component/" + cpuinfo.wmi.CPUIcon) as ImageSource;
+            #endregion
+            UITimer.Start();
 
-        private static bool IsAdmin()
+        }
+
+        private bool disposedValue = false;
+        public void Dispose()
         {
-            WindowsIdentity id = WindowsIdentity.GetCurrent();
-            WindowsPrincipal principal = new WindowsPrincipal(id);
-            return principal.IsInRole(WindowsBuiltInRole.Administrator);
-        }
-
-        private static bool RunAsRestart()
-        {
-            Process p = Process.GetCurrentProcess();
-
-            ProcessStartInfo startInfo = new ProcessStartInfo
+            if (!disposedValue)
             {
-                UseShellExecute = true,
-                WorkingDirectory = Environment.CurrentDirectory,
-                FileName = p.MainModule.FileName,
-                Verb = "runas"
-            };
-
-            try
-            {
-                Process.Start(startInfo);
-                p.Close();
-                Environment.Exit(0);
+                disposedValue = true;
+                if (frequencyRatioSensors != null)
+                    foreach (Sensor s in frequencyRatioSensors)
+                    {
+                        s?.Dispose();
+                    }
+                CoreVoltageSensor?.Dispose();
+                PackageTemperatureSensor?.Dispose();
+                PackagePowerSensor?.Dispose();
             }
-            catch
-            {
-                return false;
-            }
-            return true;
         }
+        private CPUinfo cpuinfo;
+
 
         private void Toggle1_Click(object sender, RoutedEventArgs e)
         {
@@ -160,14 +146,9 @@ namespace MetroCPU
             e.Handled = true;
         }
 
-        private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            cpuinfo.Dispose();
-        }
-
         private void Tabs_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            if(Tabs.SelectedIndex == 0)
+            if (Tabs.SelectedIndex == 0)
             {
                 if (!Tab1.Children.Contains(MonitorGroup))
                 {
@@ -175,7 +156,7 @@ namespace MetroCPU
                     Tab1.Children.Add(MonitorGroup);
                 }
             }
-            else if(Tabs.SelectedIndex ==1)
+            else if (Tabs.SelectedIndex == 1)
             {
                 if (!Tab2.Children.Contains(MonitorGroup))
                 {

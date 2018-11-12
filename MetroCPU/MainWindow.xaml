@@ -7,7 +7,7 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:WPF="clr-namespace:InteractiveDataDisplay.WPF;assembly=InteractiveDataDisplay.WPF" x:Class="MetroCPU.MainWindow"
         mc:Ignorable="d"
-        Title="MetroCPU" Height="596" Width="800" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Icon="CPU.ico" Closing="MetroWindow_Closing" MinWidth="800" MinHeight="600">
+        Title="MetroCPU" Height="596" Width="800" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Icon="CPU.ico" MinWidth="800" MinHeight="600">
     <Controls:MetroWindow.Resources>
         <SolidColorBrush x:Key="AccentBlue" Color="#FF41B1E1"/>
         <SolidColorBrush x:Key="AccentGray" Color="#FF686868"/>

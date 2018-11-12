@@ -288,12 +288,19 @@ namespace MetroCPU
         private ComboBox cbb;
         private RangeSlider rs;
         private Slider slider;
-        public EPP2Sliders(EnergyPerformancePreference epp,ComboBox cbb,RangeSlider rs,Slider slider)
+        private PowerStatusMonitor psm;
+        public EPP2Sliders(PowerStatusMonitor psm, EnergyPerformancePreference epp,ComboBox cbb,RangeSlider rs,Slider slider)
         {
+            this.psm = psm;
             this.epp = epp;
             this.cbb = cbb;
             this.rs = rs;
             this.slider = slider;
+        }
+
+        public void RefreshUI()
+        {
+            //TODO:
         }
     }
 }

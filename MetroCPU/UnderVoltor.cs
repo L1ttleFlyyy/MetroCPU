@@ -4,8 +4,8 @@ using System.IO;
 
 namespace OpenLibSys
 {
-    enum Peripheral { CPUCore, IntelGPU, CPUCache, UnCore, AnalogIO, DigitalIO };
-    class UnderVoltor
+    public enum Peripheral { CPUCore, IntelGPU, CPUCache, UnCore, AnalogIO, DigitalIO };
+    public class UnderVoltor
     {
         private Ols _ols;
         private const uint RDBase = 0x80000010;
@@ -106,7 +106,7 @@ namespace OpenLibSys
         }
     }
 
-    class UnderVoltSettings
+    public class UnderVoltSettings
     {
         public string Name { get; private set; }
         private string fileDirectory

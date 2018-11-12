@@ -3,14 +3,39 @@ using System.IO;
 
 namespace OpenLibSys
 {
-    class EnergyPerformancePreference
+    public class EnergyPerformancePreference
     {
         public byte MaxLimit { get; private set; }
         public byte MinLimit { get; private set; }
         public EPPSettings PowerSavingSettings;
         public EPPSettings HighPerformanceSettings;
+        public bool CurrentSettings { get; private set; }
+        public event Action SST_Enanbled;
+        public event Action NewSettingsApplied;
         private Ols _ols;
         private CPUinfo _cpu;
+        public bool IsEnabled{
+            get
+            {
+                if (_cpu.SST_support)
+                {
+                    return _cpu.SST_enabled;
+                }
+                else
+                    return false;
+            }
+            set
+            {
+                if(_cpu.SST_support)
+                {
+                    _cpu.SST_enabled = value;
+                    if (value)
+                    {
+                        SST_Enanbled?.Invoke();
+                    }
+                }
+            }
+        }
 
         public EnergyPerformancePreference(CPUinfo cpu)
         {
@@ -18,6 +43,7 @@ namespace OpenLibSys
             _ols = _cpu._ols;
             MaxLimit = 255;
             MinLimit = 1;
+            CurrentSettings = true;
             if (_cpu.SST_support)
             {
                 uint eax = 0, edx = 0;
@@ -41,13 +67,21 @@ namespace OpenLibSys
                 {
                     _ols.WrmsrTx(0x774, eax, edx, (UIntPtr)(1UL << i));
                 }
-
+                NewSettingsApplied?.Invoke();
             }
         }
 
         public void ApplySettings(EPPSettings settings)
         {
             ApplySettings(settings.Settings);
+            if(settings.Name== "HighPerformance")
+            {
+                CurrentSettings = true;
+            }
+            else if(settings.Name == "PowerSaving")
+            {
+                CurrentSettings = false;
+            }
         }
 
         public void SaveSettingsTo(byte[] tempsettings, EPPSettings settingFile)
@@ -62,7 +96,7 @@ namespace OpenLibSys
 
     }
 
-    class EPPSettings
+    public class EPPSettings
     {
         public string Name { get; private set; }
         private string fileDirectory

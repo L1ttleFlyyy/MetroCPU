@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.Win32;
 using System.Windows.Forms;
 
-namespace MetroCPU
+namespace OpenLibSys
 {
-    class PowerStatusMonitor
+    public class PowerStatusMonitor
     {
         public bool IsEnabled=false;
         private Action OnlineAction, OfflineAction;

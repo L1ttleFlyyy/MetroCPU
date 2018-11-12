@@ -5,7 +5,7 @@ using System.Text;
 namespace OpenLibSys
 {
 
-    class CPUinfo : IDisposable
+    public class CPUinfo : IDisposable
     {
         public readonly WMICPUinfo wmi;
         private const int MaxIndDefined = 0x1f;
@@ -13,11 +13,9 @@ namespace OpenLibSys
         public readonly Ols _ols;
         public readonly List<LogicalProcessor> logicalProcessors;
         public readonly PackageMonitor PPM;
-        public readonly Sensor CoreVoltageSensor;
-        public readonly Sensor PackageTemperatureSensor;
-        public readonly Sensor PackagePowerSensor;
-        public readonly List<Sensor> frequencyRatioSensors;
         public UnderVoltor underVoltor;
+        public EnergyPerformancePreference EPP;
+        public PowerStatusMonitor PSM;
         public int test;
         public bool LoadSucceeded { get; }
         public bool SST_support { get; }
@@ -91,21 +89,26 @@ namespace OpenLibSys
                 SST_support = BitsSlicer(CPUID[6, 0], 7, 7) > 0;
                 EPP_support = SST_support && BitsSlicer(CPUID[6, 0], 10, 10) > 0;
                 logicalProcessors = new List<LogicalProcessor>(CoreCount);
-                frequencyRatioSensors = new List<Sensor>(CoreCount);
+                //frequencyRatioSensors = new List<Sensor>(CoreCount);
                 int times = IsHyperThreading ? 2 : 1;
                 for (int i = 0; i < CoreCount; i++)
                 {
                     logicalProcessors.Add(new LogicalProcessor(_ols, i * times, MaxClockSpeed));
-                    frequencyRatioSensors.Add(new Sensor(logicalProcessors[i].GetCurrentFrequency));
+                    //frequencyRatioSensors.Add(new Sensor(logicalProcessors[i].GetCurrentFrequency));
                 }
                 underVoltor = new UnderVoltor(_ols);
                 if (Manufacturer == "GenuineIntel")
                 {
                     PPM = new PackageMonitor(_ols, Manufacturer);
-                    CoreVoltageSensor = new Sensor(PPM.GetCurrentVoltage);
-                    PackageTemperatureSensor = new Sensor(PPM.GetCurrentTemprature);
-                    PackagePowerSensor = new Sensor(PPM.GetPackagePower);
                     underVoltor = new UnderVoltor(_ols);
+                    if (SST_support)
+                    {
+                        EPP = new EnergyPerformancePreference(this);
+                        PSM = new PowerStatusMonitor(
+                            new Action(() => EPP.ApplySettings(EPP.HighPerformanceSettings)),
+                            new Action(() => EPP.ApplySettings(EPP.PowerSavingSettings))
+                            ,false);
+                    }
                 }
 
             }
@@ -199,14 +202,6 @@ namespace OpenLibSys
                     CPUID = null;
                     CPUID_ex = null;
                 }
-                if (frequencyRatioSensors != null)
-                    foreach (Sensor s in frequencyRatioSensors)
-                    {
-                        s?.Dispose();
-                    }
-                CoreVoltageSensor?.Dispose();
-                PackageTemperatureSensor?.Dispose();
-                PackagePowerSensor?.Dispose();
                 _ols.Dispose();
 
                 disposedValue = true;

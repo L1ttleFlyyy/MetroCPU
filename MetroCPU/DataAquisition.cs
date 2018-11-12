@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace OpenLibSys
 {
 
-    class LogicalProcessor
+    public class LogicalProcessor
     {
         private Ols _ols;
         public int Thread { get; }
@@ -65,7 +65,7 @@ namespace OpenLibSys
         }
     }
 
-    class PackageMonitor
+    public class PackageMonitor
     {
         public bool RAPL_supported { get; private set; }
         private Ols _ols;

@@ -2,7 +2,7 @@
 
 namespace OpenLibSys
 {
-    class WMICPUinfo
+    public class WMICPUinfo
     {
         public string Name { get; private set; }
         public string Manufacturer { get; private set; }
