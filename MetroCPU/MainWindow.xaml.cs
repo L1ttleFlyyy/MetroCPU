@@ -104,7 +104,7 @@ namespace MetroCPU
             }
         }
         private PowerStatusMonitor psm;
-        private CPUinfo cpuinfo;
+        private CPUinfo cpuinfo; 
 
         private static bool IsAdmin()
         {
