@@ -7,6 +7,7 @@ namespace OpenLibSys
         public string Name { get; private set; }
         public string Manufacturer { get; private set; }
         public uint MaxClockSpeed { get; private set; }
+        public uint ExtClock { get; private set; }
         public uint NumberOfCores { get; private set; }
         public uint NumberOfLogicalProcessors { get; private set; }
         public string SocketDesignation { get; private set; }
@@ -41,6 +42,7 @@ namespace OpenLibSys
                 Name = (string)mo["Name"];
                 Manufacturer = (string)mo["Manufacturer"];
                 MaxClockSpeed = (uint)mo["MaxClockSpeed"];
+                ExtClock = (uint)mo["ExtClock"];
                 NumberOfCores = (uint)mo["NumberOfCores"];
                 NumberOfLogicalProcessors = (uint)mo["NumberOfLogicalProcessors"];
                 SocketDesignation = (string)mo["SocketDesignation"];

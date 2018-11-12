@@ -1,0 +1,132 @@
+﻿using System;
+using System.IO;
+
+namespace OpenLibSys
+{
+    class EnergyPerformancePreference
+    {
+        public byte MaxLimit { get; private set; }
+        public byte MinLimit { get; private set; }
+        public EPPSettings PowerSavingSettings;
+        public EPPSettings HighPerformanceSettings;
+        private Ols _ols;
+        private CPUinfo _cpu;
+
+        public EnergyPerformancePreference(CPUinfo cpu)
+        {
+            _cpu = cpu;
+            _ols = _cpu._ols;
+            MaxLimit = 255;
+            MinLimit = 1;
+            if (_cpu.SST_support)
+            {
+                uint eax = 0, edx = 0;
+                if (!_cpu.SST_enabled) { _ols.Wrmsr(0x770, 1, 0); }
+                _ols.Rdmsr(0x771, ref eax, ref edx);
+                MaxLimit = (byte)CPUinfo.BitsSlicer(eax, 7, 0);
+                MinLimit = (byte)CPUinfo.BitsSlicer(eax, 31, 24);
+            }
+            PowerSavingSettings = new EPPSettings("PowerSaving");
+            HighPerformanceSettings = new EPPSettings("HighPerformance");
+        }
+
+        public void ApplySettings(byte[] settings)
+        {
+            if (_cpu.SST_support)
+            {
+                if (!_cpu.SST_enabled) { _ols.Wrmsr(0x770, 1, 0); }
+                uint eax = EPPSettings.Settings2EAX(settings);
+                uint edx = 0;
+                for (int i = 0; i < _cpu.ThreadCount; i++)
+                {
+                    _ols.WrmsrTx(0x774, eax, edx, (UIntPtr)(1UL << i));
+                }
+
+            }
+        }
+
+        public void ApplySettings(EPPSettings settings)
+        {
+            ApplySettings(settings.Settings);
+        }
+
+        public void SaveSettingsTo(byte[] tempsettings, EPPSettings settingFile)
+        {
+            settingFile.Settings = tempsettings;
+        }
+
+        public byte[] LoadSettingsFromFile(EPPSettings settingFile)
+        {
+            return settingFile.Settings;
+        }
+
+    }
+
+    class EPPSettings
+    {
+        public string Name { get; private set; }
+        private string fileDirectory
+        {
+            get
+            {
+                string tempDir = Directory.GetCurrentDirectory() + @"\EPP";
+                if (!Directory.Exists(tempDir))
+                {
+                    Directory.CreateDirectory(tempDir);
+                }
+                return tempDir;
+            }
+        }
+        private string filePath
+        {
+            get
+            {
+                string file = fileDirectory + @"\" + Name;
+                if (!File.Exists(file))
+                {
+                    using (StreamWriter sw = new StreamWriter(File.Create(file)))
+                    {
+                        sw.WriteLine("128");
+                        sw.WriteLine("255");
+                        sw.WriteLine("1");
+                    }
+                }
+                return file;
+            }
+        }
+        public byte[] Settings
+        {
+            get => LoadSettingsFromFile();
+            set => SaveSettingsToFile(value);
+        }
+        private void SaveSettingsToFile(byte[] settings)
+        {
+            using (FileStream fs = new FileStream(filePath, FileMode.Create))
+            using (StreamWriter sw = new StreamWriter(fs))
+            {
+                foreach (int i in settings)
+                    sw.WriteLine(i.ToString());
+            }
+        }
+        private byte[] LoadSettingsFromFile()
+        {
+            byte[] temp = new byte[3];
+            using (StreamReader sr = new StreamReader(filePath))
+            {
+                foreach (int i in new int[] { 0, 1, 2 })
+                {
+                    temp[i] = byte.Parse(sr.ReadLine());
+                }
+            }
+            return temp;
+        }
+        public EPPSettings(string displayName)
+        {
+            Name = displayName;
+        }
+        public static uint Settings2EAX(byte[] settings)
+        {
+            return settings[0] * 0x1000000U + settings[1] * 0x100U + settings[2];
+        }
+    }
+}

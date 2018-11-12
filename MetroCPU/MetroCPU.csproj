@@ -124,6 +124,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="EnergyPerformancePreference.cs" />
     <Compile Include="ThirdPartyLib\ArrayUtil.cs" />
     <Compile Include="ThirdPartyLib\CubicSpline.cs" />
     <Compile Include="DataAquisition.cs" />

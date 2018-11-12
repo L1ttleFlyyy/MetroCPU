@@ -282,4 +282,18 @@ namespace MetroCPU
 
     }
 
+    class EPP2Sliders
+    {
+        private EnergyPerformancePreference epp;
+        private ComboBox cbb;
+        private RangeSlider rs;
+        private Slider slider;
+        public EPP2Sliders(EnergyPerformancePreference epp,ComboBox cbb,RangeSlider rs,Slider slider)
+        {
+            this.epp = epp;
+            this.cbb = cbb;
+            this.rs = rs;
+            this.slider = slider;
+        }
+    }
 }

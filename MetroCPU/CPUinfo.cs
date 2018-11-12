@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Diagnostics;
-using System.Threading;
 
 namespace OpenLibSys
 {
@@ -11,7 +9,8 @@ namespace OpenLibSys
     {
         public readonly WMICPUinfo wmi;
         private const int MaxIndDefined = 0x1f;
-        private Ols _ols;
+        private uint ExtClock { get => wmi.ExtClock; }
+        public readonly Ols _ols;
         public readonly List<LogicalProcessor> logicalProcessors;
         public readonly PackageMonitor PPM;
         public readonly Sensor CoreVoltageSensor;
@@ -22,6 +21,7 @@ namespace OpenLibSys
         public int test;
         public bool LoadSucceeded { get; }
         public bool SST_support { get; }
+        public bool EPP_support { get; }
         public uint[,] CPUID { get; private set; }
         public int MaxCPUIDind { get; private set; }
         public uint[,] CPUID_ex { get; private set; }
@@ -89,6 +89,7 @@ namespace OpenLibSys
                 _getCPUID();
                 _getCPUIDex();
                 SST_support = BitsSlicer(CPUID[6, 0], 7, 7) > 0;
+                EPP_support = SST_support && BitsSlicer(CPUID[6, 0], 10, 10) > 0;
                 logicalProcessors = new List<LogicalProcessor>(CoreCount);
                 frequencyRatioSensors = new List<Sensor>(CoreCount);
                 int times = IsHyperThreading ? 2 : 1;
