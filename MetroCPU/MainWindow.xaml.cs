@@ -97,9 +97,12 @@ namespace MetroCPU
                 CPUIcon.Source = new ImageSourceConverter().ConvertFromString(
                     "pack://application:,,,/MetroCPU;component/"+cpuinfo.wmi.CPUIcon) as ImageSource;
                 UITimer.Start();
+                psm = new PowerStatusMonitor(
+                    ()=> MessageBox.Show($"{psm.GetPowerLineStatus()}") 
+                ,()=> MessageBox.Show($"{psm.GetPowerLineStatus()}"));
             }
         }
-
+        private PowerStatusMonitor psm;
         private CPUinfo cpuinfo;
 
         private static bool IsAdmin()
