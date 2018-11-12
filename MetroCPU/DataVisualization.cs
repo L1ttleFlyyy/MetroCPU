@@ -217,20 +217,20 @@ namespace MetroCPU
     {
         private Slider[] sliders;
         private UnderVoltor underVoltor;
-        public int[] ActualSettings = new int[6];
 
-        public void Set()
+        public void SetFromSliders()
         {
+            int[] tmp = new int[6];
             for (int i = 0; i < 6; i++)
             {
-                ActualSettings[i] = (int)sliders[i].Value;
+                tmp[i] = (int)sliders[i].Value;
             }
-            underVoltor.CurrentSettings = ActualSettings;
-            ActualSettings = underVoltor.CurrentSettings;
-            SetSliders();
+            underVoltor.CurrentSettings = tmp;
+            tmp = underVoltor.CurrentSettings;
+            SetToSliders(tmp);
         }
 
-        public void SetSliders()
+        public void SetToSliders(int[] tmpsettings)
         {
             int i = 0;
             foreach (Slider rs in sliders)
@@ -239,7 +239,7 @@ namespace MetroCPU
                 {
                     if (rs.IsEnabled = underVoltor.Support[i])
                     {
-                        rs.Value = ActualSettings[i];
+                        rs.Value = tmpsettings[i];
                     }
                 });
                 i++;
@@ -250,32 +250,37 @@ namespace MetroCPU
         {
             sliders = new Slider[6] { s0, s1, s2, s3, s4, s5 };
             underVoltor = uv;
-            ActualSettings = underVoltor.CurrentSettings;
-            SetSliders();
-            setButton.Click += (s, e) =>
+            SetToSliders(underVoltor.CurrentSettings);
+            bool enabled = s0.IsEnabled||s1.IsEnabled || s2.IsEnabled || s3.IsEnabled || s4.IsEnabled || s5.IsEnabled;
+            if (enabled)
             {
-                setButton.Cursor = Cursors.Wait;
-                Set();
-                setButton.Cursor = Cursors.Arrow;
-            };
-            saveButton.Click += (s, e) =>
+                setButton.Click += (s, e) =>
+                {
+                    setButton.Cursor = Cursors.Wait;
+                    SetFromSliders();
+                    setButton.Cursor = Cursors.Arrow;
+                };
+                saveButton.Click += (s, e) =>
+                {
+                    saveButton.Cursor = Cursors.Wait;
+                    SetFromSliders();
+                    uv.SaveSettingsToFile();
+                    saveButton.Cursor = Cursors.Arrow;
+                };
+                resetButton.Click += (s, e) =>
+                {
+                    setButton.Cursor = Cursors.Wait;
+                    SetToSliders(uv.SettingFile.Settings);
+                    SetFromSliders();
+                    setButton.Cursor = Cursors.Arrow;
+                };
+            }
+            else
             {
-                saveButton.Cursor = Cursors.Wait;
-                Set();
-                uv.SaveSettings();
-                saveButton.Cursor = Cursors.Arrow;
-            };
-            resetButton.Click += (s, e) =>
-            {
-                setButton.Cursor = Cursors.Wait;
-                if (s0.IsEnabled) s0.Value = 0;
-                if (s1.IsEnabled) s1.Value = 0;
-                if (s2.IsEnabled) s2.Value = 0;
-                if (s3.IsEnabled) s3.Value = 0;
-                if (s4.IsEnabled) s4.Value = 0;
-                if (s5.IsEnabled) s5.Value = 0;
-                setButton.Cursor = Cursors.Arrow;
-            };
+                saveButton.IsEnabled = enabled;
+                setButton.IsEnabled = enabled;
+                resetButton.IsEnabled = enabled;
+            }
         }
 
     }

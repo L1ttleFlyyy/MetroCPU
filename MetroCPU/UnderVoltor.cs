@@ -38,7 +38,7 @@ namespace OpenLibSys
             }
         }
 
-        public void SaveSettings()
+        public void SaveSettingsToFile()
         {
             SettingFile.Settings = CurrentSettings;
         }
