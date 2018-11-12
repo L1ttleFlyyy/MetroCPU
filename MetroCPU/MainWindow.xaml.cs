@@ -99,7 +99,8 @@ namespace MetroCPU
                 UITimer.Start();
                 psm = new PowerStatusMonitor(
                     ()=> MessageBox.Show($"{psm.GetPowerLineStatus()}") 
-                ,()=> MessageBox.Show($"{psm.GetPowerLineStatus()}"));
+                ,()=> MessageBox.Show($"{psm.GetPowerLineStatus()}")
+                ,true);
             }
         }
         private PowerStatusMonitor psm;

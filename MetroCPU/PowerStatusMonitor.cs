@@ -10,12 +10,13 @@ namespace MetroCPU
 {
     class PowerStatusMonitor
     {
-        public bool IsEnabled;
+        public bool IsEnabled=false;
         private Action OnlineAction, OfflineAction;
-        public PowerStatusMonitor(Action onlineAction,Action offlineAction)
+        public PowerStatusMonitor(Action onlineAction,Action offlineAction,bool enable = false)
         {
             OnlineAction = onlineAction;
             OfflineAction = offlineAction;
+            IsEnabled = enable;
             SystemEvents.PowerModeChanged += new PowerModeChangedEventHandler((s,e)=>
             {
                 if(IsEnabled)
