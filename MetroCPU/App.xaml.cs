@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Hardcodet.Wpf.TaskbarNotification;
 using System.Windows;
 
 namespace MetroCPU

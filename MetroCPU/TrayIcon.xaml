@@ -1,0 +1,26 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MetroCPU"
+        xmlns:tb="http://www.hardcodet.net/taskbar" x:Class="MetroCPU.TrayIcon"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        mc:Ignorable="d"
+        Title="TrayIcon" Height="450" Width="800">
+    <Window.Resources>
+        <SolidColorBrush x:Key="AccentBlue" Color="#FF41B1E1"/>
+        <SolidColorBrush x:Key="AccentGray" Color="#FF686868"/>
+        <SolidColorBrush x:Key="AccentBlue1" Color="#FF086F9E"/>
+        <SolidColorBrush x:Key="AccentBlue2" Color="#CC119EDA"/>
+    </Window.Resources>
+    <Grid >
+        <tb:TaskbarIcon Name="taskbarIcon" IconSource="CPU.ico">
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu Background="LightCoral">
+                    <MenuItem Header="Exit" Click="MenuItem_Click" />
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+        </tb:TaskbarIcon>
+    </Grid>
+</Window>

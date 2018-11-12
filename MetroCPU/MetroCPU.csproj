@@ -136,6 +136,9 @@
     <Compile Include="Sensor.cs" />
     <Compile Include="ThirdPartyLib\ThreadAffinity.cs" />
     <Compile Include="ThirdPartyLib\TriDiagonalMatrix.cs" />
+    <Compile Include="TrayIcon.xaml.cs">
+      <DependentUpon>TrayIcon.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UnderVoltor.cs" />
     <Compile Include="WMICPUinfo.cs" />
     <Page Include="MainWindow.xaml">
@@ -151,6 +154,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="TrayIcon.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ThirdPartyLib\OpenLibSys.cs" />
