@@ -10,9 +10,9 @@ namespace OpenLibSys
         private Ols _ols;
         private const uint RDBase = 0x80000010;
         private const uint WRBase = 0x80000011;
-        public UnderVoltSettings SettingFile;
+        private UnderVoltSettings SettingFile;
         public bool[] Support { get; private set; }
-        public int[] CurrentSettings
+        public int[] AppliedSettings
         {
             get
             {
@@ -40,14 +40,19 @@ namespace OpenLibSys
 
         public void SaveSettingsToFile()
         {
-            SettingFile.Settings = CurrentSettings;
+            SettingFile.Settings = AppliedSettings;
+        }
+        public int[] GetSettingsFromFile()
+        {
+            return SettingFile.Settings;
         }
 
         public UnderVoltor(Ols ols)
         {
             _ols = ols;
             Support = new bool[6];
-            CurrentSettings = new int[6];
+            SettingFile = new UnderVoltSettings("Untilization");
+            int[] tempsettings = new int[6];
             for (int i = 0; i < 6; i++)
             {
 
@@ -57,7 +62,7 @@ namespace OpenLibSys
                     GetVolta((Peripheral)i, out int tmp);
                     if (tmp == origin + 5)
                     {
-                        CurrentSettings[i] = origin;
+                        tempsettings[i] = origin;
                         Support[i] = true;
                         SetVolta((Peripheral)i, origin);
                     }
@@ -67,7 +72,7 @@ namespace OpenLibSys
                 else
                     Support[i] = false;
             }
-            SettingFile = new UnderVoltSettings("Untilization") { Settings = CurrentSettings };
+            AppliedSettings = tempsettings;
         }
 
         public bool SetVolta(Peripheral p, int Volta)
@@ -161,7 +166,6 @@ namespace OpenLibSys
         public UnderVoltSettings(string displayName)
         {
             Name = displayName;
-            LoadSettingsFromFile();
         }
     }
 }

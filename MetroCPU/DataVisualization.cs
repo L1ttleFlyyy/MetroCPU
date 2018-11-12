@@ -217,17 +217,15 @@ namespace MetroCPU
     {
         private Slider[] sliders;
         private UnderVoltor underVoltor;
-
-        public void SetFromSliders()
+        
+        public int[] GetSettingFromSliders()
         {
             int[] tmp = new int[6];
             for (int i = 0; i < 6; i++)
             {
                 tmp[i] = (int)sliders[i].Value;
             }
-            underVoltor.CurrentSettings = tmp;
-            tmp = underVoltor.CurrentSettings;
-            SetToSliders(tmp);
+            return tmp;
         }
 
         public void SetToSliders(int[] tmpsettings)
@@ -250,36 +248,35 @@ namespace MetroCPU
         {
             sliders = new Slider[6] { s0, s1, s2, s3, s4, s5 };
             underVoltor = uv;
-            SetToSliders(underVoltor.CurrentSettings);
+            SetToSliders(underVoltor.AppliedSettings);
             bool enabled = s0.IsEnabled||s1.IsEnabled || s2.IsEnabled || s3.IsEnabled || s4.IsEnabled || s5.IsEnabled;
             if (enabled)
             {
                 setButton.Click += (s, e) =>
                 {
                     setButton.Cursor = Cursors.Wait;
-                    SetFromSliders();
+                    uv.AppliedSettings = GetSettingFromSliders();
                     setButton.Cursor = Cursors.Arrow;
                 };
                 saveButton.Click += (s, e) =>
                 {
                     saveButton.Cursor = Cursors.Wait;
-                    SetFromSliders();
+                    uv.AppliedSettings = GetSettingFromSliders();
                     uv.SaveSettingsToFile();
                     saveButton.Cursor = Cursors.Arrow;
                 };
                 resetButton.Click += (s, e) =>
                 {
                     setButton.Cursor = Cursors.Wait;
-                    SetToSliders(uv.SettingFile.Settings);
-                    SetFromSliders();
+                    SetToSliders(uv.GetSettingsFromFile());
                     setButton.Cursor = Cursors.Arrow;
                 };
             }
             else
             {
-                saveButton.IsEnabled = enabled;
-                setButton.IsEnabled = enabled;
-                resetButton.IsEnabled = enabled;
+                saveButton.IsEnabled = false;
+                setButton.IsEnabled = false;
+                resetButton.IsEnabled = false;
             }
         }
 
