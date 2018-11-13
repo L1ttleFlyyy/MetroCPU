@@ -74,6 +74,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Reactive, Version=4.1.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
@@ -226,6 +227,8 @@
   <ItemGroup>
     <Resource Include="imagesrc\electricity.png" />
     <Resource Include="imagesrc\Reset.png" />
+    <Resource Include="imagesrc\BatterySaving.ico" />
+    <Resource Include="imagesrc\HighPerformance.ico" />
     <Content Include="ThirdPartyLib\InteractiveDataDisplay.WPF.dll" />
     <Content Include="WinRing0\WinRing0.dll" />
     <Content Include="WinRing0\WinRing0x64.dll" />

@@ -1,35 +1,49 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Win32;
 using System.Windows.Forms;
+using System.IO;
 
 namespace OpenLibSys
 {
     public class PowerStatusMonitor
     {
-        public bool IsEnabled=false;
-        private Action OnlineAction, OfflineAction;
-        public PowerStatusMonitor(Action onlineAction,Action offlineAction,bool enable = false)
+        public bool IsEnabled { get; private set; }
+        public bool FileSetting
         {
-            OnlineAction = onlineAction;
-            OfflineAction = offlineAction;
-            IsEnabled = enable;
-            SystemEvents.PowerModeChanged += new PowerModeChangedEventHandler((s,e)=>
+            set
             {
-                if(IsEnabled)
+                if (IsEnabled != value)
                 {
-                    switch(e.Mode)
+                    IsEnabled = value;
+                    EnableChanged?.Invoke(value);
+                    SettingFile.Setting = value;
+                }
+            }
+        }
+        public event Action PowerResume;
+        public event Action<bool> EnableChanged;
+        public event Action<PowerLineStatus> PowerModeChanged;
+        private AutoSetting SettingFile = new AutoSetting("AutoStart");
+        public PowerStatusMonitor()
+        {
+            IsEnabled = SettingFile.Setting;
+
+            SystemEvents.PowerModeChanged += new PowerModeChangedEventHandler((s, e) =>
+            {
+                if (IsEnabled)
+                {
+                    switch (e.Mode)
                     {
                         case PowerModes.Resume:
+                            PowerResume?.Invoke();
+                            ChangePowerMode();
+                            break;
                         case PowerModes.StatusChange:
                             ChangePowerMode();
                             break;
                         default:
                             break;
-                            
+
                     }
                 }
             });
@@ -37,15 +51,54 @@ namespace OpenLibSys
 
         private void ChangePowerMode()
         {
-            if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Offline)
-
-                OfflineAction();
-            else
-                OnlineAction();
+            PowerModeChanged?.Invoke(SystemInformation.PowerStatus.PowerLineStatus);
         }
-        public PowerLineStatus GetPowerLineStatus()
+    }
+
+    public class AutoSetting
+    {
+        public string Name { get; private set; }
+        private string filePath
         {
-            return SystemInformation.PowerStatus.PowerLineStatus;
+            get
+            {
+                string file = Directory.GetCurrentDirectory() + @"\" + Name;
+                if (!File.Exists(file))
+                {
+                    using (StreamWriter sw = new StreamWriter(File.Create(file)))
+                    {
+                        sw.WriteLine(true.ToString());
+                    }
+                }
+                return file;
+            }
+        }
+        public bool Setting
+        {
+            get => LoadSettingsFromFile();
+            set => SaveSettingsToFile(value);
+        }
+        private void SaveSettingsToFile(bool setting)
+        {
+            using (FileStream fs = new FileStream(filePath, FileMode.Create))
+            using (StreamWriter sw = new StreamWriter(fs))
+            {
+                sw.WriteLine(setting.ToString());
+            }
+        }
+        private bool LoadSettingsFromFile()
+        {
+            bool tmp;
+            using (StreamReader sr = new StreamReader(filePath))
+            {
+                tmp = bool.Parse(sr.ReadLine());
+            }
+            return tmp;
+        }
+
+        public AutoSetting(string displayName)
+        {
+            Name = displayName;
         }
     }
 }

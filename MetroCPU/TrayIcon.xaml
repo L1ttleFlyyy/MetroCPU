@@ -13,12 +13,21 @@
         <SolidColorBrush x:Key="AccentGray" Color="#FF686868"/>
         <SolidColorBrush x:Key="AccentBlue1" Color="#FF086F9E"/>
         <SolidColorBrush x:Key="AccentBlue2" Color="#CC119EDA"/>
+        <BitmapImage x:Key="HighPerformanceIcon" UriSource="imagesrc/HighPerformance.ico" />
+        <BitmapImage x:Key="PowerSavingIcon" UriSource="imagesrc/BatterySaving.ico" />
     </Window.Resources>
     <Grid >
-        <tb:TaskbarIcon Name="taskbarIcon" IconSource="CPU.ico">
+        <tb:TaskbarIcon Name="taskbarIcon" IconSource="{DynamicResource HighPerformanceIcon}">
             <tb:TaskbarIcon.ContextMenu>
-                <ContextMenu Background="LightCoral">
+                <ContextMenu>
                     <MenuItem Header="Launch Monitor" Click="MenuItem_Click_1"></MenuItem>
+                    <MenuItem Header="Autostart as windows start up"></MenuItem>
+                    <MenuItem Name="PowerPlanMenu" Header="Power Plan">
+                        <MenuItem Name="AutoSwitchMenu" Header="Auto switch when plugged in/on battery" IsCheckable="True"></MenuItem>
+                        <MenuItem Name="HPMenu" Header="High Performance" IsCheckable="True"></MenuItem>
+                        <MenuItem Name="PSMenu" Header="Battery Saving" IsCheckable="True"></MenuItem>
+                    </MenuItem>
+                    <MenuItem Name="NotificationMenu" Header="Turn on notifications" IsCheckable="True" IsChecked="True"></MenuItem>
                     <MenuItem Header="Exit" Click="MenuItem_Click" />
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>

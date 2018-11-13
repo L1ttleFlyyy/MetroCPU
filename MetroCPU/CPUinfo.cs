@@ -104,10 +104,7 @@ namespace OpenLibSys
                     if (SST_support)
                     {
                         EPP = new EnergyPerformancePreference(this);
-                        PSM = new PowerStatusMonitor(
-                            new Action(() => EPP.ApplySettings(EPP.HighPerformanceSettings)),
-                            new Action(() => EPP.ApplySettings(EPP.PowerSavingSettings))
-                            ,false);
+                        PSM = new PowerStatusMonitor();
                     }
                 }
 

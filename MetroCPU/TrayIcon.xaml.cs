@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Security.Principal;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using OpenLibSys;
 
 namespace MetroCPU
@@ -14,8 +15,7 @@ namespace MetroCPU
     {
         private MainWindow mainWindow;
         private CPUinfo cpuinfo;
-        private bool EPP_Enabled = false;
-        private bool PSM_Enabled { get => cpuinfo.PSM.IsEnabled; set => cpuinfo.PSM.IsEnabled = value; }
+        private bool notification;
         public TrayIcon()
         {
             if (!IsAdmin())
@@ -25,14 +25,76 @@ namespace MetroCPU
             }
             InitializeComponent();
             Visibility = Visibility.Hidden;
-
             cpuinfo = new CPUinfo();
             if (!cpuinfo.LoadSucceeded)
             {
-                MessageBox.Show(cpuinfo.ErrorMessage);
-                cpuinfo.Dispose();
-                Close();
-                Environment.Exit(0);
+                taskbarIcon.ShowBalloonTip("Failed, Click To Exit", cpuinfo.ErrorMessage, Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Error);
+                taskbarIcon.ResetBalloonCloseTimer();
+                taskbarIcon.TrayBalloonTipClicked += (s, e) =>
+                    {
+                        cpuinfo.Dispose();
+                        Close();
+                        Environment.Exit(0);
+                    };
+            }
+            #region EPP binding
+            cpuinfo.underVoltor.AppliedSettings = cpuinfo.underVoltor.GetSettingsFromFile();
+            if (cpuinfo.SST_support)
+            {
+                PowerPlanMenu.IsEnabled = cpuinfo.SST_enabled;
+                cpuinfo.EPP.EnableChanged += () => PowerPlanMenu.IsEnabled = cpuinfo.EPP.IsEnabled;
+
+                cpuinfo.PSM.PowerModeChanged += (status) => SetPowerPlan(status);
+                cpuinfo.PSM.PowerResume += () => cpuinfo.underVoltor.AppliedSettings = cpuinfo.underVoltor.GetSettingsFromFile();
+
+                AutoSwitchMenu.IsChecked = cpuinfo.PSM.IsEnabled;
+                cpuinfo.PSM.EnableChanged += (status) =>
+                {
+                    AutoSwitchMenu.IsChecked = status;
+                };
+                AutoSwitchMenu.Click += (s, e) =>
+                {
+                    cpuinfo.PSM.FileSetting = AutoSwitchMenu.IsChecked;
+                };
+                HPMenu.Click += (s, e) => SetPowerPlan(System.Windows.Forms.PowerLineStatus.Online);
+                PSMenu.Click += (s, e) => SetPowerPlan(System.Windows.Forms.PowerLineStatus.Offline);
+                taskbarIcon.ToolTip = $"Intel® Speed Shift Technology Available";
+            }
+            else
+            {
+                taskbarIcon.ToolTip = $"{cpuinfo.wmi.Name} (Intel® Speed Shift Technology NOT supported)";
+                PowerPlanMenu.IsEnabled = false;
+                taskbarIcon.ShowBalloonTip("Warning", "Intel SST is not supported\nMost Functions wont work", Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Warning);
+            }
+            #endregion
+
+        }
+
+        public void SetPowerPlan(System.Windows.Forms.PowerLineStatus status)
+        {
+            if (status == System.Windows.Forms.PowerLineStatus.Offline)
+            {
+                cpuinfo.EPP.ApplySettings(cpuinfo.EPP.PowerSavingSettings);
+                taskbarIcon.Dispatcher.Invoke(() =>
+                {
+                    if(NotificationMenu.IsChecked)
+                        taskbarIcon.ShowBalloonTip("Note","On battery",Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info);
+                    HPMenu.IsChecked = true;
+                    PSMenu.IsChecked = false;
+                    taskbarIcon.IconSource = (BitmapImage)Resources["PowerSavingIcon"];
+                });
+            }
+            else
+            {
+                cpuinfo.EPP.ApplySettings(cpuinfo.EPP.HighPerformanceSettings);
+                taskbarIcon.Dispatcher.Invoke(() =>
+                {
+                    if (NotificationMenu.IsChecked)
+                        taskbarIcon.ShowBalloonTip("Note", "Plugged in", Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info);
+                    HPMenu.IsChecked = false;
+                    PSMenu.IsChecked = true;
+                    taskbarIcon.IconSource = (BitmapImage)Resources["HighPerformanceIcon"];
+                });
             }
         }
 
@@ -103,6 +165,5 @@ namespace MetroCPU
             }
             return true;
         }
-
     }
 }
