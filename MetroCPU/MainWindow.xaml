@@ -327,7 +327,7 @@
                                 <TextBlock Name="FrequencyRangeBox" Foreground="{DynamicResource AccentGray}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="1.2,5,5.4,4.6" Grid.ColumnSpan="3"/>
                                 <TextBlock Text="{Binding ElementName=FrequencyRange,Path=LowerValue, Converter={StaticResource ValueToTextConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" ></TextBlock>
                                 <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="1" Grid.Column="2" ></TextBlock>
-                                <Controls:RangeSlider  Name="FrequencyRange" Grid.Row="1" Grid.Column="1" IsSnapToTickEnabled="True"></Controls:RangeSlider>
+                                <Controls:RangeSlider Name="FrequencyRange" Grid.Row="1" Grid.Column="1" IsSnapToTickEnabled="True" AutoToolTipPlacement="BottomRight" Minimum="1" Maximum="50"></Controls:RangeSlider>
                                 <TextBlock Text="{Binding ElementName=FrequencyRange,Path=UpperValue, Converter={StaticResource ValueToTextConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Grid.Column="2" ></TextBlock>
                             </Grid>
                             <Grid Grid.Row="1">
@@ -343,7 +343,7 @@
                                 <TextBlock Text="Performance Hint (%)" Foreground="{DynamicResource AccentGray}" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Margin="1.2,5,5.4,4.6"></TextBlock>
                                 <TextBlock Text="0" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" ></TextBlock>
                                 <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="1" Grid.Column="2" ></TextBlock>
-                                <Slider  Name="EPPSlider" Grid.Row="1" Grid.Column="1" IsSnapToTickEnabled="True"></Slider>
+                                <Slider  Name="EPPSlider" Grid.Row="1" Grid.Column="1" IsSnapToTickEnabled="True" TickFrequency="5" AutoToolTipPlacement="BottomRight" Value="50"></Slider>
                                 <TextBlock Text="100" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Grid.Column="2" ></TextBlock>
                             </Grid>
                             <Button Name="ApplySettingsButton" Content="Apply" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>

@@ -35,6 +35,7 @@ namespace MetroCPU
             }
             else
             {
+                Toggle1.IsChecked = cpuinfo.EPP.IsEnabled;
                 ePP = new EPP2Sliders(cpuinfo.EPP,SettingsComboBox,FrequencyRange,EPPSlider, Toggle1, ApplySettingsButton);
             }
             frequencyRatioSensors = new List<Sensor>(cpuinfo.CoreCount);

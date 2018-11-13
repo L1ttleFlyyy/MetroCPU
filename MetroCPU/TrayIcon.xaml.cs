@@ -15,7 +15,7 @@ namespace MetroCPU
         private MainWindow mainWindow;
         private CPUinfo cpuinfo;
         private bool EPP_Enabled = false;
-        private bool PSM_Enabled { get => cpuinfo.PSM.IsEnabled; set => cpuinfo.PSM.IsEnabled =value; }
+        private bool PSM_Enabled { get => cpuinfo.PSM.IsEnabled; set => cpuinfo.PSM.IsEnabled = value; }
         public TrayIcon()
         {
             if (!IsAdmin())
@@ -38,14 +38,13 @@ namespace MetroCPU
 
         public void LaunchMainWindow()
         {
-            Cursor = Cursors.Wait;
             if (mainWindow == null)
             {
                 mainWindow = new MainWindow(cpuinfo);
                 mainWindow.Closing += new System.ComponentModel.CancelEventHandler(
-                    (s,e)=>mainWindow.DisposeSensors());
+                    (s, e) => mainWindow.DisposeSensors());
                 mainWindow.Closed += new EventHandler(
-                    (s,e)=>mainWindow =null);
+                    (s, e) => mainWindow = null);
                 mainWindow.Show();
             }
 
@@ -57,7 +56,6 @@ namespace MetroCPU
             }
             else
                 mainWindow.Show();
-            Cursor = Cursors.Arrow;
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
@@ -69,7 +67,9 @@ namespace MetroCPU
 
         private void MenuItem_Click_1(object sender, RoutedEventArgs e)
         {
+            Cursor = Cursors.Wait;
             LaunchMainWindow();
+            Cursor = Cursors.Arrow;
         }
 
         private static bool IsAdmin()

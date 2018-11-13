@@ -304,7 +304,7 @@ namespace MetroCPU
             byte low, high, percent;
             low = (byte)rs.LowerValue;
             high = (byte)rs.UpperValue;
-            percent = (byte)(255 - slider.Value * 255);
+            percent = (byte)((1F - slider.Value/100F) * 255F);
             if(cbb.SelectedIndex>0)
             {
                 epp.PowerSavingSettings.Settings = new byte[3] { percent,high,low};
@@ -344,7 +344,7 @@ namespace MetroCPU
                     rs.Minimum = epp.MinLimit;
                     rs.UpperValue = epp.CurrentSetting.Settings[1];
                     rs.LowerValue = epp.CurrentSetting.Settings[2];
-                    slider.Value = 100 - (epp.CurrentSetting.Settings[0] / 255f);
+                    slider.Value = 100 - (epp.CurrentSetting.Settings[0] / 2.55f);
                     if (cbb.SelectedIndex != epp.SettingIndex)
                         cbb.SelectedIndex = epp.SettingIndex;
                 }
