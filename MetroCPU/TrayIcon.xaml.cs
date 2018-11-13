@@ -41,7 +41,7 @@ namespace MetroCPU
             #region EPP binding
             if (cpuinfo.SST_support)
             {
-                PowerPlanMenu.IsEnabled = cpuinfo.SST_enabled;
+                PowerPlanMenu.IsEnabled = true;
                 cpuinfo.EPP.EnableChanged += () => PowerPlanMenu.IsEnabled = cpuinfo.EPP.IsEnabled;
                 cpuinfo.PSM.PowerModeChanged += (status) => SetPowerPlan(status);
                 cpuinfo.PSM.PowerResume += () => cpuinfo.underVoltor.AppliedSettings = cpuinfo.underVoltor.GetSettingsFromFile();
@@ -81,10 +81,9 @@ namespace MetroCPU
                 HPMenu.Click += (s, e) => SetPowerPlan(System.Windows.Forms.PowerLineStatus.Online);
                 PSMenu.Click += (s, e) => SetPowerPlan(System.Windows.Forms.PowerLineStatus.Offline);
                 taskbarIcon.ToolTipText = $"{cpuinfo.wmi.Name}\nIntel® Speed Shift Technology Available";
-                if (cpuinfo.SST_enabled)
-                {
-                    SetPowerPlan(cpuinfo.PSM.GetPowerLineStatus());
-                }
+
+                SetPowerPlan(cpuinfo.PSM.GetPowerLineStatus());
+
             }
             else
             {
@@ -94,7 +93,7 @@ namespace MetroCPU
             }
             #endregion
             cpuinfo.underVoltor.AppliedSettings = cpuinfo.underVoltor.GetSettingsFromFile();
-            AutoStartMenu.IsChecked= Startup;
+            AutoStartMenu.IsChecked = Startup;
         }
 
         public void SetPowerPlan(System.Windows.Forms.PowerLineStatus status)
@@ -134,7 +133,7 @@ namespace MetroCPU
         {
             RegistryKey registryKey = Registry.LocalMachine.OpenSubKey
                     ("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", false);
-            
+
             foreach (string name in registryKey.GetValueNames())
             {
                 if (string.Equals(name, "MetroCPU"))

@@ -333,11 +333,14 @@ namespace MetroCPU
 
         public void EnableGroup()
         {
-            toggle.Dispatcher.Invoke(() =>
+            if (epp.IsEnabled != toggle.IsChecked)
             {
-                toggle.IsChecked = epp.IsEnabled;
-                RefreshSettings();
-            });
+                toggle.Dispatcher.Invoke(() =>
+                {
+                    toggle.IsChecked = epp.IsEnabled;
+                        RefreshSettings();
+                });
+            }
         }
 
         public void RefreshSettings()

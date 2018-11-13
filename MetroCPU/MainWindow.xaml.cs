@@ -36,9 +36,10 @@ namespace MetroCPU
             else
             {
                 Toggle1.IsChecked = cpuinfo.EPP.IsEnabled;
+
                 ePP = new EPP2Sliders(cpuinfo.EPP, SettingsComboBox, FrequencyRange, EPPSlider, Toggle1, ApplySettingsButton);
                 AutoSwitchToggle.IsChecked = cpuinfo.PSM.IsEnabled;
-                cpuinfo.PSM.EnableChanged += (status)=>
+                cpuinfo.PSM.EnableChanged += (status) =>
                 {
                     if (status != AutoSwitchToggle.IsChecked)
                         AutoSwitchToggle.IsChecked = status;
@@ -139,16 +140,17 @@ namespace MetroCPU
 
         private void Toggle1_Click(object sender, RoutedEventArgs e)
         {
-            if (Toggle1.IsChecked.HasValue)
+            if (Toggle1.IsChecked != cpuinfo.SST_enabled)
             {
                 cpuinfo.SST_enabled = Toggle1.IsChecked.Value;
                 if (Toggle1.IsChecked != cpuinfo.SST_enabled)
                 {
                     Toggle1.IsChecked = cpuinfo.SST_enabled;
                     SST_Group.IsEnabled = false;
-                    MessageBox.Show("SST status won't change unless reboot");
+                    MessageBox.Show("SST status won't change until next reboot or resume from sleep");
                 }
             }
+
         }
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e)
