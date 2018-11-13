@@ -39,13 +39,14 @@ namespace MetroCPU
                     };
             }
             #region EPP binding
+            cpuinfo.underVoltor.AppliedSettings = cpuinfo.underVoltor.GetSettingsFromFile();
+            AutoStartMenu.IsChecked = Startup;
             if (cpuinfo.SST_support)
             {
                 PowerPlanMenu.IsEnabled = true;
                 cpuinfo.EPP.EnableChanged += () => PowerPlanMenu.IsEnabled = cpuinfo.EPP.IsEnabled;
                 cpuinfo.PSM.PowerModeChanged += (status) => SetPowerPlan(status);
                 cpuinfo.PSM.PowerResume += () => cpuinfo.underVoltor.AppliedSettings = cpuinfo.underVoltor.GetSettingsFromFile();
-                AutoSwitchMenu.IsChecked = cpuinfo.PSM.IsEnabled;
                 cpuinfo.PSM.EnableChanged += (status) =>
                 {
                     if (AutoSwitchMenu.IsChecked != cpuinfo.PSM.IsEnabled)
@@ -81,8 +82,9 @@ namespace MetroCPU
                 HPMenu.Click += (s, e) => SetPowerPlan(System.Windows.Forms.PowerLineStatus.Online);
                 PSMenu.Click += (s, e) => SetPowerPlan(System.Windows.Forms.PowerLineStatus.Offline);
                 taskbarIcon.ToolTipText = $"{cpuinfo.wmi.Name}\nIntel® Speed Shift Technology Available";
-
-                SetPowerPlan(cpuinfo.PSM.GetPowerLineStatus());
+                AutoSwitchMenu.IsChecked = cpuinfo.PSM.IsEnabled;
+                if (AutoStartMenu.IsChecked)
+                    SetPowerPlan(cpuinfo.PSM.GetPowerLineStatus());
 
             }
             else
@@ -92,8 +94,6 @@ namespace MetroCPU
                 taskbarIcon.ShowBalloonTip("Warning", "Intel SST is not supported\nMost Functions wont work", Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Warning);
             }
             #endregion
-            cpuinfo.underVoltor.AppliedSettings = cpuinfo.underVoltor.GetSettingsFromFile();
-            AutoStartMenu.IsChecked = Startup;
         }
 
         public void SetPowerPlan(System.Windows.Forms.PowerLineStatus status)
@@ -131,7 +131,7 @@ namespace MetroCPU
 
         private bool GetRegister()
         {
-            RegistryKey registryKey = Registry.LocalMachine.OpenSubKey
+            RegistryKey registryKey = Registry.CurrentUser.OpenSubKey
                     ("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", false);
 
             foreach (string name in registryKey.GetValueNames())
@@ -146,7 +146,7 @@ namespace MetroCPU
 
         private void RegisterInStartup(bool isChecked)
         {
-            RegistryKey registryKey = Registry.LocalMachine.OpenSubKey
+            RegistryKey registryKey = Registry.CurrentUser.OpenSubKey
                     ("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
             if (isChecked)
             {
