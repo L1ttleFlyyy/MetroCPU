@@ -53,6 +53,12 @@ namespace OpenLibSys
         {
             PowerModeChanged?.Invoke(SystemInformation.PowerStatus.PowerLineStatus);
         }
+
+        public PowerLineStatus GetPowerLineStatus()
+        {
+            return SystemInformation.PowerStatus.PowerLineStatus;
+        }
+
     }
 
     public class AutoSetting

@@ -36,7 +36,18 @@ namespace MetroCPU
             else
             {
                 Toggle1.IsChecked = cpuinfo.EPP.IsEnabled;
-                ePP = new EPP2Sliders(cpuinfo.EPP,SettingsComboBox,FrequencyRange,EPPSlider, Toggle1, ApplySettingsButton);
+                ePP = new EPP2Sliders(cpuinfo.EPP, SettingsComboBox, FrequencyRange, EPPSlider, Toggle1, ApplySettingsButton);
+                AutoSwitchToggle.IsChecked = cpuinfo.PSM.IsEnabled;
+                cpuinfo.PSM.EnableChanged += (status)=>
+                {
+                    if (status != AutoSwitchToggle.IsChecked)
+                        AutoSwitchToggle.IsChecked = status;
+                };
+                AutoSwitchToggle.Click += (s, e) =>
+                {
+                    if (AutoSwitchToggle.IsChecked != cpuinfo.PSM.IsEnabled)
+                        cpuinfo.PSM.FileSetting = AutoSwitchToggle.IsChecked.Value;
+                };
             }
             frequencyRatioSensors = new List<Sensor>(cpuinfo.CoreCount);
             foreach (LogicalProcessor lp in cpuinfo.logicalProcessors)

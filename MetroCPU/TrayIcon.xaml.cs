@@ -43,22 +43,28 @@ namespace MetroCPU
             {
                 PowerPlanMenu.IsEnabled = cpuinfo.SST_enabled;
                 cpuinfo.EPP.EnableChanged += () => PowerPlanMenu.IsEnabled = cpuinfo.EPP.IsEnabled;
-
                 cpuinfo.PSM.PowerModeChanged += (status) => SetPowerPlan(status);
                 cpuinfo.PSM.PowerResume += () => cpuinfo.underVoltor.AppliedSettings = cpuinfo.underVoltor.GetSettingsFromFile();
-
                 AutoSwitchMenu.IsChecked = cpuinfo.PSM.IsEnabled;
                 cpuinfo.PSM.EnableChanged += (status) =>
                 {
-                    AutoSwitchMenu.IsChecked = status;
+                    if (AutoSwitchMenu.IsChecked != cpuinfo.PSM.IsEnabled)
+                        AutoSwitchMenu.IsChecked = status;
                 };
                 AutoSwitchMenu.Click += (s, e) =>
                 {
-                    cpuinfo.PSM.FileSetting = AutoSwitchMenu.IsChecked;
+                    if (AutoSwitchMenu.IsChecked != cpuinfo.PSM.IsEnabled)
+                        cpuinfo.PSM.FileSetting = AutoSwitchMenu.IsChecked;
                 };
                 HPMenu.Click += (s, e) => SetPowerPlan(System.Windows.Forms.PowerLineStatus.Online);
                 PSMenu.Click += (s, e) => SetPowerPlan(System.Windows.Forms.PowerLineStatus.Offline);
                 taskbarIcon.ToolTip = $"Intel® Speed Shift Technology Available";
+
+                cpuinfo.underVoltor.AppliedSettings = cpuinfo.underVoltor.GetSettingsFromFile();
+                if (cpuinfo.SST_enabled)
+                {
+                    SetPowerPlan(cpuinfo.PSM.GetPowerLineStatus());
+                }
             }
             else
             {
@@ -77,8 +83,8 @@ namespace MetroCPU
                 cpuinfo.EPP.ApplySettings(cpuinfo.EPP.PowerSavingSettings);
                 taskbarIcon.Dispatcher.Invoke(() =>
                 {
-                    if(NotificationMenu.IsChecked)
-                        taskbarIcon.ShowBalloonTip("Note","On battery",Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info);
+                    if (NotificationMenu.IsChecked)
+                        taskbarIcon.ShowBalloonTip("Note", "On battery", Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info);
                     HPMenu.IsChecked = true;
                     PSMenu.IsChecked = false;
                     taskbarIcon.IconSource = (BitmapImage)Resources["PowerSavingIcon"];

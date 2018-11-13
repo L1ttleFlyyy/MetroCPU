@@ -319,10 +319,16 @@ namespace MetroCPU
 
         public void LoadSettingsFromFile()
         {
-            if (cbb.SelectedIndex == 0)
-                epp.ApplySettings(epp.HighPerformanceSettings);
-            else
-                epp.ApplySettings(epp.PowerSavingSettings);
+            EPPSettings tmp = (cbb.SelectedIndex == 0) ? epp.HighPerformanceSettings : epp.PowerSavingSettings;
+            slider.Dispatcher.Invoke(() =>
+            {
+                if (epp.IsEnabled)
+                {
+                    rs.UpperValue = tmp.Settings[1];
+                    rs.LowerValue = tmp.Settings[2];
+                    slider.Value = 100 - (tmp.Settings[0] / 2.55f);
+                }
+            });
         }
 
         public void EnableGroup()
