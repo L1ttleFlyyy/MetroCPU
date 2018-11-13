@@ -15,7 +15,6 @@ namespace MetroCPU
     {
         private MainWindow mainWindow;
         private CPUinfo cpuinfo;
-        private bool notification;
         public TrayIcon()
         {
             if (!IsAdmin())
@@ -56,9 +55,31 @@ namespace MetroCPU
                     if (AutoSwitchMenu.IsChecked != cpuinfo.PSM.IsEnabled)
                         cpuinfo.PSM.FileSetting = AutoSwitchMenu.IsChecked;
                 };
+
+                cpuinfo.EPP.NewSettingsApplied += () =>
+                {
+                    if (cpuinfo.EPP.SettingIndex == 0)
+                    {
+                        HPMenu.IsChecked = true;
+                        PSMenu.IsChecked = false;
+                        if (NotificationMenu.IsChecked)
+                            taskbarIcon.ShowBalloonTip("Note", "High Performance Mode", Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info);
+                        taskbarIcon.IconSource = (BitmapImage)Resources["HighPerformanceIcon"];
+
+                    }
+                    else
+                    {
+                        HPMenu.IsChecked = false;
+                        PSMenu.IsChecked = true;
+                        if (NotificationMenu.IsChecked)
+                            taskbarIcon.ShowBalloonTip("Note", "Power Saving Mode", Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info);
+                        taskbarIcon.IconSource = (BitmapImage)Resources["PowerSavingIcon"];
+
+                    }
+                };
                 HPMenu.Click += (s, e) => SetPowerPlan(System.Windows.Forms.PowerLineStatus.Online);
                 PSMenu.Click += (s, e) => SetPowerPlan(System.Windows.Forms.PowerLineStatus.Offline);
-                taskbarIcon.ToolTip = $"Intel® Speed Shift Technology Available";
+                taskbarIcon.ToolTipText = $"{cpuinfo.wmi.Name}\nIntel® Speed Shift Technology Available";
 
                 cpuinfo.underVoltor.AppliedSettings = cpuinfo.underVoltor.GetSettingsFromFile();
                 if (cpuinfo.SST_enabled)
@@ -68,7 +89,7 @@ namespace MetroCPU
             }
             else
             {
-                taskbarIcon.ToolTip = $"{cpuinfo.wmi.Name} (Intel® Speed Shift Technology NOT supported)";
+                taskbarIcon.ToolTipText = $"{cpuinfo.wmi.Name}\n(Intel® Speed Shift Technology NOT supported)";
                 PowerPlanMenu.IsEnabled = false;
                 taskbarIcon.ShowBalloonTip("Warning", "Intel SST is not supported\nMost Functions wont work", Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Warning);
             }
@@ -81,26 +102,22 @@ namespace MetroCPU
             if (status == System.Windows.Forms.PowerLineStatus.Offline)
             {
                 cpuinfo.EPP.ApplySettings(cpuinfo.EPP.PowerSavingSettings);
-                taskbarIcon.Dispatcher.Invoke(() =>
-                {
-                    if (NotificationMenu.IsChecked)
-                        taskbarIcon.ShowBalloonTip("Note", "On battery", Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info);
-                    HPMenu.IsChecked = true;
-                    PSMenu.IsChecked = false;
-                    taskbarIcon.IconSource = (BitmapImage)Resources["PowerSavingIcon"];
-                });
+                if (NotificationMenu.IsChecked)
+                    taskbarIcon.ShowBalloonTip("Note", "Power Saving Mode", Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info);
+                HPMenu.IsChecked = false;
+                PSMenu.IsChecked = true;
+                taskbarIcon.IconSource = (BitmapImage)Resources["PowerSavingIcon"];
+
             }
             else
             {
                 cpuinfo.EPP.ApplySettings(cpuinfo.EPP.HighPerformanceSettings);
-                taskbarIcon.Dispatcher.Invoke(() =>
-                {
-                    if (NotificationMenu.IsChecked)
-                        taskbarIcon.ShowBalloonTip("Note", "Plugged in", Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info);
-                    HPMenu.IsChecked = false;
-                    PSMenu.IsChecked = true;
-                    taskbarIcon.IconSource = (BitmapImage)Resources["HighPerformanceIcon"];
-                });
+                if (NotificationMenu.IsChecked)
+                    taskbarIcon.ShowBalloonTip("Note", "High Performance Mode", Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info);
+                HPMenu.IsChecked = true;
+                PSMenu.IsChecked = false;
+                taskbarIcon.IconSource = (BitmapImage)Resources["HighPerformanceIcon"];
+
             }
         }
 

@@ -17,18 +17,18 @@
         <BitmapImage x:Key="PowerSavingIcon" UriSource="imagesrc/BatterySaving.ico" />
     </Window.Resources>
     <Grid >
-        <tb:TaskbarIcon Name="taskbarIcon" IconSource="{DynamicResource HighPerformanceIcon}">
+        <tb:TaskbarIcon Name="taskbarIcon" IconSource="{DynamicResource HighPerformanceIcon}" MenuActivation="LeftOrRightClick">
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Launch Monitor" Click="MenuItem_Click_1"></MenuItem>
-                    <MenuItem Header="Autostart as windows start up"></MenuItem>
-                    <MenuItem Name="PowerPlanMenu" Header="Power Plan">
-                        <MenuItem Name="AutoSwitchMenu" Header="Auto switch when plugged in/on battery" IsCheckable="True"></MenuItem>
-                        <MenuItem Name="HPMenu" Header="High Performance" IsCheckable="True"></MenuItem>
-                        <MenuItem Name="PSMenu" Header="Battery Saving" IsCheckable="True"></MenuItem>
+                    <MenuItem Header="Launch Monitor" Click="MenuItem_Click_1" FontSize="11"></MenuItem>
+                    <MenuItem Name="PowerPlanMenu" Header="Power Plan" FontSize="11">
+                        <MenuItem FontSize="11" Name="AutoSwitchMenu" Header="Auto switch when plugged in/on battery" IsCheckable="True"></MenuItem>
+                        <MenuItem FontSize="11" Name="HPMenu" Header="High Performance" IsCheckable="True"></MenuItem>
+                        <MenuItem FontSize="11" Name="PSMenu" Header="Battery Saving" IsCheckable="True"></MenuItem>
                     </MenuItem>
-                    <MenuItem Name="NotificationMenu" Header="Turn on notifications" IsCheckable="True" IsChecked="True"></MenuItem>
-                    <MenuItem Header="Exit" Click="MenuItem_Click" />
+                    <MenuItem FontSize="11" Name="NotificationMenu" Header="Turn on notifications" IsCheckable="True" IsChecked="True"></MenuItem>
+                    <MenuItem Header="Autostart as windows start up" FontSize="11"></MenuItem>
+                    <MenuItem FontSize="11" Header="Exit" Click="MenuItem_Click" />
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
         </tb:TaskbarIcon>
