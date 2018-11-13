@@ -17,6 +17,7 @@ namespace MetroCPU
     {
         private MainWindow mainWindow;
         private CPUinfo cpuinfo;
+        private AutoSetting NotificationSetting = new AutoSetting("Notification");
         public TrayIcon()
         {
             if (!IsAdmin())
@@ -39,6 +40,8 @@ namespace MetroCPU
                     };
             }
             #region EPP binding
+
+            NotificationMenu.IsChecked = NotificationSetting.Setting;
             cpuinfo.underVoltor.AppliedSettings = cpuinfo.underVoltor.GetSettingsFromFile();
             AutoStartMenu.IsChecked = Startup;
             if (cpuinfo.SST_support)
@@ -235,5 +238,12 @@ namespace MetroCPU
             return true;
         }
 
+        private void NotificationMenu_Click(object sender, RoutedEventArgs e)
+        {
+            if (NotificationMenu.IsChecked != NotificationSetting.Setting)
+            {
+                NotificationSetting.Setting = NotificationMenu.IsChecked;
+            }
+        }
     }
 }

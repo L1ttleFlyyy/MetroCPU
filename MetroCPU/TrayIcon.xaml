@@ -26,7 +26,7 @@
                         <MenuItem FontSize="11" Name="HPMenu" Header="High Performance" IsCheckable="True"></MenuItem>
                         <MenuItem FontSize="11" Name="PSMenu" Header="Battery Saving" IsCheckable="True"></MenuItem>
                     </MenuItem>
-                    <MenuItem FontSize="11" Name="NotificationMenu" Header="Turn on notifications" IsCheckable="True" IsChecked="True"></MenuItem>
+                    <MenuItem FontSize="11" Name="NotificationMenu" Header="Turn on notifications" IsCheckable="True" IsChecked="True" Click="NotificationMenu_Click"></MenuItem>
                     <MenuItem Name="AutoStartMenu" Header="Autostart as windows start up" FontSize="11" IsCheckable="True" Click="AutoStartMenu_Click"/>
                     <MenuItem FontSize="11" Header="Exit" Click="MenuItem_Click" />
                 </ContextMenu>
