@@ -5,16 +5,36 @@ namespace OpenLibSys
 {
     public class EnergyPerformancePreference
     {
-        public byte MaxLimit { get; private set; }
-        public byte MinLimit { get; private set; }
-        public EPPSettings PowerSavingSettings;
-        public EPPSettings HighPerformanceSettings;
-        public bool CurrentSettings { get; private set; }
-        public event Action SST_Enanbled;
-        public event Action NewSettingsApplied;
-        private Ols _ols;
-        private CPUinfo _cpu;
-        public bool IsEnabled{
+        public byte MaxLimit
+        {
+            get
+            {
+                if (IsEnabled)
+                {
+                    uint eax = 0, edx = 0;
+                    _ols.Rdmsr(0x771, ref eax, ref edx);
+                    return (byte)CPUinfo.BitsSlicer(eax, 7, 0);
+                }
+                else
+                    return 255;
+            }
+        }
+        public byte MinLimit
+        {
+            get
+            {
+                if (IsEnabled)
+                {
+                    uint eax = 0, edx = 0;
+                    _ols.Rdmsr(0x771, ref eax, ref edx);
+                    return (byte)CPUinfo.BitsSlicer(eax, 31, 24);
+                }
+                else
+                    return 1;
+            }
+        }
+        public bool IsEnabled
+        {
             get
             {
                 if (_cpu.SST_support)
@@ -26,37 +46,35 @@ namespace OpenLibSys
             }
             set
             {
-                if(_cpu.SST_support)
+                if (_cpu.SST_support)
                 {
-                    _cpu.SST_enabled = value;
-                    if (value)
+                    if (value != IsEnabled)
                     {
-                        SST_Enanbled?.Invoke();
+                        _cpu.SST_enabled = value;
+                        EnableChanged?.Invoke();
                     }
                 }
             }
         }
+        public EPPSettings PowerSavingSettings;
+        public EPPSettings HighPerformanceSettings;
+        public event Action EnableChanged;
+        public event Action NewSettingsApplied;
+        private Ols _ols;
+        private CPUinfo _cpu;
+        public int SettingIndex { get; private set; }
+        public EPPSettings CurrentSetting { get => SettingIndex == 0 ? HighPerformanceSettings : PowerSavingSettings; }
 
         public EnergyPerformancePreference(CPUinfo cpu)
         {
             _cpu = cpu;
             _ols = _cpu._ols;
-            MaxLimit = 255;
-            MinLimit = 1;
-            CurrentSettings = true;
-            if (_cpu.SST_support)
-            {
-                uint eax = 0, edx = 0;
-                if (!_cpu.SST_enabled) { _ols.Wrmsr(0x770, 1, 0); }
-                _ols.Rdmsr(0x771, ref eax, ref edx);
-                MaxLimit = (byte)CPUinfo.BitsSlicer(eax, 7, 0);
-                MinLimit = (byte)CPUinfo.BitsSlicer(eax, 31, 24);
-            }
+            SettingIndex = 0;
             PowerSavingSettings = new EPPSettings("PowerSaving");
             HighPerformanceSettings = new EPPSettings("HighPerformance");
         }
 
-        public void ApplySettings(byte[] settings)
+        private void ApplySettings(byte[] settings)
         {
             if (_cpu.SST_support)
             {
@@ -73,15 +91,15 @@ namespace OpenLibSys
 
         public void ApplySettings(EPPSettings settings)
         {
+            if (settings.Name == "HighPerformance")
+            {
+                SettingIndex = 0;
+            }
+            else if (settings.Name == "PowerSaving")
+            {
+                SettingIndex = 1;
+            }
             ApplySettings(settings.Settings);
-            if(settings.Name== "HighPerformance")
-            {
-                CurrentSettings = true;
-            }
-            else if(settings.Name == "PowerSaving")
-            {
-                CurrentSettings = false;
-            }
         }
 
         public void SaveSettingsTo(byte[] tempsettings, EPPSettings settingFile)

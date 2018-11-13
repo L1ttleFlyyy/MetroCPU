@@ -20,6 +20,8 @@ namespace MetroCPU
         private List<Sensor> frequencyRatioSensors;
         #endregion
 
+        private System.Windows.Threading.DispatcherTimer UITimer;
+        private UnderVoltor2Sliders UV2S;
         public MainWindow(CPUinfo cP)
         {
             InitializeComponent();
@@ -33,15 +35,13 @@ namespace MetroCPU
             }
             else
             {
-                Toggle1.IsChecked = cpuinfo.SST_enabled;
+                ePP = new EPP2Sliders(cpuinfo.EPP,SettingsComboBox,FrequencyRange,EPPSlider, Toggle1, ApplySettingsButton);
             }
             frequencyRatioSensors = new List<Sensor>(cpuinfo.CoreCount);
             foreach (LogicalProcessor lp in cpuinfo.logicalProcessors)
             {
                 frequencyRatioSensors.Add(new Sensor(lp.GetCurrentFrequency));
             }
-
-
 
             #endregion
 
@@ -100,13 +100,14 @@ namespace MetroCPU
             MaxClockSpeedTextBox.Text = (cpuinfo.MaxClockSpeed / 1000F).ToString();
             CPUIcon.Source = new ImageSourceConverter().ConvertFromString(
                 "pack://application:,,,/MetroCPU;component/" + cpuinfo.wmi.CPUIcon) as ImageSource;
+            FrequencyRangeBox.Text = $"Frequency Range (x{cpuinfo.wmi.ExtClock.ToString()} MHz)";
             #endregion
             UITimer.Start();
 
         }
-
+        private EPP2Sliders ePP;
         private bool disposedValue = false;
-        public void Dispose()
+        public void DisposeSensors()
         {
             if (!disposedValue)
             {

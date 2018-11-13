@@ -156,12 +156,6 @@ namespace MetroCPU
         }
     }
 
-    public partial class MainWindow : MetroWindow
-    {
-        private System.Windows.Threading.DispatcherTimer UITimer;
-        private UnderVoltor2Sliders UV2S;
-    }
-
     class TransitionText
     {
         private TextBlock TB1;
@@ -217,7 +211,7 @@ namespace MetroCPU
     {
         private Slider[] sliders;
         private UnderVoltor underVoltor;
-        
+
         public int[] GetSettingFromSliders()
         {
             int[] tmp = new int[6];
@@ -249,7 +243,7 @@ namespace MetroCPU
             sliders = new Slider[6] { s0, s1, s2, s3, s4, s5 };
             underVoltor = uv;
             SetToSliders(underVoltor.AppliedSettings);
-            bool enabled = s0.IsEnabled||s1.IsEnabled || s2.IsEnabled || s3.IsEnabled || s4.IsEnabled || s5.IsEnabled;
+            bool enabled = s0.IsEnabled || s1.IsEnabled || s2.IsEnabled || s3.IsEnabled || s4.IsEnabled || s5.IsEnabled;
             if (enabled)
             {
                 setButton.Click += (s, e) =>
@@ -288,19 +282,74 @@ namespace MetroCPU
         private ComboBox cbb;
         private RangeSlider rs;
         private Slider slider;
-        private PowerStatusMonitor psm;
-        public EPP2Sliders(PowerStatusMonitor psm, EnergyPerformancePreference epp,ComboBox cbb,RangeSlider rs,Slider slider)
+        private ToggleSwitchButton toggle;
+        private Button applyButton;
+        public EPP2Sliders(EnergyPerformancePreference epp, ComboBox cbb, RangeSlider rs, Slider slider, ToggleSwitchButton toggle, Button applyButton)
         {
-            this.psm = psm;
+            this.applyButton = applyButton;
+            this.toggle = toggle;
             this.epp = epp;
             this.cbb = cbb;
             this.rs = rs;
             this.slider = slider;
+            epp.NewSettingsApplied += () => RefreshSettings();
+            epp.EnableChanged += () => EnableGroup();
+            cbb.SelectionChanged += (s, e) => LoadSettingsFromFile();
+            applyButton.Click +=  (s,e)=>ApplyAndSave();
+            RefreshSettings();
         }
 
-        public void RefreshUI()
+        public void ApplyAndSave()
         {
-            //TODO:
+            byte low, high, percent;
+            low = (byte)rs.LowerValue;
+            high = (byte)rs.UpperValue;
+            percent = (byte)(255 - slider.Value * 255);
+            if(cbb.SelectedIndex>0)
+            {
+                epp.PowerSavingSettings.Settings = new byte[3] { percent,high,low};
+                epp.ApplySettings(epp.PowerSavingSettings);
+            }
+            else
+            {
+                epp.HighPerformanceSettings.Settings = new byte[3] { percent, high, low };
+                epp.ApplySettings(epp.HighPerformanceSettings);
+            }
         }
+
+        public void LoadSettingsFromFile()
+        {
+            if (cbb.SelectedIndex == 0)
+                epp.ApplySettings(epp.HighPerformanceSettings);
+            else
+                epp.ApplySettings(epp.PowerSavingSettings);
+        }
+
+        public void EnableGroup()
+        {
+            toggle.Dispatcher.Invoke(() =>
+            {
+                toggle.IsChecked = epp.IsEnabled;
+                RefreshSettings();
+            });
+        }
+
+        public void RefreshSettings()
+        {
+            slider.Dispatcher.Invoke(() =>
+            {
+                if (epp.IsEnabled)
+                {
+                    rs.Maximum = epp.MaxLimit;
+                    rs.Minimum = epp.MinLimit;
+                    rs.UpperValue = epp.CurrentSetting.Settings[1];
+                    rs.LowerValue = epp.CurrentSetting.Settings[2];
+                    slider.Value = 100 - (epp.CurrentSetting.Settings[0] / 255f);
+                    if (cbb.SelectedIndex != epp.SettingIndex)
+                        cbb.SelectedIndex = epp.SettingIndex;
+                }
+            });
+        }
+
     }
 }

@@ -25,8 +25,6 @@ namespace MetroCPU
             }
             InitializeComponent();
             Visibility = Visibility.Hidden;
-            taskbarIcon.LeftClickCommand = new ShowMainWindowCommand();
-            taskbarIcon.LeftClickCommandParameter = this;
 
             cpuinfo = new CPUinfo();
             if (!cpuinfo.LoadSucceeded)
@@ -45,7 +43,7 @@ namespace MetroCPU
             {
                 mainWindow = new MainWindow(cpuinfo);
                 mainWindow.Closing += new System.ComponentModel.CancelEventHandler(
-                    (s,e)=>mainWindow.Dispose());
+                    (s,e)=>mainWindow.DisposeSensors());
                 mainWindow.Closed += new EventHandler(
                     (s,e)=>mainWindow =null);
                 mainWindow.Show();
@@ -54,9 +52,7 @@ namespace MetroCPU
             if (mainWindow.IsVisible)
             {
                 if (mainWindow.WindowState == WindowState.Minimized)
-                {
                     mainWindow.WindowState = WindowState.Normal;
-                }
                 mainWindow.Activate();
             }
             else
@@ -69,6 +65,11 @@ namespace MetroCPU
             mainWindow?.Close();
             taskbarIcon.Dispose();
             Application.Current.Shutdown();
+        }
+
+        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        {
+            LaunchMainWindow();
         }
 
         private static bool IsAdmin()
@@ -103,20 +104,5 @@ namespace MetroCPU
             return true;
         }
 
-    }
-
-    public class ShowMainWindowCommand : ICommand
-    {
-        public void Execute(object parameter)
-        {
-            ((TrayIcon)parameter).LaunchMainWindow();
-        }
-
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-
-        public event EventHandler CanExecuteChanged;
     }
 }

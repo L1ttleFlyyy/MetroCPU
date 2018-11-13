@@ -300,10 +300,60 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <Controls:ToggleSwitchButton x:Name="Toggle1" Height="Auto" Width="35" HorizontalAlignment="Left" Click="Toggle1_Click" Cursor="Hand"/>
+                            <Controls:ToggleSwitchButton x:Name="Toggle1" Height="18" Width="35" HorizontalAlignment="Left" Click="Toggle1_Click" Cursor="Hand"/>
                         </DockPanel>
                     </GroupBox>
-                    <GroupBox x:Name="EPP_Group" Header="Energy Performance Preference" Controls:ControlsHelper.ContentCharacterCasing="Normal" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Margin="0,4,0,0" Controls:GroupBoxHelper.HeaderForeground="{x:Null}" BorderThickness="2" Grid.Row="1"/>
+                    <GroupBox x:Name="EPP_Group" IsEnabled="{Binding Path=IsChecked, ElementName=Toggle1}" Header="Energy Performance Preference" Controls:ControlsHelper.ContentCharacterCasing="Normal" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" Margin="0,4,0,0" Controls:GroupBoxHelper.HeaderForeground="{x:Null}" BorderThickness="2" Grid.Row="1">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="3*"/>
+                                <RowDefinition Height="3*"/>
+                                <RowDefinition Height="2*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="6*"/>
+                                <ColumnDefinition Width="4*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="4*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="2*"/>
+                                    <RowDefinition Height="3*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Name="FrequencyRangeBox" Foreground="{DynamicResource AccentGray}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="1.2,5,5.4,4.6" Grid.ColumnSpan="3"/>
+                                <TextBlock Text="{Binding ElementName=FrequencyRange,Path=LowerValue, Converter={StaticResource ValueToTextConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" ></TextBlock>
+                                <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="1" Grid.Column="2" ></TextBlock>
+                                <Controls:RangeSlider  Name="FrequencyRange" Grid.Row="1" Grid.Column="1" IsSnapToTickEnabled="True"></Controls:RangeSlider>
+                                <TextBlock Text="{Binding ElementName=FrequencyRange,Path=UpperValue, Converter={StaticResource ValueToTextConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Grid.Column="2" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="4*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="2*"/>
+                                    <RowDefinition Height="3*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Performance Hint (%)" Foreground="{DynamicResource AccentGray}" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Margin="1.2,5,5.4,4.6"></TextBlock>
+                                <TextBlock Text="0" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" ></TextBlock>
+                                <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="1" Grid.Column="2" ></TextBlock>
+                                <Slider  Name="EPPSlider" Grid.Row="1" Grid.Column="1" IsSnapToTickEnabled="True"></Slider>
+                                <TextBlock Text="100" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Grid.Column="2" ></TextBlock>
+                            </Grid>
+                            <Button Name="ApplySettingsButton" Content="Apply" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <ComboBox Name="SettingsComboBox" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" SelectedIndex="0" FontSize="11" FontWeight="Bold" Grid.RowSpan="2">
+                                <ComboBoxItem Content="High Performance"></ComboBoxItem>
+                                <ComboBoxItem Content="Power Saving"></ComboBoxItem>
+                            </ComboBox>
+                            <Controls:ToggleSwitch Name="AutoSwitchToggle" Header="Auto switch if plug in/out" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" FontSize="12" Controls:ControlsHelper.HeaderFontSize="11" OffLabel="Disabled" OnLabel="Enabled"></Controls:ToggleSwitch>
+                        </Grid>
+                    </GroupBox>
                     <GroupBox Header="Undervolting (Voltage Offset)" Grid.Row="2" Margin="0,4,0,0" Controls:ControlsHelper.ContentCharacterCasing="Normal" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" BorderThickness="2">
                         <Grid>
                             <Grid.RowDefinitions>
@@ -333,7 +383,7 @@
                                 <TextBlock Text="{Binding ElementName=Slider0, Path=Value, Converter={StaticResource ValueToTextConverter}}" TextAlignment="Right" Grid.Row="1" FontWeight="Bold" HorizontalAlignment="Center"/>
                                 <TextBlock Text="mV" TextAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left"/>
                             </Grid>
-                            <Slider Name="Slider0" Grid.Column="1" VerticalAlignment="Center" Style="{DynamicResource FlatSlider}" Maximum="150" Minimum="-150" TickFrequency="5" IsSnapToTickEnabled="True" />
+                            <Slider Name="Slider0" Grid.Column="1" VerticalAlignment="Center" Style="{DynamicResource MetroSlider}" Maximum="150" Minimum="-150" TickFrequency="5" IsSnapToTickEnabled="True" />
                             <Grid Grid.Row="1">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="1*"/>
@@ -347,7 +397,7 @@
                                 <TextBlock Text="{Binding ElementName=Slider1, Path=Value, Converter={StaticResource ValueToTextConverter}}" TextAlignment="Right" Grid.Row="1" FontWeight="Bold" HorizontalAlignment="Center"/>
                                 <TextBlock Text="mV" TextAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left"/>
                             </Grid>
-                            <Slider Name="Slider1" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Style="{DynamicResource FlatSlider}" Maximum="150" Minimum="-150" TickFrequency="5" IsSnapToTickEnabled="True" />
+                            <Slider Name="Slider1" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Style="{DynamicResource MetroSlider}" Maximum="150" Minimum="-150" TickFrequency="5" IsSnapToTickEnabled="True" />
                             <Grid Grid.Row="2">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="1*"/>
@@ -361,7 +411,7 @@
                                 <TextBlock Text="{Binding ElementName=Slider2, Path=Value, Converter={StaticResource ValueToTextConverter}}" TextAlignment="Right" Grid.Row="1" FontWeight="Bold" HorizontalAlignment="Center"/>
                                 <TextBlock Text="mV" TextAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left"/>
                             </Grid>
-                            <Slider Name="Slider2" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Style="{DynamicResource FlatSlider}" Maximum="150" Minimum="-150" TickFrequency="5" IsSnapToTickEnabled="True" />
+                            <Slider Name="Slider2" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Style="{DynamicResource MetroSlider}" Maximum="150" Minimum="-150" TickFrequency="5" IsSnapToTickEnabled="True" />
                             <Grid Grid.Row="3">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="1*"/>
@@ -375,7 +425,7 @@
                                 <TextBlock Text="{Binding ElementName=Slider3, Path=Value, Converter={StaticResource ValueToTextConverter}}" TextAlignment="Right" Grid.Row="1" FontWeight="Bold" HorizontalAlignment="Center"/>
                                 <TextBlock Text="mV" TextAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left"/>
                             </Grid>
-                            <Slider Name="Slider3" Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" Style="{DynamicResource FlatSlider}" Maximum="150" Minimum="-150" TickFrequency="5" IsSnapToTickEnabled="True" />
+                            <Slider Name="Slider3" Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" Style="{DynamicResource MetroSlider}" Maximum="150" Minimum="-150" TickFrequency="5" IsSnapToTickEnabled="True" />
                             <Grid Grid.Row="4">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="1*"/>
@@ -389,7 +439,7 @@
                                 <TextBlock Text="{Binding ElementName=Slider4, Path=Value, Converter={StaticResource ValueToTextConverter}}" TextAlignment="Right" Grid.Row="1" FontWeight="Bold" HorizontalAlignment="Center"/>
                                 <TextBlock Text="mV" TextAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left"/>
                             </Grid>
-                            <Slider Name="Slider4" Grid.Column="1" Grid.Row="4" VerticalAlignment="Center" Style="{DynamicResource FlatSlider}" Maximum="150" Minimum="-150" TickFrequency="5" IsSnapToTickEnabled="True" />
+                            <Slider Name="Slider4" Grid.Column="1" Grid.Row="4" VerticalAlignment="Center" Style="{DynamicResource MetroSlider}" Maximum="150" Minimum="-150" TickFrequency="5" IsSnapToTickEnabled="True" />
                             <Grid Grid.Row="5">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="1*"/>
@@ -403,7 +453,7 @@
                                 <TextBlock Text="{Binding ElementName=Slider5, Path=Value, Converter={StaticResource ValueToTextConverter}}" TextAlignment="Right" Grid.Row="1" FontWeight="Bold" HorizontalAlignment="Center"/>
                                 <TextBlock Text="mV" TextAlignment="Center" Foreground="{DynamicResource AccentGray}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left"/>
                             </Grid>
-                            <Slider Name="Slider5" Grid.Column="1" Grid.Row="5" VerticalAlignment="Center" Style="{DynamicResource FlatSlider}" Maximum="150" Minimum="-150" TickFrequency="5" IsSnapToTickEnabled="True" />
+                            <Slider Name="Slider5" Grid.Column="1" Grid.Row="5" VerticalAlignment="Center" Style="{DynamicResource MetroSlider}" Maximum="150" Minimum="-150" TickFrequency="5" IsSnapToTickEnabled="True" />
                             <!--#endregion-->
                             <Grid Grid.Column="2" Grid.Row="1" >
                                 <Grid.ColumnDefinitions>
@@ -412,7 +462,7 @@
                                 </Grid.ColumnDefinitions>
                                 <Button Name="ApplyButton" VerticalAlignment="Bottom" Content="Apply" Grid.ColumnSpan="2" Margin="0,0,0.2,-0.2" HorizontalAlignment="Center" Width="80" Height="28"/>
                                 <Button Name="ResetButton" Grid.Column="1" Width="28" Height="28" HorizontalAlignment="Left" VerticalAlignment="Bottom" ToolTip="Reset to default" Cursor="Hand" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
-                                    <Image  Source="/imagesrc/Reset.png"></Image>
+                                    <Image  Source="/imagesrc/Reset.png"/>
                                 </Button>
                             </Grid>
                             <Button Name="SaveButton" Grid.Column="2" Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Save" Width="80" Height="28"/>

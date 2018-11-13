@@ -18,6 +18,7 @@
         <tb:TaskbarIcon Name="taskbarIcon" IconSource="CPU.ico">
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu Background="LightCoral">
+                    <MenuItem Header="Launch Monitor" Click="MenuItem_Click_1"></MenuItem>
                     <MenuItem Header="Exit" Click="MenuItem_Click" />
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
