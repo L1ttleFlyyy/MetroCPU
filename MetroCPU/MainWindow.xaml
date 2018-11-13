@@ -351,7 +351,8 @@
                                 <ComboBoxItem Content="High Performance"></ComboBoxItem>
                                 <ComboBoxItem Content="Power Saving"></ComboBoxItem>
                             </ComboBox>
-                            <Controls:ToggleSwitch Name="AutoSwitchToggle" Header="Auto switch if plug in/out" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" FontSize="12" Controls:ControlsHelper.HeaderFontSize="11" OffLabel="Disabled" OnLabel="Enabled"></Controls:ToggleSwitch>
+                            <TextBlock Text="Auto switch plan when plugged in/on battery" Grid.Row="1" Grid.Column="2" VerticalAlignment="Bottom" HorizontalAlignment="Center" TextWrapping="Wrap" Foreground="{DynamicResource AccentGray}" FontWeight="Bold"></TextBlock>
+                            <Controls:ToggleSwitch Name="AutoSwitchToggle" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Grid.Row="2" FontSize="11" Controls:ControlsHelper.HeaderFontSize="11" OffLabel="Disabled" OnLabel="Enabled"/>
                         </Grid>
                     </GroupBox>
                     <GroupBox Header="Undervolting (Voltage Offset)" Grid.Row="2" Margin="0,4,0,0" Controls:ControlsHelper.ContentCharacterCasing="Normal" Background="{DynamicResource AccentBlue1}" BorderBrush="{DynamicResource AccentBlue1}" BorderThickness="2">
