@@ -3,4 +3,4 @@
 
 ![icon](https://raw.githubusercontent.com/L1ttleFlyyy/MetroCPU/master/MetroCPU/CPU.ico)
 
-这个人现在有一堆final和due。先留个坑，回头再写Readme.
+这个人现在有一堆final和due(´▽`ʃƪ)。先留个坑，回头再写Readme.
