@@ -28,6 +28,13 @@
                     </MenuItem>
                     <MenuItem FontSize="11" Name="NotificationMenu" Header="Turn on notifications" IsCheckable="True" IsChecked="True" Click="NotificationMenu_Click"></MenuItem>
                     <MenuItem Name="AutoStartMenu" Header="Autostart as windows start up" FontSize="11" IsCheckable="True" Click="AutoStartMenu_Click"/>
+                    <MenuItem>
+                        <MenuItem.Header>
+                            <Hyperlink NavigateUri="https://github.com/L1ttleFlyyy/MetroCPU" TextDecorations="{x:Null}" RequestNavigate="Hyperlink_Click">
+                                Fork me on GitHub!
+                            </Hyperlink>
+                        </MenuItem.Header>
+                    </MenuItem>
                     <MenuItem FontSize="11" Header="Exit" Click="MenuItem_Click" />
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
