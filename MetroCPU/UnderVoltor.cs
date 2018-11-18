@@ -113,7 +113,7 @@ namespace OpenLibSys
         {
             get
             {
-                string tempDir = Directory.GetCurrentDirectory() + @"\UnderVolt";
+                string tempDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\MetroCPU";
                 if (!Directory.Exists(tempDir))
                 {
                     Directory.CreateDirectory(tempDir);

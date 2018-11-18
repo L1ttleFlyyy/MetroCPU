@@ -17,7 +17,7 @@ namespace MetroCPU
     {
         private MainWindow mainWindow;
         private CPUinfo cpuinfo;
-        private AutoSetting NotificationSetting = new AutoSetting("Notification");
+        private PSMAutoSetting NotificationSetting = new PSMAutoSetting("Notification");
         public TrayIcon()
         {
             if (!IsAdmin())

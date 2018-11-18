@@ -23,7 +23,7 @@ namespace OpenLibSys
         public event Action PowerResume;
         public event Action<bool> EnableChanged;
         public event Action<PowerLineStatus> PowerModeChanged;
-        private AutoSetting SettingFile = new AutoSetting("AutoStart");
+        private PSMAutoSetting SettingFile = new PSMAutoSetting("AutoStart");
         public PowerStatusMonitor()
         {
             IsEnabled = SettingFile.Setting;
@@ -61,14 +61,26 @@ namespace OpenLibSys
 
     }
 
-    public class AutoSetting
+    public class PSMAutoSetting
     {
         public string Name { get; private set; }
+        private string fileDirectory
+        {
+            get
+            {
+                string tempDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\MetroCPU";
+                if (!Directory.Exists(tempDir))
+                {
+                    Directory.CreateDirectory(tempDir);
+                }
+                return tempDir;
+            }
+        }
         private string filePath
         {
             get
             {
-                string file = Directory.GetCurrentDirectory() + @"\" + Name;
+                string file = fileDirectory + @"\" + Name;
                 if (!File.Exists(file))
                 {
                     using (StreamWriter sw = new StreamWriter(File.Create(file)))
@@ -102,7 +114,7 @@ namespace OpenLibSys
             return tmp;
         }
 
-        public AutoSetting(string displayName)
+        public PSMAutoSetting(string displayName)
         {
             Name = displayName;
         }

@@ -121,7 +121,7 @@ namespace OpenLibSys
         {
             get
             {
-                string tempDir = Directory.GetCurrentDirectory() + @"\EPP";
+                string tempDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\MetroCPU";
                 if (!Directory.Exists(tempDir))
                 {
                     Directory.CreateDirectory(tempDir);
