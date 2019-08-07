@@ -3,4 +3,16 @@
 
 ![icon](https://raw.githubusercontent.com/L1ttleFlyyy/MetroCPU/master/MetroCPU/CPU.ico)
 
-这个人现在有一堆final和due(´▽`ʃƪ)。先留个坑，回头再写Readme.
+
+# Screenshots
+Tab1: basic info and clock monitor
+
+![](screenshots/tab1.png)
+
+Tab2: power plan settings and other monitors
+
+![](screenshots/tab2.png)
+
+Tray Shortcut
+
+![](screenshots/tray_menu.png)
